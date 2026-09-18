@@ -1,0 +1,31 @@
+@startuml
+!include <C4/C4_Component>
+skinparam monochrome true
+skinparam shadowing false
+LAYOUT_TOP_DOWN()
+HIDE_STEREOTYPE()
+
+Container_Boundary(svc, "Dịch vụ BRE") {
+Component(api, "API đánh giá", "net/http", "Nhận yêu cầu đánh giá, trả kết quả quyết định")
+Component(mgmt, "Lớp quản trị", "Go", "Đăng ký phiên bản đã phát hành, chuyển con trỏ latest")
+
+Boundary(core, "Lõi BRE", "gói Go độc lập") {
+  Component(engine, "Engine", "Go interface", "Điểm vào duy nhất: Register, SetLatest, Evaluate")
+  Component(loader, "Bộ biên dịch định nghĩa", "Go", "Phân tích tệp định nghĩa, chuyển ô bảng thành AST, kiểm tra kiểu")
+  Component(registry, "Bộ đăng ký quyết định", "Go, sync.RWMutex", "Lưu phiên bản theo (decisionId, version), con trỏ latest")
+  Component(validator, "Bộ kiểm tra lược đồ", "Go", "Kiểm tra trường bắt buộc và kiểu của dữ kiện")
+  Component(evaluator, "Bộ đánh giá điều kiện", "Go", "Duyệt AST trên dữ kiện, điều hướng an toàn")
+  Component(resolver, "Bộ giải quyết hit policy", "Go", "FIRST, UNIQUE, PRIORITY, COLLECT")
+  Component(tracer, "Bộ ghi vết", "Go", "Tạo bản tóm tắt vết và vết đánh giá đầy đủ")
+}
+}
+
+Rel(api, engine, "Evaluate")
+Rel(mgmt, engine, "Register, SetLatest")
+Rel(engine, loader, "Biên dịch khi đăng ký")
+Rel(engine, registry, "Thêm, tra cứu phiên bản")
+Rel(engine, validator, "Kiểm tra dữ kiện")
+Rel(engine, evaluator, "Đánh giá từng luật")
+Rel(engine, resolver, "Tổng hợp luật khớp")
+Rel(evaluator, tracer, "Ghi kết quả từng nút")
+@enduml

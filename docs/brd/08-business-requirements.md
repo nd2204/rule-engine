@@ -1,0 +1,11 @@
+# 8. Yêu cầu nghiệp vụ
+
+| Mã | Yêu cầu | Lý do/giá trị | Ưu tiên | Tiêu chí chấp nhận cấp business |
+| --- | --- | --- | --- | --- |
+| BR-001 | Cho phép định nghĩa và thực thi nhiều loại business decision khác nhau mà không yêu cầu Business Rule Engine chứa logic đặc thù của từng domain nghiệp vụ. | Tái sử dụng nền tảng cho nhiều bài toán. | Must | Cùng một engine minh hoạ được các decision thuộc ít nhất hai domain khác nhau (Retail POS & Smart IoT). |
+| BR-002 | Hỗ trợ cấu trúc biểu diễn Rule Condition theo dạng JSON AST an toàn, có khả năng ánh xạ từ Decision Table dạng bảng. | Ngăn ngừa code injection, dễ kiểm thử và tương thích cho UI builder sau này. | Must | Engine parse và thực thi biểu thức điều kiện với các toán tử so sánh (`==`, `!=`, `>`, `<`, `>=`, `<=`, `in`, `not_in`), logic (`and`, `or`, `not`), và mảng (`some`, `all`, `none`). |
+| BR-003 | Cung cấp cơ chế giải quyết xung đột rule thông qua các Hit Policy chuẩn hóa (`FIRST`, `UNIQUE`, `PRIORITY`, `COLLECT`). | Đảm bảo tính nhất quán của kết quả khi nhiều rule cùng thỏa mãn. | Must | Kiểm chứng đúng đắn với cả 4 Hit Policy; trả về danh sách mảng cho `COLLECT` và báo lỗi cho `UNIQUE` nếu có >1 rule khớp. |
+| BR-004 | Xuất báo cáo Evaluation Trace đầy đủ cho mỗi lần chạy quyết định. | Minh bạch và phục vụ kiểm toán, đối soát lỗi. | Must | Trace ghi nhận snapshot Facts, danh sách rule được duyệt, kết quả boolean từng điều kiện con, lý do chọn/bỏ qua, và mã phiên bản rule set. |
+| BR-005 | Quản lý vòng đời rule qua Dynamic In-Memory Registry có gắn phiên bản ngữ nghĩa (Semantic Versioning). | Hỗ trợ cập nhật chính sách không gián đoạn (zero-downtime) và thử nghiệm A/B hoặc rollback. | Must | Nạp phiên bản mới vào RAM tức thì, caller có thể chỉ định gọi phiên bản cụ thể hoặc lấy phiên bản `latest`. |
+| BR-006 | Xác thực schema Facts trước khi chạy và xử lý an toàn với dữ liệu bị thiếu (Safe Navigation). | Bảo vệ hệ thống khỏi crash hoặc sai lệch do thiếu dữ liệu môi trường. | Must | Kiểm tra required fields trước khi chạy; các trường optional bị null/undefined được đánh giá là `false` mà không ném panic/exception. |
+| BR-007 | Thực thi thuần túy trong bộ nhớ (Pure In-Memory Execution). | Đảm bảo độ trễ sub-millisecond cho quầy POS và IoT real-time backend. | Must | Engine không thực hiện bất kỳ lệnh I/O, truy vấn DB hay network request nào trong vòng lặp đánh giá rule. |

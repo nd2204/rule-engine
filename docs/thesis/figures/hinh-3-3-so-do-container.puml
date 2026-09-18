@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Container>
+skinparam monochrome true
+skinparam shadowing false
+LAYOUT_TOP_DOWN()
+HIDE_STEREOTYPE()
+
+Person(author, "Người soạn luật")
+System_Ext(caller, "Ứng dụng gọi")
+
+System_Boundary(sys, "Hệ thống BRE") {
+  Container(cli, "Công cụ dòng lệnh bre", "Go", "Gửi bản nháp, ca kiểm thử; yêu cầu mô phỏng, phát hành, rollback")
+  Container(svc, "Dịch vụ BRE", "Go, HTTP", "Gồm lõi BRE (đánh giá trong bộ nhớ) và lớp quản trị vòng đời")
+  ContainerDb(db, "Cơ sở dữ liệu", "SQLite", "Bản nháp, ca kiểm thử, phiên bản đã phát hành, con trỏ latest")
+}
+
+Rel(author, cli, "Dùng")
+Rel(cli, svc, "Gọi API quản trị", "HTTP/JSON")
+Rel(caller, svc, "Gọi API đánh giá", "HTTP/JSON")
+Rel(svc, db, "Đọc, ghi trạng thái vòng đời", "SQL")
+@enduml

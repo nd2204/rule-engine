@@ -1,0 +1,78 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontSize 13
+skinparam classAttributeIconSize 0
+hide circle
+hide empty methods
+
+class "Quyết định\n(Decision)" as Decision {
+  id : string
+}
+class "Phiên bản quyết định\n(DecisionVersion)" as Version {
+  version : int
+  publishedAt : time
+}
+class "Bản nháp\n(Draft)" as Draft {
+  id : string
+  updatedAt : time
+}
+class "Ca kiểm thử\n(TestCase)" as TestCase {
+  id : string
+  facts : object
+  expected : object
+}
+class "Định nghĩa quyết định\n(DecisionDefinition)" as Def {
+  decisionId : string
+  hitPolicy : HitPolicy
+}
+class "Lược đồ đầu vào\n(InputSchema)" as Schema
+class "Trường dữ kiện\n(FieldSpec)" as Field {
+  path : string
+  type : FieldType
+  required : bool
+}
+class "Luật\n(Rule)" as Rule {
+  id : string
+  description : string
+  priority : int [0..1]
+  output : object
+}
+abstract class "Điều kiện\n(Condition)" as Cond
+class "So sánh\n(Comparison)" as Cmp {
+  op : string
+  path : string
+  value : any
+}
+class "Phép logic\n(Logical)" as Logic {
+  op : and | or | not
+}
+class "Lượng từ\n(Quantifier)" as Quant {
+  op : some | all | none
+  path : string
+}
+enum HitPolicy {
+  FIRST
+  UNIQUE
+  PRIORITY
+  COLLECT
+}
+
+Decision "1" *-- "0..*" Version : phiên bản
+Decision "1" --> "0..1" Version : con trỏ latest
+Decision "1" *-- "0..*" Draft
+Decision "1" *-- "0..*" TestCase
+Draft "0..*" --> "0..1" Version : bản cơ sở
+Version "1" *-- "1" Def
+Draft "1" *-- "1" Def
+Def "1" *-- "1" Schema
+Schema "1" *-- "0..*" Field
+Def "1" *-- "1..*" Rule : theo thứ tự\nkhai báo
+Rule "1" *-- "1" Cond
+Cond <|-- Cmp
+Cond <|-- Logic
+Cond <|-- Quant
+Logic "1" *-- "1..*" Cond : toán hạng
+Quant "1" *-- "1" Cond : điều kiện\ncho từng phần tử
+Def ..> HitPolicy
+@enduml

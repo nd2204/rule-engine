@@ -1,0 +1,27 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontSize 13
+
+state "Bản nháp" as D {
+  state "Đang soạn" as Editing
+  state "Lỗi thời" as Stale
+  [*] --> Editing : tạo từ phiên bản latest\n(hoặc từ tệp định nghĩa mới)
+  Editing --> Editing : sửa định nghĩa /\nmô phỏng
+  Editing --> Stale : con trỏ latest rời\nkhỏi bản cơ sở
+  Stale --> Editing : con trỏ latest\ntrở lại bản cơ sở
+  Stale --> Stale : sửa định nghĩa /\nmô phỏng
+}
+
+state "Phiên bản đã phát hành" as V {
+  state "Được con trỏ latest trỏ tới" as Latest
+  state "Không phải latest" as NotLatest
+  Latest --> NotLatest : phát hành phiên bản khác /\nrollback về phiên bản khác
+  NotLatest --> Latest : rollback về phiên bản này
+}
+
+Editing --> Latest : phát hành\n[có ca kiểm thử, mọi ca đạt,\nbreaking change đã xác nhận]
+Stale --> Latest : phát hành\n[như trên, và đã xác nhận\nbản nháp lỗi thời]
+Editing --> [*] : xoá
+Stale --> [*] : xoá
+@enduml

@@ -1,0 +1,3 @@
+# Latest Is an Explicit Pointer, Not the Highest Version
+
+`latest` resolves to a per-Decision Latest Pointer that Publish moves forward and Rollback moves back, rather than to the highest version number. This gives instant Rollback and side-by-side evaluation (ADR-0003) without minting fake versions, and leaves the newer version Published and evaluable by exact version. Because the pointer carries the ordering, Decision Versions are numbered by the service with a monotonically increasing integer at Publish time instead of author-chosen semver, which would imply compatibility guarantees nothing checks.

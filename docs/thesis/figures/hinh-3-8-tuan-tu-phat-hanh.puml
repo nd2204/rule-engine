@@ -1,0 +1,41 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontSize 13
+skinparam sequenceMessageAlign center
+hide footbox
+
+actor "Người soạn luật" as U
+participant "Công cụ\ndòng lệnh" as CLI
+participant "API quản trị" as A
+participant "Dịch vụ\nphát hành" as P
+participant "Bộ mô phỏng" as S
+participant "Kho lưu trữ" as K
+database "SQLite" as DB
+participant "Lõi BRE" as E
+
+U -> CLI : bre publish <draftId>
+CLI -> A : POST /v1/admin/drafts/{id}/publish
+A -> P : Publish(draftId, xác nhận)
+note over P : giữ khoá phát hành\ncủa dịch vụ
+P -> K : Đọc bản nháp, ca kiểm thử,\nphiên bản latest
+K -> DB : SELECT
+P -> S : Chạy mọi ca kiểm thử trên bản nháp
+S --> P : báo cáo mô phỏng
+alt không có ca kiểm thử hoặc có ca không đạt
+  P --> A : từ chối (TEST_CASES_FAILED)
+  A --> CLI : 422
+end
+P -> P : Kiểm tra bản nháp lỗi thời,\nbreaking change
+alt cần xác nhận mà chưa có
+  P --> A : từ chối (STALE_DRAFT / BREAKING_CHANGE)
+  A --> CLI : 409
+end
+P -> K : Giao dịch phát hành
+K -> DB : BEGIN; cấp version = max + 1;\nINSERT phiên bản; UPDATE latest;\nDELETE bản nháp; COMMIT
+P -> E : Register(định nghĩa, version)
+P -> E : SetLatest(decisionId, version)
+P --> A : version mới
+A --> CLI : 201
+CLI --> U : Đã phát hành phiên bản n
+@enduml

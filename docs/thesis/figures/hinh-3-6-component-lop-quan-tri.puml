@@ -1,0 +1,37 @@
+@startuml
+!include <C4/C4_Component>
+skinparam monochrome true
+skinparam shadowing false
+LAYOUT_TOP_DOWN()
+HIDE_STEREOTYPE()
+
+Container(cli, "Công cụ dòng lệnh bre", "Go")
+ContainerDb(db, "Cơ sở dữ liệu", "SQLite")
+
+Container_Boundary(svc, "Dịch vụ BRE") {
+Boundary(mgmt, "Lớp quản trị vòng đời", "nhóm component") {
+  Component(api, "API quản trị", "net/http", "Các điểm cuối /v1/admin/...")
+  Component(drafts, "Dịch vụ bản nháp", "Go", "Tạo, sửa, xoá bản nháp; quản lý ca kiểm thử")
+  Component(sim, "Bộ mô phỏng", "Go", "Chạy ca kiểm thử trên engine tạm, so sánh với phiên bản latest")
+  Component(pub, "Dịch vụ phát hành", "Go", "Kiểm tra điều kiện phát hành, cấp số phiên bản, rollback")
+  Component(diff, "Bộ so sánh lược đồ", "Go", "Phát hiện breaking change giữa hai lược đồ đầu vào")
+  Component(repo, "Kho lưu trữ", "Go, database/sql", "Đọc, ghi bảng dữ liệu trong giao dịch")
+  Component(boot, "Bộ khởi tạo", "Go", "Nạp lại mọi phiên bản đã phát hành vào lõi khi khởi động")
+}
+Component(core, "Lõi BRE", "Go", "Engine: Register, SetLatest, Evaluate")
+}
+
+Rel(cli, api, "Gọi", "HTTP/JSON")
+Rel(api, drafts, "Bản nháp, ca kiểm thử")
+Rel(api, sim, "Mô phỏng")
+Rel(api, pub, "Phát hành, rollback")
+Rel(pub, sim, "Chạy ca kiểm thử")
+Rel(pub, diff, "So sánh lược đồ")
+Rel(drafts, repo, "Đọc, ghi")
+Rel(pub, repo, "Giao dịch phát hành")
+Rel(sim, core, "Evaluate phiên bản latest")
+Rel(pub, core, "Register, SetLatest")
+Rel(boot, repo, "Đọc phiên bản")
+Rel(boot, core, "Register, SetLatest")
+Rel(repo, db, "SQL")
+@enduml

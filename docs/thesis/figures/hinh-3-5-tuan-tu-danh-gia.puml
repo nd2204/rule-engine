@@ -1,0 +1,43 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontSize 13
+skinparam sequenceMessageAlign center
+hide footbox
+
+participant "Ứng dụng gọi" as C
+participant "API đánh giá" as A
+participant "Engine" as E
+participant "Bộ đăng ký\nquyết định" as R
+participant "Bộ kiểm tra\nlược đồ" as V
+participant "Bộ đánh giá\nđiều kiện" as Ev
+participant "Bộ giải quyết\nhit policy" as H
+
+C -> A : POST /v1/decisions/{id}/evaluate\n(dữ kiện, phiên bản, mức vết)
+A -> E : Evaluate(ctx, id, version, facts)
+E -> R : Tra cứu(id, version)
+activate R
+note right of R : giữ khoá đọc\ntrong lúc tra cứu
+R --> E : quyết định đã biên dịch
+deactivate R
+alt không tìm thấy quyết định hoặc phiên bản
+  E --> A : lỗi DECISION_NOT_FOUND
+  A --> C : 404
+end
+E -> V : Kiểm tra(facts, lược đồ đầu vào)
+alt dữ kiện không hợp lệ
+  V --> E : danh sách vi phạm
+  E --> A : lỗi INPUT_SCHEMA_VIOLATION
+  A --> C : 422
+end
+loop mỗi luật theo thứ tự khai báo
+  E -> Ev : Đánh giá điều kiện của luật
+  Ev --> E : khớp / không khớp (+ cảnh báo)
+  E -> H : Ghi nhận kết quả luật
+  H --> E : dừng (FIRST đã có luật khớp) / tiếp tục
+end
+E -> H : Tổng hợp
+H --> E : kết quả đầu ra hoặc lỗi UNIQUE
+E --> A : kết quả quyết định + bản tóm tắt vết\n(+ vết đầy đủ nếu được yêu cầu)
+A --> C : 200 (hoặc 422 nếu vi phạm UNIQUE)
+@enduml

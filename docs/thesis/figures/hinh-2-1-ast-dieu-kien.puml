@@ -1,0 +1,25 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam defaultFontSize 14
+skinparam rectangleRoundCorner 8
+
+rectangle "and" as n_and
+rectangle "<U+003D><U+003D>" as n_eq1
+rectangle "some" as n_some
+rectangle "var: customer.tier" as n_tier
+rectangle "<U+0022>GOLD<U+0022>" as n_gold
+rectangle "var: cart.items" as n_items
+rectangle "<U+003D><U+003D>" as n_eq2
+rectangle "var: category" as n_cat
+rectangle "<U+0022>BEVERAGE<U+0022>" as n_bev
+
+n_and --> n_eq1
+n_and --> n_some
+n_eq1 --> n_tier
+n_eq1 --> n_gold
+n_some --> n_items : danh sách
+n_some --> n_eq2 : điều kiện\ncho từng phần tử
+n_eq2 --> n_cat
+n_eq2 --> n_bev
+@enduml

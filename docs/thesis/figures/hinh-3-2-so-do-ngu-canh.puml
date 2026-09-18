@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Context>
+skinparam monochrome true
+skinparam shadowing false
+LAYOUT_TOP_DOWN()
+HIDE_STEREOTYPE()
+
+Person(author, "Người soạn luật", "Soạn, mô phỏng, phát hành và rollback các quyết định")
+Person(integrator, "Người tích hợp", "Kết nối ứng dụng gọi với hệ thống, chuẩn bị dữ kiện")
+System(bre, "Hệ thống BRE", "Quản lý vòng đời quyết định và đánh giá quyết định trên dữ kiện")
+System_Ext(caller, "Ứng dụng gọi", "Ví dụ: dịch vụ POS, hệ thống tưới tiêu IoT")
+
+Rel(author, bre, "Soạn và phát hành quyết định", "CLI")
+Rel(integrator, caller, "Tích hợp lời gọi đánh giá")
+Rel(integrator, bre, "Xuất tệp định nghĩa, xem vết đánh giá", "HTTP/JSON")
+Rel(caller, bre, "Gửi dữ kiện, nhận kết quả quyết định", "HTTP/JSON")
+@enduml
