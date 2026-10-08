@@ -1,0 +1,70 @@
+:root {
+  /* Drawing-office sheet */
+  --sheet: #ffffff;
+  --paper: #f9faf9;
+  --panel: #eef1f4;
+  --panel-2: #e3e8ee;
+  --rule: #d3d9e0;
+  --rule-strong: #9aa4b0;
+  --ink: #16181d;
+  --ink-2: #3f4651;
+  --ink-3: #5b636e;
+
+  /* Shell: drawing blue */
+  --rail: #1b3a6b;
+  --rail-deep: #142d55;
+  --rail-line: #2c4d83;
+  --rail-ink: #eef3fa;
+  --rail-ink-2: #b3c3dc;
+
+  /* Signals: the only state colours. Each pairs with an icon and a label. */
+  --clear: #13804b;
+  --clear-ink: #0d6038;
+  --clear-tint: #e4f3ea;
+  --stop: #c42a1f;
+  --stop-ink: #a32118;
+  --stop-tint: #fbeae8;
+  --caution: #e8a40c;
+  --caution-ink: #7a5300;
+  --caution-tint: #fdf3da;
+
+  /* Selection and focus borrow the shell blue */
+  --accent: #1b3a6b;
+  --accent-hover: #24497f;
+  --accent-tint: #e8eef8;
+  --lit: #eef3fb;
+  --lit-strong: #dbe6f6;
+  /* Lever green: the sheet's own green, the same as the clear lamp. Hover steps darker for the white label. */
+  --primary: #13804b;
+  --primary-hover: #046d3d;
+  --row-hover: #fbfcfd;
+  --toast-bg: #16181d;
+  --lever-lock: #3f4651;
+  --on-primary: #fff;
+  --on-signal: #fff;
+  --on-caution: #16181d;
+  /* Fill and text for a stop signal that carries text (conflict row number). */
+  --stop-fill: var(--stop);
+  --on-stop: var(--on-signal);
+  --on-lever-lock: #fff;
+  --toast-ink: #fff;
+
+  --font-ui: 'Be Vietnam Pro', system-ui, sans-serif;
+  --font-tech: 'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;
+  --font-code: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* Fixed rem scale, ratio ~1.2 */
+  --t-xs: 0.6875rem;
+  --t-sm: 0.75rem;
+  --t-md: 0.8125rem;
+  --t-base: 0.875rem;
+  --t-lg: 1rem;
+  --t-xl: 1.25rem;
+  --t-2xl: 1.75rem;
+
+  --radius: 3px;
+  --rail-w: 56px;
+  --inspector-w: 340px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --shadow-pop: 0 6px 18px -6px rgb(22 24 29 / 0.28), 0 2px 4px -1px rgb(22 24 29 / 0.12);
+}
