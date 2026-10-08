@@ -1,0 +1,1496 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-10T09:41:19+00:00",
+  "title": "Design System: bre console",
+  "extensions": {
+    "colorMeta": {
+      "sheet": {
+        "role": "neutral",
+        "displayName": "Drawing Sheet",
+        "canonical": "#181818",
+        "oklch": "oklch(20.9% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#222222",
+          "#3a3a3a",
+          "#555555",
+          "#747474",
+          "#959595",
+          "#bababa",
+          "#ebebeb"
+        ],
+        "cssVar": "--sheet",
+        "derivedIn": []
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper Under the Sheet",
+        "canonical": "#181818",
+        "oklch": "oklch(20.9% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#222222",
+          "#3a3a3a",
+          "#555555",
+          "#747474",
+          "#959595",
+          "#bababa",
+          "#ebebeb"
+        ],
+        "cssVar": "--paper",
+        "derivedIn": []
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "Panel",
+        "canonical": "#282828",
+        "oklch": "oklch(27.7% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#242424",
+          "#404040",
+          "#5d5d5d",
+          "#7d7d7d",
+          "#9e9e9e",
+          "#c4c4c4",
+          "#eeeeee"
+        ],
+        "cssVar": "--panel",
+        "derivedIn": []
+      },
+      "panel-2": {
+        "role": "neutral",
+        "displayName": "Deep Panel",
+        "canonical": "#32302f",
+        "oklch": "oklch(31.1% 0.003 48.6)",
+        "tonalRamp": [
+          "#0c0b0a",
+          "#252423",
+          "#413f3e",
+          "#5f5d5c",
+          "#7f7d7b",
+          "#a09e9c",
+          "#c6c3c2",
+          "#f0eeec"
+        ],
+        "cssVar": "--panel-2",
+        "derivedIn": []
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Hairline Rule",
+        "canonical": "#32302f",
+        "oklch": "oklch(31.1% 0.003 48.6)",
+        "tonalRamp": [
+          "#0c0b0a",
+          "#232120",
+          "#3c3a39",
+          "#575554",
+          "#767473",
+          "#979593",
+          "#bcbab9",
+          "#edeae9"
+        ],
+        "cssVar": "--rule",
+        "derivedIn": []
+      },
+      "rule-strong": {
+        "role": "neutral",
+        "displayName": "Strong Rule",
+        "canonical": "#665c54",
+        "oklch": "oklch(48.2% 0.018 61.0)",
+        "tonalRamp": [
+          "#110904",
+          "#2b221b",
+          "#473e36",
+          "#655b53",
+          "#867b73",
+          "#a79c93",
+          "#cdc2b9",
+          "#f8ece3"
+        ],
+        "cssVar": "--rule-strong",
+        "derivedIn": []
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#ebdbb2",
+        "oklch": "oklch(89.4% 0.057 89.2)",
+        "tonalRamp": [
+          "#130900",
+          "#2f2200",
+          "#4c3e19",
+          "#6a5c37",
+          "#8b7c56",
+          "#ac9d76",
+          "#d3c39b",
+          "#feedc4"
+        ],
+        "cssVar": "--ink",
+        "derivedIn": []
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Second Ink",
+        "canonical": "#d5c4a1",
+        "oklch": "oklch(82.5% 0.051 85.1)",
+        "tonalRamp": [
+          "#140900",
+          "#2f2202",
+          "#4c3e1f",
+          "#6b5c3c",
+          "#8b7b5b",
+          "#ad9d7b",
+          "#d3c29f",
+          "#feedc9"
+        ],
+        "cssVar": "--ink-2",
+        "derivedIn": [
+          "dracula"
+        ]
+      },
+      "ink-3": {
+        "role": "neutral",
+        "displayName": "Muted Ink",
+        "canonical": "#a89984",
+        "oklch": "oklch(69.0% 0.035 76.3)",
+        "tonalRamp": [
+          "#130900",
+          "#2e2210",
+          "#4a3d2b",
+          "#695b48",
+          "#897b67",
+          "#ab9c87",
+          "#d1c2ac",
+          "#fcecd5"
+        ],
+        "cssVar": "--ink-3",
+        "derivedIn": [
+          "nord",
+          "dracula"
+        ]
+      },
+      "rail": {
+        "role": "neutral",
+        "displayName": "Shell Rail",
+        "canonical": "#151515",
+        "oklch": "oklch(19.6% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#222222",
+          "#3a3a3a",
+          "#555555",
+          "#747474",
+          "#959595",
+          "#bababa",
+          "#ebebeb"
+        ],
+        "cssVar": "--rail",
+        "derivedIn": [
+          "gruvbox",
+          "tokyonight",
+          "nord"
+        ]
+      },
+      "rail-deep": {
+        "role": "neutral",
+        "displayName": "Rail Deep",
+        "canonical": "#181818",
+        "oklch": "oklch(20.9% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#222222",
+          "#3a3a3a",
+          "#555555",
+          "#747474",
+          "#959595",
+          "#bababa",
+          "#ebebeb"
+        ],
+        "cssVar": "--rail-deep",
+        "derivedIn": []
+      },
+      "rail-line": {
+        "role": "neutral",
+        "displayName": "Rail Line",
+        "canonical": "#32302f",
+        "oklch": "oklch(31.1% 0.003 48.6)",
+        "tonalRamp": [
+          "#0c0b0a",
+          "#252423",
+          "#413f3e",
+          "#5f5d5c",
+          "#7f7d7b",
+          "#a09e9c",
+          "#c6c3c2",
+          "#f0eeec"
+        ],
+        "cssVar": "--rail-line",
+        "derivedIn": []
+      },
+      "rail-ink": {
+        "role": "neutral",
+        "displayName": "Rail Ink",
+        "canonical": "#ebdbb2",
+        "oklch": "oklch(89.4% 0.057 89.2)",
+        "tonalRamp": [
+          "#130900",
+          "#2f2200",
+          "#4c3e19",
+          "#6a5c37",
+          "#8b7c56",
+          "#ac9d76",
+          "#d3c39b",
+          "#feedc4"
+        ],
+        "cssVar": "--rail-ink",
+        "derivedIn": []
+      },
+      "rail-ink-2": {
+        "role": "neutral",
+        "displayName": "Rail Muted Ink",
+        "canonical": "#a89984",
+        "oklch": "oklch(69.0% 0.035 76.3)",
+        "tonalRamp": [
+          "#130900",
+          "#2e2210",
+          "#4a3d2b",
+          "#695b48",
+          "#897b67",
+          "#ab9c87",
+          "#d1c2ac",
+          "#fcecd5"
+        ],
+        "cssVar": "--rail-ink-2",
+        "derivedIn": []
+      },
+      "clear": {
+        "role": "tertiary",
+        "displayName": "Signal Green",
+        "canonical": "#b8bb26",
+        "oklch": "oklch(76.5% 0.158 110.8)",
+        "tonalRamp": [
+          "#0c0c00",
+          "#262600",
+          "#424308",
+          "#616204",
+          "#818306",
+          "#a3a625",
+          "#c9cd3f",
+          "#f4f870"
+        ],
+        "cssVar": "--clear",
+        "derivedIn": []
+      },
+      "clear-ink": {
+        "role": "tertiary",
+        "displayName": "Signal Green Text",
+        "canonical": "#b8bb26",
+        "oklch": "oklch(76.5% 0.158 110.8)",
+        "tonalRamp": [
+          "#0c0c00",
+          "#262600",
+          "#424308",
+          "#616204",
+          "#818306",
+          "#a3a625",
+          "#c9cd3f",
+          "#f4f870"
+        ],
+        "cssVar": "--clear-ink",
+        "derivedIn": []
+      },
+      "clear-tint": {
+        "role": "tertiary",
+        "displayName": "Signal Green Tint",
+        "canonical": "#282819",
+        "oklch": "oklch(27.2% 0.026 108.0)",
+        "tonalRamp": [
+          "#0c0c02",
+          "#232314",
+          "#3c3c2c",
+          "#565746",
+          "#767664",
+          "#969785",
+          "#bcbca9",
+          "#ecedd9"
+        ],
+        "cssVar": "--clear-tint",
+        "derivedIn": []
+      },
+      "stop": {
+        "role": "tertiary",
+        "displayName": "Signal Red",
+        "canonical": "#fb4934",
+        "oklch": "oklch(66.0% 0.218 30.4)",
+        "tonalRamp": [
+          "#230000",
+          "#4a0200",
+          "#7a0c03",
+          "#ab2011",
+          "#e12c19",
+          "#f86c58",
+          "#fbaea0",
+          "#fee9e5"
+        ],
+        "cssVar": "--stop",
+        "derivedIn": []
+      },
+      "stop-ink": {
+        "role": "tertiary",
+        "displayName": "Signal Red Text",
+        "canonical": "#fc6a58",
+        "oklch": "oklch(70.3% 0.182 29.5)",
+        "tonalRamp": [
+          "#210000",
+          "#4c0000",
+          "#7b0602",
+          "#ad1910",
+          "#d44436",
+          "#fb6957",
+          "#fdada0",
+          "#ffe9e5"
+        ],
+        "cssVar": "--stop-ink",
+        "derivedIn": [
+          "gruvbox",
+          "nord"
+        ]
+      },
+      "stop-tint": {
+        "role": "tertiary",
+        "displayName": "Signal Red Tint",
+        "canonical": "#381f1c",
+        "oklch": "oklch(27.2% 0.040 27.3)",
+        "tonalRamp": [
+          "#190403",
+          "#321a17",
+          "#4d332f",
+          "#6a4d49",
+          "#8a6c68",
+          "#ad8c88",
+          "#d3b1ad",
+          "#fee4e1"
+        ],
+        "cssVar": "--stop-tint",
+        "derivedIn": []
+      },
+      "caution": {
+        "role": "tertiary",
+        "displayName": "Signal Amber",
+        "canonical": "#fabd2f",
+        "oklch": "oklch(83.2% 0.159 83.0)",
+        "tonalRamp": [
+          "#140800",
+          "#312100",
+          "#533b00",
+          "#77580c",
+          "#9f7612",
+          "#c99402",
+          "#f6b928",
+          "#ffecc9"
+        ],
+        "cssVar": "--caution",
+        "derivedIn": []
+      },
+      "caution-ink": {
+        "role": "tertiary",
+        "displayName": "Signal Amber Text",
+        "canonical": "#fabd2f",
+        "oklch": "oklch(83.2% 0.159 83.0)",
+        "tonalRamp": [
+          "#140800",
+          "#312100",
+          "#533b00",
+          "#77580c",
+          "#9f7612",
+          "#c99402",
+          "#f6b928",
+          "#ffecc9"
+        ],
+        "cssVar": "--caution-ink",
+        "derivedIn": []
+      },
+      "caution-tint": {
+        "role": "tertiary",
+        "displayName": "Signal Amber Tint",
+        "canonical": "#332c1b",
+        "oklch": "oklch(29.6% 0.030 88.1)",
+        "tonalRamp": [
+          "#100a00",
+          "#282110",
+          "#413a28",
+          "#5c5542",
+          "#7c7461",
+          "#9d9581",
+          "#c3baa5",
+          "#f4ebd5"
+        ],
+        "cssVar": "--caution-tint",
+        "derivedIn": []
+      },
+      "accent": {
+        "role": "secondary",
+        "displayName": "Aqua Selection",
+        "canonical": "#8aa98a",
+        "oklch": "oklch(70.3% 0.056 144.9)",
+        "tonalRamp": [
+          "#001001",
+          "#0e280f",
+          "#274228",
+          "#415e42",
+          "#607e60",
+          "#809f80",
+          "#a5c5a5",
+          "#d5f6d5"
+        ],
+        "cssVar": "--accent",
+        "derivedIn": []
+      },
+      "accent-hover": {
+        "role": "secondary",
+        "displayName": "Aqua Selection Hover",
+        "canonical": "#a3bea3",
+        "oklch": "oklch(77.4% 0.048 145.1)",
+        "tonalRamp": [
+          "#001001",
+          "#112813",
+          "#2a412b",
+          "#455d45",
+          "#637c63",
+          "#839d83",
+          "#a8c3a8",
+          "#d8f4d8"
+        ],
+        "cssVar": "--accent-hover",
+        "derivedIn": []
+      },
+      "accent-tint": {
+        "role": "secondary",
+        "displayName": "Aqua Selection Tint",
+        "canonical": "#272b27",
+        "oklch": "oklch(28.4% 0.009 145.3)",
+        "tonalRamp": [
+          "#090c09",
+          "#1f231f",
+          "#383c38",
+          "#525752",
+          "#717671",
+          "#929792",
+          "#b7bcb7",
+          "#e7ede7"
+        ],
+        "cssVar": "--accent-tint",
+        "derivedIn": []
+      },
+      "lit": {
+        "role": "secondary",
+        "displayName": "Lit Row",
+        "canonical": "#262926",
+        "oklch": "oklch(27.7% 0.007 145.4)",
+        "tonalRamp": [
+          "#090c09",
+          "#202320",
+          "#383b38",
+          "#535653",
+          "#727672",
+          "#939693",
+          "#b8bcb8",
+          "#e8ece8"
+        ],
+        "cssVar": "--lit",
+        "derivedIn": []
+      },
+      "lit-strong": {
+        "role": "secondary",
+        "displayName": "Winner Row",
+        "canonical": "#313831",
+        "oklch": "oklch(33.2% 0.015 145.2)",
+        "tonalRamp": [
+          "#070d07",
+          "#1d241d",
+          "#363d36",
+          "#505850",
+          "#6f776f",
+          "#909890",
+          "#b5bdb5",
+          "#e5eee5"
+        ],
+        "cssVar": "--lit-strong",
+        "derivedIn": []
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "Lever Green",
+        "canonical": "#b8bb26",
+        "oklch": "oklch(76.5% 0.158 110.8)",
+        "tonalRamp": [
+          "#060600",
+          "#171800",
+          "#2d2e01",
+          "#454602",
+          "#616203",
+          "#7e8005",
+          "#a4a609",
+          "#e3e75e"
+        ],
+        "cssVar": "--primary",
+        "derivedIn": []
+      },
+      "primary-hover": {
+        "role": "primary",
+        "displayName": "Lever Green Hover",
+        "canonical": "#c6c938",
+        "oklch": "oklch(80.8% 0.159 110.7)",
+        "tonalRamp": [
+          "#060600",
+          "#171800",
+          "#2d2e00",
+          "#454600",
+          "#616205",
+          "#7f8006",
+          "#a4a600",
+          "#e3e75c"
+        ],
+        "cssVar": "--primary-hover",
+        "derivedIn": []
+      },
+      "on-primary": {
+        "role": "primary",
+        "displayName": "On Lever",
+        "canonical": "#282828",
+        "oklch": "oklch(27.7% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#222222",
+          "#3a3a3a",
+          "#555555",
+          "#747474",
+          "#959595",
+          "#bababa",
+          "#ebebeb"
+        ],
+        "cssVar": "--on-primary",
+        "derivedIn": []
+      },
+      "on-signal": {
+        "role": "tertiary",
+        "displayName": "Glyph on Lamp",
+        "canonical": "#181818",
+        "oklch": "oklch(20.9% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#222222",
+          "#3a3a3a",
+          "#555555",
+          "#747474",
+          "#959595",
+          "#bababa",
+          "#ebebeb"
+        ],
+        "cssVar": "--on-signal",
+        "derivedIn": []
+      },
+      "on-caution": {
+        "role": "tertiary",
+        "displayName": "Glyph on Amber Lamp",
+        "canonical": "#181818",
+        "oklch": "oklch(20.9% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#222222",
+          "#3a3a3a",
+          "#555555",
+          "#747474",
+          "#959595",
+          "#bababa",
+          "#ebebeb"
+        ],
+        "cssVar": "--on-caution",
+        "derivedIn": []
+      },
+      "row-hover": {
+        "role": "neutral",
+        "displayName": "Row Hover",
+        "canonical": "#20201e",
+        "oklch": "oklch(24.3% 0.004 106.7)",
+        "tonalRamp": [
+          "#0b0b09",
+          "#222220",
+          "#3b3b38",
+          "#555553",
+          "#757572",
+          "#959593",
+          "#bbbbb8",
+          "#ebebe8"
+        ],
+        "cssVar": "--row-hover",
+        "derivedIn": []
+      },
+      "toast-bg": {
+        "role": "neutral",
+        "displayName": "Toast Plate",
+        "canonical": "#3c3836",
+        "oklch": "oklch(34.4% 0.007 48.5)",
+        "tonalRamp": [
+          "#0e0a09",
+          "#272321",
+          "#433f3d",
+          "#615d5a",
+          "#817c7a",
+          "#a29d9b",
+          "#c8c3c0",
+          "#f2edeb"
+        ],
+        "cssVar": "--toast-bg",
+        "derivedIn": []
+      },
+      "lever-lock": {
+        "role": "neutral",
+        "displayName": "Lever Lock Plate",
+        "canonical": "#504945",
+        "oklch": "oklch(41.1% 0.012 51.9)",
+        "tonalRamp": [
+          "#0f0a07",
+          "#29231f",
+          "#453e3a",
+          "#635c58",
+          "#837b77",
+          "#a59d98",
+          "#cbc2bd",
+          "#f5ece8"
+        ],
+        "cssVar": "--lever-lock",
+        "derivedIn": []
+      },
+      "stop-fill": {
+        "role": "tertiary",
+        "displayName": "Signal Red Text-Bearing Fill",
+        "canonical": "#fb4934",
+        "oklch": "oklch(66.0% 0.218 30.4)",
+        "tonalRamp": [
+          "#230000",
+          "#4a0200",
+          "#7a0c03",
+          "#ab2011",
+          "#e12c19",
+          "#f86c58",
+          "#fbaea0",
+          "#fee9e5"
+        ],
+        "cssVar": "--stop-fill",
+        "derivedIn": [
+          "nord"
+        ]
+      },
+      "on-stop": {
+        "role": "tertiary",
+        "displayName": "Text on Red Fill",
+        "canonical": "#1d2021",
+        "oklch": "oklch(24.1% 0.005 219.7)",
+        "tonalRamp": [
+          "#090c0d",
+          "#222526",
+          "#3d4041",
+          "#5b5e5f",
+          "#7a7e7f",
+          "#9b9fa0",
+          "#c1c5c6",
+          "#ebeff1"
+        ],
+        "cssVar": "--on-stop",
+        "derivedIn": []
+      },
+      "on-lever-lock": {
+        "role": "neutral",
+        "displayName": "Padlock Glyph",
+        "canonical": "#ffffff",
+        "oklch": "oklch(100.0% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#242424",
+          "#404040",
+          "#5d5d5d",
+          "#7d7d7d",
+          "#9e9e9e",
+          "#c4c4c4",
+          "#eeeeee"
+        ],
+        "cssVar": "--on-lever-lock",
+        "derivedIn": []
+      },
+      "toast-ink": {
+        "role": "neutral",
+        "displayName": "Toast Ink",
+        "canonical": "#ffffff",
+        "oklch": "oklch(100.0% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#242424",
+          "#404040",
+          "#5d5d5d",
+          "#7d7d7d",
+          "#9e9e9e",
+          "#c4c4c4",
+          "#eeeeee"
+        ],
+        "cssVar": "--toast-ink",
+        "derivedIn": []
+      }
+    },
+    "themes": {
+      "source": {
+        "base": "console/src/styles/tokens.css",
+        "overrides": "console/src/styles/themes.css",
+        "logic": "console/src/theme.ts",
+        "control": "console/src/components/ThemeSelect.tsx"
+      },
+      "default": "gruvbox",
+      "attribute": "data-theme on <html>; absent for drawing",
+      "resolution": [
+        "?theme= URL parameter",
+        "localStorage bre-console-theme",
+        "default gruvbox"
+      ],
+      "appliedBeforeFirstRender": true,
+      "metaThemeColor": "--rail",
+      "frontmatterRecords": "gruvbox",
+      "list": [
+        {
+          "id": "signal-night",
+          "label": "Signal Night",
+          "default": false,
+          "base": false,
+          "selector": ":root[data-theme='signal-night']",
+          "colorScheme": "dark",
+          "derived": [],
+          "colors": {
+            "sheet": "#0c0f13",
+            "paper": "#07090c",
+            "panel": "#13171d",
+            "panel-2": "#1a1f27",
+            "rule": "#1e242c",
+            "rule-strong": "#343c47",
+            "ink": "#e9edf2",
+            "ink-2": "#b8c1cc",
+            "ink-3": "#8a95a3",
+            "rail": "#040507",
+            "rail-deep": "#0d1015",
+            "rail-line": "#1a1f26",
+            "rail-ink": "#e9edf2",
+            "rail-ink-2": "#8f9aa8",
+            "clear": "#2fd87e",
+            "clear-ink": "#3ee08b",
+            "clear-tint": "#0a2416",
+            "stop": "#ff4f45",
+            "stop-ink": "#ff6b62",
+            "stop-tint": "#2b0e0d",
+            "caution": "#ffb21f",
+            "caution-ink": "#ffbf47",
+            "caution-tint": "#2a1f05",
+            "accent": "#5b9cff",
+            "accent-hover": "#7cb0ff",
+            "accent-tint": "#0f1d33",
+            "lit": "#0e1b2e",
+            "lit-strong": "#14284a",
+            "primary": "#2fd87e",
+            "primary-hover": "#44e58a",
+            "on-primary": "#040507",
+            "on-signal": "#040507",
+            "on-caution": "#040507",
+            "row-hover": "#11151b",
+            "toast-bg": "#1a1f27",
+            "lever-lock": "#2a313b",
+            "on-lever-lock": "#fff",
+            "toast-ink": "#fff"
+          }
+        },
+        {
+          "id": "gruvbox",
+          "label": "Gruvbox Material Mix",
+          "default": true,
+          "base": false,
+          "selector": ":root[data-theme='gruvbox']",
+          "colorScheme": "dark",
+          "derived": [
+            "clear-tint",
+            "stop-ink",
+            "stop-tint",
+            "caution-tint",
+            "accent-hover",
+            "accent-tint",
+            "lit",
+            "lit-strong",
+            "primary-hover"
+          ],
+          "colors": {
+            "sheet": "#181818",
+            "paper": "#181818",
+            "panel": "#282828",
+            "panel-2": "#32302f",
+            "rule": "#32302f",
+            "rule-strong": "#665c54",
+            "ink": "#ebdbb2",
+            "ink-2": "#d5c4a1",
+            "ink-3": "#a89984",
+            "rail": "#151515",
+            "rail-deep": "#181818",
+            "rail-line": "#32302f",
+            "rail-ink": "#ebdbb2",
+            "rail-ink-2": "#a89984",
+            "clear": "#b8bb26",
+            "clear-ink": "#b8bb26",
+            "clear-tint": "#282819",
+            "stop": "#fb4934",
+            "stop-ink": "#fc6a58",
+            "stop-tint": "#381f1c",
+            "caution": "#fabd2f",
+            "caution-ink": "#fabd2f",
+            "caution-tint": "#332c1b",
+            "accent": "#8aa98a",
+            "accent-hover": "#a3bea3",
+            "accent-tint": "#272b27",
+            "lit": "#262926",
+            "lit-strong": "#313831",
+            "primary": "#b8bb26",
+            "primary-hover": "#c6c938",
+            "on-primary": "#282828",
+            "on-signal": "#181818",
+            "on-caution": "#181818",
+            "row-hover": "#20201e",
+            "toast-bg": "#3c3836",
+            "lever-lock": "#504945",
+            "on-lever-lock": "#fff",
+            "toast-ink": "#fff"
+          }
+        },
+        {
+          "id": "catppuccin",
+          "label": "Catppuccin Mocha",
+          "default": false,
+          "base": false,
+          "selector": ":root[data-theme='catppuccin']",
+          "colorScheme": "dark",
+          "derived": [],
+          "colors": {
+            "sheet": "#1e1e2e",
+            "paper": "#1e1e2e",
+            "panel": "#181825",
+            "panel-2": "#313244",
+            "rule": "#313244",
+            "rule-strong": "#585b70",
+            "ink": "#cdd6f4",
+            "ink-2": "#bac2de",
+            "ink-3": "#9399b2",
+            "rail": "#11111b",
+            "rail-deep": "#181825",
+            "rail-line": "#313244",
+            "rail-ink": "#cdd6f4",
+            "rail-ink-2": "#9399b2",
+            "clear": "#a6e3a1",
+            "clear-ink": "#a6e3a1",
+            "clear-tint": "#233029",
+            "stop": "#f38ba8",
+            "stop-ink": "#f38ba8",
+            "stop-tint": "#3a2430",
+            "caution": "#f9e2af",
+            "caution-ink": "#f9e2af",
+            "caution-tint": "#37332b",
+            "accent": "#cba6f7",
+            "accent-hover": "#d8bcfa",
+            "accent-tint": "#2b2640",
+            "lit": "#2a2840",
+            "lit-strong": "#383454",
+            "primary": "#a6e3a1",
+            "primary-hover": "#b3f0ae",
+            "on-primary": "#11111b",
+            "on-signal": "#11111b",
+            "on-caution": "#11111b",
+            "row-hover": "#232334",
+            "toast-bg": "#313244",
+            "lever-lock": "#45475a",
+            "on-lever-lock": "#fff",
+            "toast-ink": "#fff"
+          }
+        },
+        {
+          "id": "tokyonight",
+          "label": "Tokyo Night",
+          "default": false,
+          "base": false,
+          "selector": ":root[data-theme='tokyonight']",
+          "colorScheme": "dark",
+          "derived": [
+            "rail"
+          ],
+          "colors": {
+            "sheet": "#1a1b26",
+            "paper": "#1a1b26",
+            "panel": "#16161e",
+            "panel-2": "#292e42",
+            "rule": "#292e42",
+            "rule-strong": "#414868",
+            "ink": "#c0caf5",
+            "ink-2": "#a9b1d6",
+            "ink-3": "#9aa5ce",
+            "rail": "#13141c",
+            "rail-deep": "#16161e",
+            "rail-line": "#292e42",
+            "rail-ink": "#c0caf5",
+            "rail-ink-2": "#9aa5ce",
+            "clear": "#9ece6a",
+            "clear-ink": "#9ece6a",
+            "clear-tint": "#222a22",
+            "stop": "#f7768e",
+            "stop-ink": "#f7768e",
+            "stop-tint": "#33202a",
+            "caution": "#e0af68",
+            "caution-ink": "#e0af68",
+            "caution-tint": "#302a20",
+            "accent": "#7aa2f7",
+            "accent-hover": "#94b4f9",
+            "accent-tint": "#1f2540",
+            "lit": "#202a46",
+            "lit-strong": "#2a3760",
+            "primary": "#9ece6a",
+            "primary-hover": "#aadb77",
+            "on-primary": "#16161e",
+            "on-signal": "#16161e",
+            "on-caution": "#16161e",
+            "row-hover": "#1f2030",
+            "toast-bg": "#292e42",
+            "lever-lock": "#414868",
+            "on-lever-lock": "#fff",
+            "toast-ink": "#fff"
+          }
+        },
+        {
+          "id": "nord",
+          "label": "Nord",
+          "default": false,
+          "base": false,
+          "selector": ":root[data-theme='nord']",
+          "colorScheme": "dark",
+          "derived": [
+            "ink-3",
+            "rail",
+            "stop-ink",
+            "stop-fill"
+          ],
+          "colors": {
+            "sheet": "#2e3440",
+            "paper": "#2e3440",
+            "panel": "#3b4252",
+            "panel-2": "#434c5e",
+            "rule": "#3b4252",
+            "rule-strong": "#4c566a",
+            "ink": "#eceff4",
+            "ink-2": "#e5e9f0",
+            "ink-3": "#b4bccb",
+            "rail": "#242933",
+            "rail-deep": "#2b303b",
+            "rail-line": "#3b4252",
+            "rail-ink": "#eceff4",
+            "rail-ink-2": "#b4bccb",
+            "clear": "#a3be8c",
+            "clear-ink": "#a3be8c",
+            "clear-tint": "#374036",
+            "stop": "#bf616a",
+            "stop-ink": "#e3949b",
+            "stop-tint": "#43343a",
+            "caution": "#ebcb8b",
+            "caution-ink": "#ebcb8b",
+            "caution-tint": "#45423a",
+            "accent": "#88c0d0",
+            "accent-hover": "#9fcfdc",
+            "accent-tint": "#33404d",
+            "lit": "#354352",
+            "lit-strong": "#3f5163",
+            "primary": "#a3be8c",
+            "primary-hover": "#afcb98",
+            "on-primary": "#2e3440",
+            "on-signal": "#2e3440",
+            "on-caution": "#2e3440",
+            "row-hover": "#333a47",
+            "toast-bg": "#434c5e",
+            "lever-lock": "#4c566a",
+            "stop-fill": "#a54e57",
+            "on-stop": "#ffffff",
+            "on-lever-lock": "#fff",
+            "toast-ink": "#fff"
+          }
+        },
+        {
+          "id": "dracula",
+          "label": "Dracula",
+          "default": false,
+          "base": false,
+          "selector": ":root[data-theme='dracula']",
+          "colorScheme": "dark",
+          "derived": [
+            "ink-2",
+            "ink-3"
+          ],
+          "colors": {
+            "sheet": "#282a36",
+            "paper": "#282a36",
+            "panel": "#21222c",
+            "panel-2": "#343746",
+            "rule": "#343746",
+            "rule-strong": "#6272a4",
+            "ink": "#f8f8f2",
+            "ink-2": "#dcdcd6",
+            "ink-3": "#a3abcf",
+            "rail": "#191a21",
+            "rail-deep": "#21222c",
+            "rail-line": "#343746",
+            "rail-ink": "#f8f8f2",
+            "rail-ink-2": "#a3abcf",
+            "clear": "#50fa7b",
+            "clear-ink": "#50fa7b",
+            "clear-tint": "#263a2f",
+            "stop": "#ff5555",
+            "stop-ink": "#ff6e6e",
+            "stop-tint": "#432a32",
+            "caution": "#f1fa8c",
+            "caution-ink": "#f1fa8c",
+            "caution-tint": "#3c3f33",
+            "accent": "#bd93f9",
+            "accent-hover": "#cdaafb",
+            "accent-tint": "#33304a",
+            "lit": "#353249",
+            "lit-strong": "#433d5e",
+            "primary": "#50fa7b",
+            "primary-hover": "#6dfb90",
+            "on-primary": "#21222c",
+            "on-signal": "#21222c",
+            "on-caution": "#21222c",
+            "row-hover": "#2e303e",
+            "toast-bg": "#44475a",
+            "lever-lock": "#6272a4",
+            "on-lever-lock": "#fff",
+            "toast-ink": "#fff"
+          }
+        },
+        {
+          "id": "drawing",
+          "label": "Bản vẽ (sáng)",
+          "default": false,
+          "base": true,
+          "selector": ":root (no data-theme)",
+          "colorScheme": "light",
+          "derived": [],
+          "colors": {
+            "sheet": "#ffffff",
+            "paper": "#f9faf9",
+            "panel": "#eef1f4",
+            "panel-2": "#e3e8ee",
+            "rule": "#d3d9e0",
+            "rule-strong": "#9aa4b0",
+            "ink": "#16181d",
+            "ink-2": "#3f4651",
+            "ink-3": "#5b636e",
+            "rail": "#1b3a6b",
+            "rail-deep": "#142d55",
+            "rail-line": "#2c4d83",
+            "rail-ink": "#eef3fa",
+            "rail-ink-2": "#b3c3dc",
+            "clear": "#13804b",
+            "clear-ink": "#0d6038",
+            "clear-tint": "#e4f3ea",
+            "stop": "#c42a1f",
+            "stop-ink": "#a32118",
+            "stop-tint": "#fbeae8",
+            "caution": "#e8a40c",
+            "caution-ink": "#7a5300",
+            "caution-tint": "#fdf3da",
+            "accent": "#1b3a6b",
+            "accent-hover": "#24497f",
+            "accent-tint": "#e8eef8",
+            "lit": "#eef3fb",
+            "lit-strong": "#dbe6f6",
+            "primary": "#13804b",
+            "primary-hover": "#046d3d",
+            "on-primary": "#ffffff",
+            "on-signal": "#fff",
+            "on-caution": "#16181d",
+            "row-hover": "#fbfcfd",
+            "toast-bg": "#16181d",
+            "lever-lock": "#3f4651",
+            "on-lever-lock": "#fff",
+            "toast-ink": "#fff"
+          }
+        }
+      ]
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Identifier Headline",
+        "purpose": "decisionId@draft headline and the Test Case pass count."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Rail wordmark and screen-state titles."
+      },
+      "title": {
+        "displayName": "Strip Title",
+        "purpose": "Uppercase strip heads (TEST CASE)."
+      },
+      "figure": {
+        "displayName": "Figure",
+        "purpose": "Route numbers, hit counts, numeric outputs; tabular."
+      },
+      "label": {
+        "displayName": "Drawing Label",
+        "purpose": "Uppercase title-block fields, column and group heads, tags, rail section labels."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "UI text in Be Vietnam Pro; tnum on."
+      },
+      "body-sm": {
+        "displayName": "Body Small",
+        "purpose": "Notes, lock details, banners, theme select."
+      },
+      "code": {
+        "displayName": "Expression",
+        "purpose": "Condition expressions and ids only."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-pop",
+        "value": "0 6px 18px -6px rgb(22 24 29 / 0.28), 0 2px 4px -1px rgb(22 24 29 / 0.12)",
+        "darkValue": "0 8px 22px -6px rgb(0 0 0 / 0.6), 0 2px 4px -1px rgb(0 0 0 / 0.4)",
+        "purpose": "Toasts, the scope menu, the shell popover, and the inspector drawer or sheet below 1200px."
+      },
+      {
+        "name": "pinned-edge",
+        "value": "10px 0 10px -10px rgb(0 0 0 / 0.22)",
+        "purpose": "Sticky identity and output columns while the table overflows (mirrored for the right edge)."
+      },
+      {
+        "name": "interlock-lift",
+        "value": "0 -10px 16px -12px rgb(0 0 0 / 0.35)",
+        "purpose": "Top edge of the commit bar: the interlock row on a Draft, the Latest Pointer bar on a version."
+      },
+      {
+        "name": "rule-panel-edge",
+        "value": "-14px 0 24px -18px rgb(0 0 0 / 0.45)",
+        "purpose": "Left edge of the Rule panel floating over the inspector."
+      },
+      {
+        "name": "drag",
+        "value": "0 8px 14px -10px rgb(22 24 29 / 0.45)",
+        "purpose": "Rule row being dragged."
+      },
+      {
+        "name": "lamp-bezel",
+        "value": "inset 0 -2px 0 rgb(0 0 0 / 0.18)",
+        "purpose": "Lit lamps only."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "All transitions and the release."
+      },
+      {
+        "name": "ui-state",
+        "value": "150ms",
+        "purpose": "Buttons, shell nav items, tabs, scope picker, mode toggle."
+      },
+      {
+        "name": "table-state",
+        "value": "200ms",
+        "purpose": "Cell and row backgrounds, lamps, locks, chevron."
+      },
+      {
+        "name": "toast-in",
+        "value": "220ms",
+        "purpose": "Toast rise of 8px with fade."
+      },
+      {
+        "name": "release-lamp-settle",
+        "value": "460ms, stagger 90ms per lamp",
+        "purpose": "Lamps settle from scale 0.55, desaturated."
+      },
+      {
+        "name": "release-lever",
+        "value": "560ms, delay 380ms",
+        "purpose": "Primary fill slides across the lever."
+      },
+      {
+        "name": "release-unlock",
+        "value": "520ms, delay 420ms",
+        "purpose": "Padlock glyph tilts open."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "1ms durations, 0ms delays, 1 iteration",
+        "purpose": "prefers-reduced-motion: reduce."
+      },
+      {
+        "name": "panel-in",
+        "value": "220ms, 12px slide with fade",
+        "purpose": "Rule panel and the inspector drawer as they open."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "wide",
+        "value": "1600px",
+        "note": "gutter 32px, inspector 340px at and above; 24px / 300px below"
+      },
+      {
+        "name": "drawer-inspector",
+        "value": "1199px",
+        "note": "inspector leaves the grid for a right drawer; tab-row toggle shows its verdict; title block 3 columns; locks 2×2"
+      },
+      {
+        "name": "compact",
+        "value": "959px",
+        "note": "gutter 16px; tab row scrolls sideways; commit bar back in flow"
+      },
+      {
+        "name": "phone",
+        "value": "599px",
+        "note": "shell nav as 48px top bar, bottom tab bar, one-line commit bar, inspector bottom sheet, read-only RuleList"
+      },
+      {
+        "name": "fixed-shell",
+        "value": "(min-width: 1200px) and (min-height: 720px)",
+        "note": "100dvh shell, primary and inspector scroll on their own"
+      }
+    ],
+    "layout": {
+      "model": "Decision Workspace",
+      "slots": [
+        {
+          "name": "shell-nav",
+          "className": "shell",
+          "width": "56px",
+          "holds": "Global destinations: Decisions, theme select"
+        },
+        {
+          "name": "context-head",
+          "className": "screen__head",
+          "holds": "Title block with the scope picker, then the tab row"
+        },
+        {
+          "name": "primary",
+          "className": "screen__primary",
+          "holds": "The one object being worked on"
+        },
+        {
+          "name": "inspector",
+          "className": "screen__inspector",
+          "width": "340px / 300px",
+          "holds": "What explains the primary; content follows the tab"
+        },
+        {
+          "name": "commit-bar",
+          "className": "screen__commit",
+          "holds": "Interlock + Publish lever on a Draft; Latest Pointer + Rollback on a version"
+        }
+      ],
+      "tabs": {
+        "order": [
+          "Rules",
+          "Test Case",
+          "Simulation",
+          "Version",
+          "Schema"
+        ],
+        "built": [
+          "Rules",
+          "Version",
+          "Schema"
+        ],
+        "route": "#/d/:id/draft/:draft[/versions|/schema] and #/d/:id/v/:n[/versions|/schema]"
+      },
+      "gutter": "32px from 1600px, 24px below, 16px below 960px",
+      "orderColumn": "64px",
+      "outputPinMinConditions": "200px",
+      "spacing": "literal 4px-step values (4, 8, 12, 16, 24, 32, 48px); no spacing tokens"
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Primary action. Publish itself is the lever, not this button.",
+      "html": "<button class=\"ds-btn-primary\">Tạo Draft</button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border:1px solid var(--primary,#076678);border-radius:var(--radius,3px);background:var(--primary,#076678);color:var(--on-primary,#ebdbb2);font-family:'Be Vietnam Pro', system-ui, sans-serif;font-size:0.875rem;font-weight:500;cursor:pointer;transition:background-color 150ms cubic-bezier(0.16, 1, 0.3, 1),border-color 150ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-btn-primary:hover{background:var(--primary-hover,#0b7a8f);border-color:var(--primary-hover,#0b7a8f);} .ds-btn-primary:focus-visible{outline:2px solid var(--accent,#83a598);outline-offset:2px;}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Neutral action on the sheet, ruled in rule-strong.",
+      "html": "<button class=\"ds-btn-secondary\">So sánh với Latest v7</button>",
+      "css": ".ds-btn-secondary{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border:1px solid var(--rule-strong,#665c54);border-radius:var(--radius,3px);background:var(--sheet,#1d2021);color:var(--ink,#ebdbb2);font-family:'Be Vietnam Pro', system-ui, sans-serif;font-size:0.875rem;font-weight:500;cursor:pointer;transition:background-color 150ms cubic-bezier(0.16, 1, 0.3, 1),border-color 150ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-btn-secondary:hover{background:var(--panel,#282828);border-color:var(--ink-3,#a89984);} .ds-btn-secondary:focus-visible{outline:2px solid var(--accent,#83a598);outline-offset:2px;}"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Inline action such as + Thêm Rule.",
+      "html": "<button class=\"ds-btn-ghost\">+ Thêm Rule</button>",
+      "css": ".ds-btn-ghost{display:inline-flex;align-items:center;height:34px;padding:0 10px;border:0;border-radius:var(--radius,3px);background:transparent;color:var(--accent,#83a598);font-family:'Be Vietnam Pro', system-ui, sans-serif;font-size:0.875rem;font-weight:500;cursor:pointer;transition:background-color 150ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-btn-ghost:hover{background:var(--accent-tint,#24302d);} .ds-btn-ghost:focus-visible{outline:2px solid var(--accent,#83a598);outline-offset:2px;}"
+    },
+    {
+      "name": "Tags",
+      "kind": "chip",
+      "refersTo": "tag",
+      "description": "Technical-lettered flags; signal variants use tint fill and -ink text.",
+      "html": "<span class=\"ds-tag\">COLLECT</span> <span class=\"ds-tag ds-tag-clear\">VÀO OUTPUT</span> <span class=\"ds-tag ds-tag-caution\">KHÁC LATEST</span> <span class=\"ds-tag ds-tag-stop\">FAIL</span>",
+      "css": ".ds-tag{display:inline-flex;align-items:center;height:18px;padding:0 6px;border:1px solid var(--rule-strong,#665c54);border-radius:2px;background:var(--sheet,#1d2021);color:var(--ink-2,#d5c4a1);font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.6875rem;font-weight:600;letter-spacing:0.03em;text-transform:uppercase;} .ds-tag-clear{border-color:color-mix(in srgb,var(--clear,#b8bb26) 45%,transparent);background:var(--clear-tint,#2a2c1c);color:var(--clear-ink,#b8bb26);} .ds-tag-stop{border-color:color-mix(in srgb,var(--stop,#fb4934) 45%,transparent);background:var(--stop-tint,#3a1e1a);color:var(--stop-ink,#fc6a58);} .ds-tag-caution{border-color:color-mix(in srgb,var(--caution,#fabd2f) 55%,transparent);background:var(--caution-tint,#372e19);color:var(--caution-ink,#fabd2f);}"
+    },
+    {
+      "name": "Signal Lamps",
+      "kind": "custom",
+      "refersTo": "lamp-clear",
+      "description": "Clear / stop / caution / idle lamps, each with its glyph and an adjacent label.",
+      "html": "<span class=\"ds-lamprow\"><span class=\"ds-lamp ds-lamp-clear\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg></span>Có Test Case</span> <span class=\"ds-lamprow\"><span class=\"ds-lamp ds-lamp-stop\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/></svg></span>Test Case pass</span> <span class=\"ds-lamprow\"><span class=\"ds-lamp ds-lamp-caution\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\"/><path d=\"M12 9v4\"/><path d=\"M12 17h.01\"/></svg></span>Stale Draft</span> <span class=\"ds-lamprow\"><span class=\"ds-lamp ds-lamp-idle\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12h14\"/></svg></span>Chưa chạy</span>",
+      "css": ".ds-lamprow{display:inline-flex;align-items:center;gap:8px;margin-right:14px;font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.75rem;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;color:var(--ink,#ebdbb2);} .ds-lamp{display:inline-grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;color:var(--on-signal,#1d2021);box-shadow:inset 0 -2px 0 rgb(0 0 0 / 0.18);transition:background-color 200ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-lamp svg{width:13px;height:13px;} .ds-lamp-clear{background:var(--clear,#b8bb26);} .ds-lamp-stop{background:var(--stop,#fb4934);} .ds-lamp-caution{background:var(--caution,#fabd2f);color:var(--on-caution,#1d2021);} .ds-lamp-idle{background:var(--panel-2,#32302f);color:var(--ink-3,#a89984);box-shadow:none;}"
+    },
+    {
+      "name": "Title Block",
+      "kind": "card",
+      "refersTo": "titleblock-cell",
+      "description": "Identifier headline over a ruled grid of drawing facts.",
+      "html": "<header class=\"ds-tb\"><h1 class=\"ds-tb-id\">calculate-pos-discounts<span>@draft-3</span></h1><dl class=\"ds-tb-grid\"><div><dt>Draft</dt><dd>Hạ ngưỡng giỏ lớn</dd></div><div><dt>Dựa trên</dt><dd>v6</dd></div><div><dt>Hit Policy</dt><dd>COLLECT</dd></div><div><dt>Input schema</dt><dd>5 trường</dd></div></dl></header>",
+      "css": ".ds-tb{font-family:'Be Vietnam Pro', system-ui, sans-serif;color:var(--ink,#ebdbb2);} .ds-tb-id{margin:0 0 14px;font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:1.75rem;font-weight:600;line-height:1.1;letter-spacing:-0.005em;} .ds-tb-id span{margin-left:2px;color:var(--accent,#83a598);font-weight:500;} .ds-tb-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:0;border:1px solid var(--ink,#ebdbb2);background:var(--sheet,#1d2021);} .ds-tb-grid div{padding:7px 12px 9px;border-left:1px solid var(--rule-strong,#665c54);} .ds-tb-grid div:first-child{border-left:0;} .ds-tb-grid dt{font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.6875rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--ink-3,#a89984);} .ds-tb-grid dd{margin:2px 0 0;font-size:0.875rem;font-weight:500;font-feature-settings:'tnum' 1;}"
+    },
+    {
+      "name": "Rules Table",
+      "kind": "custom",
+      "refersTo": "rules-cell",
+      "description": "Control table: ink frame, technical heads, 2px ink output divider; winner, lit, conflict, changed, removed and editing states.",
+      "html": "<table class=\"ds-rules\"><thead><tr><th>#</th><th>Mã</th><th>customerTier</th><th class=\"ds-out\">discountCode</th></tr></thead><tbody><tr class=\"ds-winner\"><td><span class=\"ds-idx\">1</span></td><td class=\"ds-code\">GOLD5</td><td class=\"ds-code\">GOLD</td><td class=\"ds-out\">GOLD5</td></tr><tr class=\"ds-lit\"><td><span class=\"ds-idx\">2</span></td><td class=\"ds-code\">BIGCART</td><td class=\"ds-code ds-any\">-</td><td class=\"ds-out\">BIGCART</td></tr><tr class=\"ds-conflict\"><td><span class=\"ds-idx\">3</span></td><td class=\"ds-code\">BEV2</td><td class=\"ds-changed ds-code\">SILVER</td><td class=\"ds-out\">BEV2</td></tr><tr class=\"ds-removed\"><td><span class=\"ds-idx\">4</span></td><td class=\"ds-code\">ONL30</td><td class=\"ds-code\">-</td><td class=\"ds-out\">ONL30</td></tr><tr><td><span class=\"ds-idx\">5</span></td><td class=\"ds-code\">WKND</td><td class=\"ds-editing\"><input class=\"ds-cell-input\" value=\"in [SAT, SUN]\" aria-label=\"customerTier\"></td><td class=\"ds-out\">WKND</td></tr></tbody></table>",
+      "css": ".ds-rules{border-collapse:separate;border-spacing:0;border:1px solid var(--ink,#ebdbb2);background:var(--sheet,#1d2021);color:var(--ink,#ebdbb2);font-family:'Be Vietnam Pro', system-ui, sans-serif;font-size:0.8125rem;font-variant-numeric:tabular-nums;} .ds-rules th{padding:6px 10px 8px;background:var(--panel,#282828);border-bottom:1px solid var(--ink,#ebdbb2);text-align:left;font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.6875rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--ink-2,#d5c4a1);} .ds-rules td{padding:10px;background:var(--sheet,#1d2021);border-bottom:1px solid var(--rule,#3c3836);transition:background-color 200ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-rules tr:hover td{background:var(--row-hover,#232627);} .ds-rules .ds-out{border-left:2px solid var(--ink,#ebdbb2);font-weight:500;} .ds-code{font-family:'JetBrains Mono', ui-monospace, monospace;} .ds-rules .ds-any{color:var(--ink-3,#a89984);} .ds-idx{display:inline-grid;place-items:center;min-width:24px;height:22px;border:1px solid var(--rule-strong,#665c54);border-radius:2px;font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.875rem;font-weight:600;color:var(--ink-2,#d5c4a1);} .ds-rules .ds-lit td{background:var(--lit,#243230);} .ds-lit .ds-idx{border-color:var(--accent,#83a598);color:var(--accent,#83a598);} .ds-rules .ds-winner td{background:var(--lit-strong,#2f413d);} .ds-winner .ds-idx{border-color:var(--clear,#b8bb26);background:var(--clear,#b8bb26);color:var(--on-signal,#1d2021);} .ds-rules .ds-conflict td{background:var(--stop-tint,#3a1e1a);} .ds-conflict .ds-idx{border-color:var(--stop-fill,#fb4934);background:var(--stop-fill,#fb4934);color:var(--on-stop,#1d2021);} .ds-rules td.ds-changed{background:var(--caution-tint,#372e19);} .ds-rules .ds-removed td{background-image:repeating-linear-gradient(-45deg,var(--stop-tint,#3a1e1a) 0 6px,var(--sheet,#1d2021) 6px 12px);color:var(--ink-3,#a89984);text-decoration:line-through;} .ds-rules td.ds-editing{padding:4px;background:var(--accent-tint,#24302d);} .ds-cell-input{height:32px;padding:0 8px;border:1px solid var(--accent,#83a598);border-radius:2px;background:var(--sheet,#1d2021);color:var(--ink,#ebdbb2);font-family:'JetBrains Mono', ui-monospace, monospace;font-size:0.8125rem;outline:none;}"
+    },
+    {
+      "name": "Interlock Row and Publish Lever",
+      "kind": "custom",
+      "refersTo": "lever-free",
+      "description": "Signature: lock lamps and the Publish lever, locked until every lock is clear. Second instance shows the free state.",
+      "html": "<section class=\"ds-interlock\"><ul class=\"ds-locks\"><li class=\"ds-lock\"><span class=\"ds-lamp ds-lamp-clear\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg></span><span><b>Có Test Case</b><small>6 Test Case của Decision</small></span></li><li class=\"ds-lock ds-lock-stop\"><span class=\"ds-lamp ds-lamp-stop\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/></svg></span><span><b>Test Case pass</b><small>2 chưa pass</small></span></li><li class=\"ds-lock ds-lock-caution\"><span class=\"ds-lamp ds-lamp-caution\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\"/><path d=\"M12 9v4\"/><path d=\"M12 17h.01\"/></svg></span><span><b>Stale Draft</b><small>Latest là v7</small></span></li></ul><div class=\"ds-lever\"><button class=\"ds-lever-btn\" aria-disabled=\"true\"><span class=\"ds-lever-icon\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\"/><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"/></svg></span>Publish thành v8</button><span class=\"ds-lever-reason\">Còn 2 khoá chưa giải</span></div></section><section class=\"ds-interlock is-free\"><ul class=\"ds-locks\"><li class=\"ds-lock\"><span class=\"ds-lamp ds-lamp-clear\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg></span><span><b>Tất cả pass</b><small>6/6</small></span></li></ul><div class=\"ds-lever\"><button class=\"ds-lever-btn\"><span class=\"ds-lever-icon\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\"/><path d=\"M7 11V7a5 5 0 0 1 9.9-1\"/></svg></span>Publish thành v8</button><span class=\"ds-lever-reason\">Mọi khoá đã giải</span></div></section>",
+      "css": ".ds-interlock{display:grid;grid-template-columns:minmax(0,1fr) auto;margin-bottom:12px;border-top:2px solid var(--ink,#ebdbb2);background:var(--sheet,#1d2021);color:var(--ink,#ebdbb2);font-family:'Be Vietnam Pro', system-ui, sans-serif;font-size:0.75rem;} .ds-locks{display:flex;margin:0;padding:0;list-style:none;} .ds-lock{display:flex;gap:10px;align-items:center;padding:10px 14px;border-right:1px solid var(--rule,#3c3836);} .ds-lock b{display:block;font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;} .ds-lock small{color:var(--ink-2,#d5c4a1);font-size:0.75rem;} .ds-lock-stop{background:var(--stop-tint,#3a1e1a);} .ds-lock-caution{background:var(--caution-tint,#372e19);} .ds-lamp{display:inline-grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;color:var(--on-signal,#1d2021);box-shadow:inset 0 -2px 0 rgb(0 0 0 / 0.18);transition:background-color 200ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-lamp svg{width:13px;height:13px;} .ds-lamp-clear{background:var(--clear,#b8bb26);} .ds-lamp-stop{background:var(--stop,#fb4934);} .ds-lamp-caution{background:var(--caution,#fabd2f);color:var(--on-caution,#1d2021);} .ds-lamp-idle{background:var(--panel-2,#32302f);color:var(--ink-3,#a89984);box-shadow:none;} .ds-lever{display:flex;flex-direction:column;justify-content:center;gap:4px;min-width:230px;padding:10px 20px;background:var(--panel,#282828);} .ds-lever-btn{display:flex;align-items:center;gap:12px;height:44px;padding:0 18px 0 0;border:1px solid var(--rule-strong,#665c54);border-radius:var(--radius,3px);background-color:var(--panel-2,#32302f);background-image:linear-gradient(90deg,var(--primary,#076678) 0 50%,transparent 50% 100%);background-size:200% 100%;background-position:100% 0;color:var(--ink-3,#a89984);font-family:'Be Vietnam Pro', system-ui, sans-serif;font-size:0.875rem;font-weight:600;cursor:not-allowed;transition:background-position 420ms cubic-bezier(0.16, 1, 0.3, 1),color 300ms cubic-bezier(0.16, 1, 0.3, 1),border-color 300ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-lever-icon{display:inline-grid;place-items:center;align-self:stretch;width:44px;margin:-1px 0 -1px -1px;border-radius:var(--radius,3px) 0 0 var(--radius,3px);background:var(--lever-lock,#504945);color:var(--on-lever-lock,#ffffff);transition:background-color 300ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-lever-reason{color:var(--ink-2,#d5c4a1);} .is-free .ds-lever-btn{border-color:var(--primary,#076678);background-position:0 0;color:var(--on-primary,#ebdbb2);cursor:pointer;} .is-free .ds-lever-btn:hover{background-color:var(--primary-hover,#0b7a8f);background-image:none;} .is-free .ds-lever-btn:active{transform:translateY(1px);} .is-free .ds-lever-icon{background:var(--clear,#b8bb26);color:var(--on-signal,#1d2021);} .is-free .ds-lever-reason{color:var(--clear-ink,#b8bb26);font-weight:500;} .ds-lever-btn:focus-visible{outline:2px solid var(--accent,#83a598);outline-offset:2px;}"
+    },
+    {
+      "name": "Shell Nav",
+      "kind": "nav",
+      "refersTo": "shell-nav",
+      "description": "56px icon rail for global destinations: brand mark (home), Decisions, and the theme popover at the foot.",
+      "html": "<nav class=\"ds-shell\" aria-label=\"Điều hướng chính\"><a class=\"ds-shell-brand\" href=\"#\"><span class=\"ds-shell-mark\"><span></span><span></span></span><span>bre</span></a><a class=\"ds-shell-item is-current\" href=\"#\" aria-label=\"Decisions\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"5\" width=\"6\" height=\"6\" rx=\"1\"/><path d=\"m3 17 2 2 4-4\"/><path d=\"M13 6h8\"/><path d=\"M13 12h8\"/><path d=\"M13 18h8\"/></svg></a><span class=\"ds-shell-fill\"></span><button class=\"ds-shell-item ds-shell-foot\" type=\"button\" aria-label=\"Giao diện\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"13.5\" cy=\"6.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"17.5\" cy=\"10.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"8.5\" cy=\"7.5\" r=\".5\" fill=\"currentColor\"/><circle cx=\"6.5\" cy=\"12.5\" r=\".5\" fill=\"currentColor\"/><path d=\"M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z\"/></svg></button></nav>",
+      "css": ".ds-shell{display:flex;flex-direction:column;width:56px;height:320px;border-right:1px solid var(--rule-strong,#665c54);background:var(--rail,#151718);color:var(--rail-ink,#ebdbb2);} .ds-shell-brand{display:grid;justify-items:center;gap:6px;padding:14px 0 12px;border-bottom:1px solid var(--rail-line,#32302f);color:var(--rail-ink,#ebdbb2);text-decoration:none;font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.875rem;font-weight:700;letter-spacing:0.04em;line-height:1;} .ds-shell-mark{display:grid;gap:3px;} .ds-shell-mark span{width:10px;height:10px;border-radius:50%;} .ds-shell-mark span:first-child{background:var(--rail-ink,#ebdbb2);} .ds-shell-mark span:last-child{box-sizing:border-box;border:2px solid var(--rail-ink,#ebdbb2);} .ds-shell-item{display:grid;place-items:center;width:100%;height:52px;border:0;border-bottom:1px solid var(--rail-line,#32302f);background:transparent;color:var(--rail-ink-2,#a89984);cursor:pointer;transition:background-color 150ms cubic-bezier(0.16, 1, 0.3, 1),color 150ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-shell-item:hover{background:var(--rail-deep,#1d2021);color:var(--rail-ink,#ebdbb2);} .ds-shell-item.is-current{background:var(--rail-deep,#1d2021);color:var(--rail-ink,#ebdbb2);box-shadow:inset 2px 0 0 var(--rail-ink,#ebdbb2);} .ds-shell-item:focus-visible{outline:2px solid var(--rail-ink,#ebdbb2);outline-offset:-4px;} .ds-shell-fill{flex:1;} .ds-shell-foot{border-top:1px solid var(--rail-line,#32302f);border-bottom:0;}"
+    },
+    {
+      "name": "Workspace Tabs",
+      "kind": "nav",
+      "refersTo": "tabs",
+      "description": "The Decision-scoped tab row under the title block, with the inspector toggle that appears below 1200px.",
+      "html": "<nav class=\"ds-tabs\" aria-label=\"Màn hình của Decision\"><a class=\"ds-tab is-current\" href=\"#\" aria-current=\"page\">Rules</a><a class=\"ds-tab\" href=\"#\">Version</a><a class=\"ds-tab\" href=\"#\">Schema</a><button class=\"ds-tabs-toggle\" type=\"button\" aria-expanded=\"false\"><span class=\"ds-tabs-lamp\" aria-hidden=\"true\"></span>4/6 pass</button></nav>",
+      "css": ".ds-tabs{display:flex;align-items:stretch;gap:4px;padding:0 24px 0 12px;border-top:1px solid var(--rule-strong,#665c54);border-bottom:1px solid var(--rule-strong,#665c54);background:var(--sheet,#1d2021);} .ds-tab{display:flex;align-items:center;height:40px;margin-bottom:-1px;padding:0 12px;border-bottom:2px solid transparent;font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.875rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--ink-3,#a89984);text-decoration:none;transition:color 150ms cubic-bezier(0.16, 1, 0.3, 1),border-color 150ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-tab:hover{color:var(--ink,#ebdbb2);} .ds-tab.is-current{border-bottom-color:var(--accent,#83a598);color:var(--ink,#ebdbb2);} .ds-tab:focus-visible{outline:2px solid var(--accent,#83a598);outline-offset:-4px;} .ds-tabs-toggle{display:inline-flex;align-items:center;gap:6px;align-self:center;margin-left:auto;height:30px;padding:0 10px;border:1px solid var(--rule-strong,#665c54);border-radius:3px;background:var(--sheet,#1d2021);color:var(--ink,#ebdbb2);font-family:'Be Vietnam Pro', system-ui, sans-serif;font-size:0.75rem;font-weight:500;cursor:pointer;transition:background-color 150ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-tabs-toggle:hover{background:var(--panel,#282828);} .ds-tabs-toggle:focus-visible{outline:2px solid var(--accent,#83a598);outline-offset:2px;} .ds-tabs-lamp{width:16px;height:16px;border-radius:50%;background:var(--stop,#fb4934);}"
+    },
+    {
+      "name": "Scope Picker",
+      "kind": "custom",
+      "refersTo": "scope-picker",
+      "description": "The @draft / @vN qualifier of the identifier headline; opens the Drafts and Published versions of the Decision.",
+      "html": "<div class=\"ds-scope\"><h1 class=\"ds-scope-id\">calculate-pos-discounts<button class=\"ds-scope-btn\" type=\"button\" aria-expanded=\"true\">@draft-3<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m6 9 6 6 6-6\"/></svg></button></h1><div class=\"ds-scope-menu\"><p class=\"ds-scope-label\">Draft</p><a class=\"ds-scope-item is-current\" href=\"#\"><code>draft-3</code><span>Hạ ngưỡng giỏ lớn</span><em class=\"is-stale\">từ v6</em></a><p class=\"ds-scope-label\">Published</p><a class=\"ds-scope-item\" href=\"#\"><code>v7</code><span>Thêm ưu đãi cuối tuần</span><b class=\"ds-latest\">Latest</b></a><a class=\"ds-scope-item\" href=\"#\"><code>v6</code><span>Ngưỡng giỏ lớn 1.200.000 ₫</span></a></div></div>",
+      "css": ".ds-scope{color:var(--ink,#ebdbb2);} .ds-scope-id{margin:0 0 8px;font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:1.75rem;font-weight:600;line-height:1.1;} .ds-scope-btn{display:inline-flex;align-items:center;gap:2px;margin-left:2px;padding:0 2px 0 3px;border:0;border-radius:3px;background:var(--accent-tint,#24302d);color:var(--accent,#83a598);font:inherit;font-weight:500;cursor:pointer;} .ds-scope-btn:hover{background:var(--accent-tint,#24302d);} .ds-scope-btn:focus-visible{outline:2px solid var(--accent,#83a598);outline-offset:2px;} .ds-scope-menu{width:360px;padding:4px 0 8px;border:1px solid var(--rule-strong,#665c54);border-radius:3px;background:var(--sheet,#1d2021);box-shadow:var(--shadow-pop,0 8px 22px -6px rgb(0 0 0 / 0.6));font-family:'Be Vietnam Pro', system-ui, sans-serif;} .ds-scope-label{margin:0;padding:10px 14px 4px;font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.6875rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--ink-3,#a89984);} .ds-scope-item{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:baseline;gap:10px;padding:7px 14px;color:var(--ink,#ebdbb2);text-decoration:none;} .ds-scope-item:hover{background:var(--panel,#282828);} .ds-scope-item.is-current{background:var(--lit-strong,#2f413d);} .ds-scope-item:focus-visible{outline:2px solid var(--accent,#83a598);outline-offset:-2px;} .ds-scope-item code{font-family:'JetBrains Mono', ui-monospace, monospace;font-size:0.8125rem;font-weight:600;} .ds-scope-item span{overflow:hidden;font-size:0.75rem;color:var(--ink-2,#d5c4a1);text-overflow:ellipsis;white-space:nowrap;} .ds-scope-item em{font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.6875rem;font-style:normal;font-weight:600;color:var(--ink-3,#a89984);} .ds-scope-item em.is-stale{color:var(--caution-ink,#fabd2f);} .ds-latest{padding:0 5px;border-radius:2px;background:var(--ink,#ebdbb2);color:var(--sheet,#1d2021);font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.6875rem;font-weight:700;line-height:18px;letter-spacing:0.03em;text-transform:uppercase;}"
+    },
+    {
+      "name": "Toast",
+      "kind": "custom",
+      "refersTo": "toast",
+      "description": "One toast surface in every theme; tone is carried by a leading lamp, never by the toast colour. The only element using the pop shadow.",
+      "html": "<div class=\"ds-toast\"><span class=\"ds-lamp ds-lamp-sm ds-lamp-clear\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg></span><span>Đã lưu Draft.</span><button class=\"ds-toast-action\">Hoàn tác</button></div>",
+      "css": ".ds-toast{display:inline-flex;align-items:center;gap:12px;max-width:460px;padding:10px 8px 10px 14px;border-radius:var(--radius,3px);background:var(--toast-bg,#3c3836);color:var(--toast-ink,#ffffff);font-family:'Be Vietnam Pro', system-ui, sans-serif;font-size:0.875rem;box-shadow:var(--shadow-pop,0 8px 22px -6px rgb(0 0 0 / 0.6),0 2px 4px -1px rgb(0 0 0 / 0.4));animation:ds-toast-in 220ms cubic-bezier(0.16, 1, 0.3, 1) both;} .ds-toast-action{padding:4px 10px;border:1px solid rgb(255 255 255 / 0.4);border-radius:2px;background:none;color:var(--toast-ink,#ffffff);font-family:'Be Vietnam Pro', system-ui, sans-serif;font-size:0.75rem;font-weight:600;cursor:pointer;} .ds-toast-action:hover{background:rgb(255 255 255 / 0.12);} .ds-toast-action:focus-visible{outline:2px solid var(--toast-ink,#ffffff);outline-offset:2px;} .ds-lamp{display:inline-grid;place-items:center;flex:none;border-radius:50%;color:var(--on-signal,#1d2021);box-shadow:inset 0 -2px 0 rgb(0 0 0 / 0.18);} .ds-lamp-sm{width:16px;height:16px;} .ds-lamp-sm svg{width:10px;height:10px;} .ds-lamp-clear{background:var(--clear,#b8bb26);} @keyframes ds-toast-in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Interlocking Control Table",
+    "overview": "The console is a signal box's control table drawn on a drafting sheet. One Rule per row, terse conditions per cell, a ruled title block at the head of the drawing, and at the foot an interlock row of lamps ending at the Publish lever. The lever only releases when every lamp shows clear. The system exists to make the reason Publish is blocked, or free, readable at a glance, and to refuse the neutral SaaS grid whose lone Publish button is always clickable and explains nothing.\n\nThe world is dense and ruled, not carded. Depth comes from drawn lines, all one weight: a 1px `rule-strong` frame around the title block and the other sheet objects, and inside the table a single soft line (`--line`, `rule-strong` mixed 40% into `rule`) for the frame, the heads and the input | output seam. Inputs and outputs are told apart by a quiet tonal band behind the outputs, not by a heavier stroke. Lettering has three hands: a condensed technical letter for everything a draughtsman would letter (identifiers, column and group heads, lamps, counts), a humanist sans for UI prose, and a monospace only for condition expressions and ids.\n\nThe world is no longer one palette. After the direction contract was approved, the user asked to keep a theme switcher as a product feature, so the same semantic tokens are mapped onto seven themes: Signal Night (the console's own dark, see below), Gruvbox Material Mix (the default, mapped from the owner's VS Code theme `nd2204/vscode-gruvbox` `gruvbox_material_mix.json`), Catppuccin Mocha, Tokyo Night, Nord, Dracula, and \"Bản vẽ (sáng)\", the original light drawing-office sheet. \"Bản vẽ\" is the base token set; the six dark themes override it.\n\n**Signal Night** is the one dark theme drawn for this product rather than borrowed from an editor: a signal box after dark. Depth comes from three stacked blue-black surfaces, paper `#07090c` under sheet `#0c0f13` under panel `#13171d`, with a near-black rail `#040507`. The drawing blue of Bản vẽ is brightened into the accent `#5b9cff` (lit rows `#0e1b2e` / `#14284a`) The primary is a lever green `#17824a` with white text, darker than the clear lamp. Lamps are saturated LED colours: clear `#2fd87e`, stop `#ff4f45`, caution `#ffb21f`, dark text on each. Every text pair is measured at 4.5:1 or better. The frontmatter on this file records the default Gruvbox values. Per-theme values live in `console/src/styles/tokens.css` (base) and `console/src/styles/themes.css` (overrides) and are mirrored in the sidecar.",
+    "keyCharacteristics": [
+      "Ruled drafting-sheet surfaces. Flat panels separated by hairlines of one weight, not by cards or shadows.",
+      "Signal lamps (clear / stop / caution / pending / idle) are the only carriers of state colour, and every lamp has a glyph and a label.",
+      "Identifier as headline (`decisionId@draft`) over a ruled title block of six cells.",
+      "The interlock row and Publish lever are the signature, with one authored release moment.",
+      "Every screen fills the same five slots of the Decision Workspace: shell nav, context head with tabs, primary, inspector, commit bar.",
+      "Seven themes are mapped onto one semantic token set. Each theme's red, yellow and green come from its own editor scheme.",
+      "Vietnamese prose, with English domain terms (Rule, Draft, Test Case, Hit Policy, Publish) kept as written in CONTEXT.md."
+    ],
+    "rules": [
+      {
+        "name": "The Signal Reservation Rule",
+        "body": "Red, amber and green are reserved for state, in every theme. Shell, accent, primary, brand marks, theme swatches and markers such as the Latest Pointer never reuse them. Each theme uses its own scheme's red, yellow and green for the lamps.",
+        "section": "colors"
+      },
+      {
+        "name": "The Lamp, Glyph and Word Rule",
+        "body": "State is never carried by colour alone. Every lamp has its glyph (check, cross, warning triangle, spinner, dash), and the caller always places a text label beside it.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Map Rule",
+        "body": "A theme overrides semantic tokens and nothing else. Components reference tokens, never a theme's hex. Text clears 4.5:1 and lamp glyphs clear 3:1 against their ground in every theme. When a scheme's canonical colour misses that bar, it is lifted (or, for a fill that carries text, darkened) and marked `derived` in themes.css; the canonical hue stays wherever it does not carry text.",
+        "section": "colors"
+      },
+      {
+        "name": "The Three Hands Rule",
+        "body": "Technical lettering is for the drawing's labels and identifiers. UI sans is for prose. Mono is only for expressions and ids, never for labels or sentences.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "Tabular numerals are on everywhere: the body sets `tnum` and the table sets `tabular-nums`. Numeric columns are right-aligned.",
+        "section": "typography"
+      },
+      {
+        "name": "The Five Slots Rule",
+        "body": "A screen is shell nav, context head, primary, inspector and commit bar, in that order in the DOM and in focus order, at every size. A new screen fills the slots; it does not add a sixth region or move one.",
+        "section": "layout"
+      },
+      {
+        "name": "The Commit Bar Follows the Draft Rule",
+        "body": "The interlock and Publish lever belong to the Draft, not to the Rules tab. Switching tabs never hides why Publish is blocked.",
+        "section": "layout"
+      },
+      {
+        "name": "The Pinned Result Rule",
+        "body": "A Rule's route number and its outputs never scroll out of view, the same way in every Decision. The identity plate pins only when conditions keep at least 200px.",
+        "section": "layout"
+      },
+      {
+        "name": "The Drawn Line Rule",
+        "body": "Structure is ruled, not lifted, and every line is 1px. Use `rule-strong` for the frames of the sheet's main objects and the interlock top edge, `--line` inside the table (frame, heads, the inputs | outputs seam), and `rule` hairlines for rows. Never draw a line in `ink`: on dark themes it reads as a glare, not a rule. Major divisions are made by tone (the output band), not by stroke weight.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** route every colour through the semantic tokens so all six themes stay correct, and add a new theme only by overriding the full token map under `:root[data-theme='…']`.",
+      "**Do** keep red, amber and green for state in every theme, and pair each lamp with its glyph and a text label.",
+      "**Do** use `stop-fill` / `on-stop` whenever a red fill carries text, and lead a toned toast with its lamp rather than tinting the toast.",
+      "**Do** lift a scheme colour that misses 4.5:1 for text, and mark it `derived` in themes.css.",
+      "**Do** letter identifiers, column and group heads, counts and lamp labels in Barlow Semi Condensed, set prose in Be Vietnam Pro, and keep JetBrains Mono for expressions and ids.",
+      "**Do** keep state transitions at 150 to 250ms on `--ease-out`, and let the release sequence be the only choreographed motion.",
+      "**Do** keep the reduced-motion override that collapses every duration and delay to 1ms.",
+      "**Do** keep Publish locked, with a written reason, until every interlock lamp is clear."
+    ],
+    "donts": [
+      "**Don't** use a signal red, amber or green for the shell, brand mark, accent, primary, theme swatch or a marker like LATEST in any theme.",
+      "**Don't** signal state with colour alone, whether as a tinted row without a route-number change or a lamp without a label.",
+      "**Don't** ship the category default: a neutral SaaS grid with a lone, always-clickable Publish button that explains nothing.",
+      "**Don't** add cards, rounded containers above 3px, or decorative shadows. Divide with ruled lines.",
+      "**Don't** use JetBrains Mono for labels, buttons or sentences.",
+      "**Don't** add a second authored animation that competes with the lever release."
+    ]
+  }
+}

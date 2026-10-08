@@ -1,0 +1,258 @@
+/*
+ * Console themes: popular editor schemes mapped onto the console's tokens.
+ * The light drawing-office sheet in tokens.css is the base; these override it via data-theme.
+ * Each scheme supplies its own red / yellow / green for the signal lamps.
+ * Derived (non-canonical) values are marked; they exist to keep text at ≥4.5:1.
+ */
+
+:root[data-theme] {
+  color-scheme: dark;
+  --shadow-pop: 0 8px 22px -6px rgb(0 0 0 / 0.6), 0 2px 4px -1px rgb(0 0 0 / 0.4);
+}
+
+/* Gruvbox Material Mix: mapped from nd2204/vscode-gruvbox themes/gruvbox_material_mix.json.
+   Editor #181818 is the sheet, sidebar #151515 the rail, link/selection #8aa98a the accent,
+   and the button (#b8bb26 on #282828) the primary. */
+:root[data-theme='gruvbox'] {
+  --sheet: #181818; /* editor.background */
+  --paper: #181818;
+  --panel: #282828; /* input.background */
+  --panel-2: #32302f; /* editorGroup.border */
+  --rule: #32302f; /* editorGroup.border, tab.border */
+  --rule-strong: #665c54;
+  --ink: #ebdbb2; /* editor.foreground */
+  --ink-2: #d5c4a1;
+  --ink-3: #a89984;
+  --rail: #151515; /* sideBar.background */
+  --rail-deep: #181818;
+  --rail-line: #32302f; /* sideBar.border */
+  --rail-ink: #ebdbb2;
+  --rail-ink-2: #a89984;
+  --clear: #b8bb26; /* terminal.ansiGreen */
+  --clear-ink: #b8bb26;
+  --clear-tint: #282819; /* derived */
+  --stop: #fb4934; /* terminal.ansiRed */
+  --stop-ink: #fc6a58; /* derived: bright red lifted to clear 4.5:1 on its tint */
+  --stop-tint: #381f1c; /* derived */
+  --caution: #fabd2f; /* terminal.ansiYellow */
+  --caution-ink: #fabd2f;
+  --caution-tint: #332c1b; /* derived */
+  --accent: #8aa98a; /* textLink.foreground, selection.background */
+  --accent-hover: #a3bea3; /* derived */
+  --accent-tint: #272b27; /* derived */
+  --lit: #262926; /* derived */
+  --lit-strong: #313831; /* derived */
+  --primary: #b8bb26; /* button.background = terminal.ansiGreen */
+  --primary-hover: #c6c938; /* derived: lifted, the theme's 60% alpha hover would drop the label below 4.5:1 */
+  --on-primary: #282828; /* button.foreground */
+  --on-signal: #181818;
+  --on-caution: #181818;
+  --row-hover: #20201e; /* editor.lineHighlightBackground over the sheet */
+  --toast-bg: #3c3836; /* editor.selectionBackground */
+  --lever-lock: #504945;
+}
+
+/* Catppuccin Mocha */
+:root[data-theme='catppuccin'] {
+  --sheet: #1e1e2e;
+  --paper: #1e1e2e;
+  --panel: #181825;
+  --panel-2: #313244;
+  --rule: #313244;
+  --rule-strong: #585b70;
+  --ink: #cdd6f4;
+  --ink-2: #bac2de;
+  --ink-3: #9399b2;
+  --rail: #11111b;
+  --rail-deep: #181825;
+  --rail-line: #313244;
+  --rail-ink: #cdd6f4;
+  --rail-ink-2: #9399b2;
+  --clear: #a6e3a1;
+  --clear-ink: #a6e3a1;
+  --clear-tint: #233029;
+  --stop: #f38ba8;
+  --stop-ink: #f38ba8;
+  --stop-tint: #3a2430;
+  --caution: #f9e2af;
+  --caution-ink: #f9e2af;
+  --caution-tint: #37332b;
+  --accent: #cba6f7;
+  --accent-hover: #d8bcfa;
+  --accent-tint: #2b2640;
+  --lit: #2a2840;
+  --lit-strong: #383454;
+  --primary: #a6e3a1; /* green */
+  --primary-hover: #b3f0ae; /* derived: one step lighter */
+  --on-primary: #11111b;
+  --on-signal: #11111b;
+  --on-caution: #11111b;
+  --row-hover: #232334;
+  --toast-bg: #313244;
+  --lever-lock: #45475a;
+}
+
+/* Tokyo Night */
+:root[data-theme='tokyonight'] {
+  --sheet: #1a1b26;
+  --paper: #1a1b26;
+  --panel: #16161e;
+  --panel-2: #292e42;
+  --rule: #292e42;
+  --rule-strong: #414868;
+  --ink: #c0caf5;
+  --ink-2: #a9b1d6;
+  --ink-3: #9aa5ce;
+  --rail: #13141c; /* derived */
+  --rail-deep: #16161e;
+  --rail-line: #292e42;
+  --rail-ink: #c0caf5;
+  --rail-ink-2: #9aa5ce;
+  --clear: #9ece6a;
+  --clear-ink: #9ece6a;
+  --clear-tint: #222a22;
+  --stop: #f7768e;
+  --stop-ink: #f7768e;
+  --stop-tint: #33202a;
+  --caution: #e0af68;
+  --caution-ink: #e0af68;
+  --caution-tint: #302a20;
+  --accent: #7aa2f7;
+  --accent-hover: #94b4f9;
+  --accent-tint: #1f2540;
+  --lit: #202a46;
+  --lit-strong: #2a3760;
+  --primary: #9ece6a; /* green */
+  --primary-hover: #aadb77; /* derived: one step lighter */
+  --on-primary: #16161e;
+  --on-signal: #16161e;
+  --on-caution: #16161e;
+  --row-hover: #1f2030;
+  --toast-bg: #292e42;
+  --lever-lock: #414868;
+}
+
+/* Nord */
+:root[data-theme='nord'] {
+  --sheet: #2e3440;
+  --paper: #2e3440;
+  --panel: #3b4252;
+  --panel-2: #434c5e;
+  --rule: #3b4252;
+  --rule-strong: #4c566a;
+  --ink: #eceff4;
+  --ink-2: #e5e9f0;
+  --ink-3: #b4bccb; /* derived from snow storm for contrast */
+  --rail: #242933; /* derived */
+  --rail-deep: #2b303b;
+  --rail-line: #3b4252;
+  --rail-ink: #eceff4;
+  --rail-ink-2: #b4bccb;
+  --clear: #a3be8c;
+  --clear-ink: #a3be8c;
+  --clear-tint: #374036;
+  --stop: #bf616a;
+  --stop-ink: #e3949b; /* derived: aurora red lifted for text contrast */
+  --stop-fill: #a54e57; /* derived: darker aurora red so text on it clears 4.5:1 */
+  --on-stop: #ffffff;
+  --stop-tint: #43343a;
+  --caution: #ebcb8b;
+  --caution-ink: #ebcb8b;
+  --caution-tint: #45423a;
+  --accent: #88c0d0;
+  --accent-hover: #9fcfdc;
+  --accent-tint: #33404d;
+  --lit: #354352;
+  --lit-strong: #3f5163;
+  --primary: #a3be8c; /* aurora green */
+  --primary-hover: #afcb98; /* derived: one step lighter */
+  --on-primary: #2e3440;
+  --on-signal: #2e3440;
+  --on-caution: #2e3440;
+  --row-hover: #333a47;
+  --toast-bg: #434c5e;
+  --lever-lock: #4c566a;
+}
+
+/* Dracula */
+:root[data-theme='dracula'] {
+  --sheet: #282a36;
+  --paper: #282a36;
+  --panel: #21222c;
+  --panel-2: #343746;
+  --rule: #343746;
+  --rule-strong: #6272a4;
+  --ink: #f8f8f2;
+  --ink-2: #dcdcd6; /* derived */
+  --ink-3: #a3abcf; /* derived from comment for contrast */
+  --rail: #191a21;
+  --rail-deep: #21222c;
+  --rail-line: #343746;
+  --rail-ink: #f8f8f2;
+  --rail-ink-2: #a3abcf;
+  --clear: #50fa7b;
+  --clear-ink: #50fa7b;
+  --clear-tint: #263a2f;
+  --stop: #ff5555;
+  --stop-ink: #ff6e6e;
+  --stop-tint: #432a32;
+  --caution: #f1fa8c;
+  --caution-ink: #f1fa8c;
+  --caution-tint: #3c3f33;
+  --accent: #bd93f9;
+  --accent-hover: #cdaafb;
+  --accent-tint: #33304a;
+  --lit: #353249;
+  --lit-strong: #433d5e;
+  --primary: #50fa7b; /* green */
+  --primary-hover: #6dfb90; /* derived: one step lighter */
+  --on-primary: #21222c;
+  --on-signal: #21222c;
+  --on-caution: #21222c;
+  --row-hover: #2e303e;
+  --toast-bg: #44475a;
+  --lever-lock: #6272a4;
+}
+
+/* Signal Night: the console's own dark. A signal box after dark: layered blue-black surfaces
+   (paper below sheet below panel) give depth; the drawing blue is brightened into a lit accent;
+   lamps are saturated LED red, amber and green. All text pairs measured ≥4.5:1. */
+:root[data-theme='signal-night'] {
+  --sheet: #0c0f13;
+  --paper: #07090c;
+  --panel: #13171d;
+  --panel-2: #1a1f27;
+  --rule: #1e242c;
+  --rule-strong: #343c47;
+  --ink: #e9edf2;
+  --ink-2: #b8c1cc;
+  --ink-3: #8a95a3;
+  --rail: #040507;
+  --rail-deep: #0d1015;
+  --rail-line: #1a1f26;
+  --rail-ink: #e9edf2;
+  --rail-ink-2: #8f9aa8;
+  --clear: #2fd87e;
+  --clear-ink: #3ee08b;
+  --clear-tint: #0a2416;
+  --stop: #ff4f45;
+  --stop-ink: #ff6b62;
+  --stop-tint: #2b0e0d;
+  --caution: #ffb21f;
+  --caution-ink: #ffbf47;
+  --caution-tint: #2a1f05;
+  --accent: #5b9cff;
+  --accent-hover: #7cb0ff;
+  --accent-tint: #0f1d33;
+  --lit: #0e1b2e;
+  --lit-strong: #14284a;
+  --primary: #2fd87e; /* LED green, the clear lamp */
+  --primary-hover: #44e58a; /* derived: one step lighter */
+  --on-primary: #040507;
+  --on-signal: #040507;
+  --on-caution: #040507;
+  --row-hover: #11151b;
+  --toast-bg: #1a1f27;
+  --lever-lock: #2a313b;
+  --shadow-pop: 0 10px 28px -8px rgb(0 0 0 / 0.75), 0 2px 6px -1px rgb(0 0 0 / 0.5);
+}
