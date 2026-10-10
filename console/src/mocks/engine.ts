@@ -3,17 +3,23 @@
 // can be built before the Go engine exists. The UI never imports this file:
 // once the real HTTP API is up, it is deleted with the rest of src/mocks.
 
-import { cellAst } from '../domain/cell';
+import { cellAst, describeAst } from '../domain/cell';
 import type {
   AstNode,
   BreakingChange,
+  Disposition,
   EvalResult,
+  EvaluationTrace,
   Expected,
   OutputRow,
   RuleSet,
   Scalar,
+  SimFact,
+  SimFactResult,
   TestCaseResult,
   TestCase,
+  TraceNode,
+  TraceRule,
 } from '../domain/types';
 
 function lookup(scope: unknown, path: string): { found: boolean; value: unknown } {
@@ -197,4 +203,120 @@ export function breakingChanges(draft: RuleSet, latest: RuleSet): BreakingChange
     }
   }
   return changes;
+}
+
+// ---------- Evaluation Trace ----------
+
+const ITEM_CAP = 8;
+
+/** Re-evaluates a condition tree node by node, so the trace can show which branch decided. */
+function traceNode(node: AstNode, scope: unknown): TraceNode {
+  const sink = new Set<string>();
+  const ok = evalNode(node, scope, sink);
+  switch (node.op) {
+    case 'and':
+    case 'or':
+      return { text: node.op === 'and' ? 'tất cả' : 'một trong', ok, children: node.args.map((a) => traceNode(a, scope)) };
+    case 'not':
+      return { text: 'không', ok, children: [traceNode(node.arg, scope)] };
+    case 'some':
+    case 'all':
+    case 'none': {
+      const { value } = lookup(scope, node.path);
+      const items = Array.isArray(value) ? value : [];
+      const children: TraceNode[] = items.slice(0, ITEM_CAP).map((item, i) => {
+        const inner = traceNode(node.where, item);
+        return { ...inner, text: `${node.path}[${i}]: ${describeAst(node.where)}` };
+      });
+      if (items.length > ITEM_CAP) children.push({ text: `… và ${items.length - ITEM_CAP} phần tử nữa`, ok: null });
+      return {
+        text: Array.isArray(value) ? `${node.op} ${node.path} (${items.length} phần tử): ${describeAst(node.where)}` : `${node.op} ${node.path}: thiếu trường`,
+        ok,
+        children,
+      };
+    }
+    default:
+      return { text: describeAst(node), ok };
+  }
+}
+
+function dispositionOf(ruleSet: RuleSet, result: EvalResult, ruleId: string): { disposition: Disposition; by?: string } {
+  const matched = result.matchedRuleIds.includes(ruleId);
+  if (!matched) return { disposition: 'missed' };
+  if (result.error?.code === 'UNIQUE_VIOLATION') return { disposition: 'conflict' };
+  if (ruleSet.hitPolicy === 'COLLECT') return { disposition: 'collected' };
+  if (result.winnerRuleIds.includes(ruleId)) return { disposition: 'won' };
+  const by = result.winnerRuleIds[0];
+  return { disposition: ruleSet.hitPolicy === 'PRIORITY' ? 'outweighed' : 'shadowed', by };
+}
+
+export function traceOf(ruleSet: RuleSet, facts: Record<string, unknown>, result: EvalResult, label: string, durationMs: number): EvaluationTrace {
+  const rules: TraceRule[] =
+    result.error?.code === 'SCHEMA'
+      ? []
+      : ruleSet.rules.map((rule) => {
+          const { disposition, by } = dispositionOf(ruleSet, result, rule.id);
+          return {
+            ruleId: rule.id,
+            matched: result.matchedRuleIds.includes(rule.id),
+            disposition,
+            ...(by ? { by } : {}),
+            conditions: ruleSet.inputs.map((field) => {
+              const ast = cellAst(rule.when[field.name], field);
+              const { found, value } = lookup(facts, field.name);
+              if (!ast) return { field: field.name, ok: null, ...(found ? { value } : {}) };
+              const ok = result.cellOutcomes[rule.id]?.[field.name] ?? false;
+              const tree = rule.when[field.name]?.kind === 'ast' ? traceNode(ast, facts) : undefined;
+              return { field: field.name, ok, ...(found ? { value } : {}), ...(tree ? { tree } : {}) };
+            }),
+          };
+        });
+  return {
+    ruleSetVersion: label,
+    hitPolicy: ruleSet.hitPolicy,
+    engine: 'mock-evaluator',
+    evaluatedAt: new Date().toISOString(),
+    durationMs,
+    rules,
+  };
+}
+
+function traced(ruleSet: RuleSet, facts: Record<string, unknown>, label: string) {
+  const t0 = performance.now();
+  const result = evaluate(ruleSet, facts);
+  const durationMs = performance.now() - t0;
+  return { ...result, trace: traceOf(ruleSet, facts, result, label, durationMs) };
+}
+
+/** Simulation over Test Cases and a Fact Batch, each Fact evaluated by the subject and, when there is one, the baseline. */
+export function simulateRun(
+  subject: { ruleSet: RuleSet; label: string },
+  baseline: { ruleSet: RuleSet; label: string } | null,
+  testCases: TestCase[],
+  batch: SimFact[],
+): SimFactResult[] {
+  const all: (SimFact & { expected?: Expected })[] = [
+    ...testCases.map((tc) => ({ key: tc.id, source: 'test-case' as const, facts: tc.facts, expected: tc.expected })),
+    ...batch,
+  ];
+  return all.map((f) => {
+    const s = traced(subject.ruleSet, f.facts, subject.label);
+    const b = baseline ? traced(baseline.ruleSet, f.facts, baseline.label) : undefined;
+    const status = f.expected
+      ? matchesExpected(s, f.expected)
+        ? 'pass'
+        : s.error && !('error' in f.expected)
+          ? 'error'
+          : 'fail'
+      : undefined;
+    return {
+      key: f.key,
+      source: f.source,
+      facts: f.facts,
+      subject: s,
+      ...(b ? { baseline: b } : {}),
+      changed: b ? !sameResult(s, b) : false,
+      ...(status ? { status } : {}),
+    };
+  });
 }

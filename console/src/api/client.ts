@@ -5,7 +5,10 @@ import type {
   EvalResult,
   Expected,
   RuleSet,
+  SimFact,
+  SimScope,
   SimulationReport,
+  SimulationRun,
   TestCase,
 } from '../domain/types';
 
@@ -62,6 +65,16 @@ export const api = {
     request<Draft>('POST', `/decisions/${enc(id)}/drafts`, { fromVersion }),
   simulate: (id: string, draftId: string, ruleSet: RuleSet) =>
     request<SimulationReport>('POST', `/decisions/${enc(id)}/drafts/${enc(draftId)}/simulate`, { ruleSet }),
+  /** Simulation of a Draft (as edited) or a Published version, over the Test Cases and a Fact Batch, against a baseline. */
+  simulationRun: (id: string, scope: SimScope, body: { ruleSet?: RuleSet; baseline: number | null; batch: SimFact[] }) =>
+    request<SimulationRun>(
+      'POST',
+      scope.kind === 'draft'
+        ? `/decisions/${enc(id)}/drafts/${enc(scope.draftId)}/simulation-runs`
+        : `/decisions/${enc(id)}/versions/${scope.version}/simulation-runs`,
+      body,
+    ),
+  sampleBatch: (id: string) => request<{ name: string; facts: Record<string, unknown>[] }>('GET', `/decisions/${enc(id)}/sample-batch`),
   publish: (id: string, draftId: string, acknowledgedLatest: number | null, confirmBreaking: boolean) =>
     request<{ version: number; decision: DecisionSummary }>(
       'POST',

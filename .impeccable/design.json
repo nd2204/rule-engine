@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-10T09:41:19+00:00",
+  "generatedAt": "2026-10-10T12:00:00+00:00",
   "title": "Design System: bre console",
   "extensions": {
     "colorMeta": {
@@ -1395,7 +1395,7 @@
       "kind": "nav",
       "refersTo": "tabs",
       "description": "The Decision-scoped tab row under the title block, with the inspector toggle that appears below 1200px.",
-      "html": "<nav class=\"ds-tabs\" aria-label=\"Màn hình của Decision\"><a class=\"ds-tab is-current\" href=\"#\" aria-current=\"page\">Rules</a><a class=\"ds-tab\" href=\"#\">Version</a><a class=\"ds-tab\" href=\"#\">Schema</a><button class=\"ds-tabs-toggle\" type=\"button\" aria-expanded=\"false\"><span class=\"ds-tabs-lamp\" aria-hidden=\"true\"></span>4/6 pass</button></nav>",
+      "html": "<nav class=\"ds-tabs\" aria-label=\"Màn hình của Decision\"><a class=\"ds-tab is-current\" href=\"#\" aria-current=\"page\">Rules</a><a class=\"ds-tab\" href=\"#\">Simulation</a><a class=\"ds-tab\" href=\"#\">Version</a><a class=\"ds-tab\" href=\"#\">Schema</a><button class=\"ds-tabs-toggle\" type=\"button\" aria-expanded=\"false\"><span class=\"ds-tabs-lamp\" aria-hidden=\"true\"></span>4/6 pass</button></nav>",
       "css": ".ds-tabs{display:flex;align-items:stretch;gap:4px;padding:0 24px 0 12px;border-top:1px solid var(--rule-strong,#665c54);border-bottom:1px solid var(--rule-strong,#665c54);background:var(--sheet,#1d2021);} .ds-tab{display:flex;align-items:center;height:40px;margin-bottom:-1px;padding:0 12px;border-bottom:2px solid transparent;font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.875rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--ink-3,#a89984);text-decoration:none;transition:color 150ms cubic-bezier(0.16, 1, 0.3, 1),border-color 150ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-tab:hover{color:var(--ink,#ebdbb2);} .ds-tab.is-current{border-bottom-color:var(--accent,#83a598);color:var(--ink,#ebdbb2);} .ds-tab:focus-visible{outline:2px solid var(--accent,#83a598);outline-offset:-4px;} .ds-tabs-toggle{display:inline-flex;align-items:center;gap:6px;align-self:center;margin-left:auto;height:30px;padding:0 10px;border:1px solid var(--rule-strong,#665c54);border-radius:3px;background:var(--sheet,#1d2021);color:var(--ink,#ebdbb2);font-family:'Be Vietnam Pro', system-ui, sans-serif;font-size:0.75rem;font-weight:500;cursor:pointer;transition:background-color 150ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-tabs-toggle:hover{background:var(--panel,#282828);} .ds-tabs-toggle:focus-visible{outline:2px solid var(--accent,#83a598);outline-offset:2px;} .ds-tabs-lamp{width:16px;height:16px;border-radius:50%;background:var(--stop,#fb4934);}"
     },
     {
@@ -1469,8 +1469,18 @@
         "section": "layout"
       },
       {
+        "name": "The Evidence Is Not a Lock Rule",
+        "body": "Simulation and a Fact Batch inform Publish; they never gate it. The interlock's locks are computed from Test Cases, Stale and Breaking Change only, and a batch's changed count reaches the commit bar solely as a caution line in the release bay.",
+        "section": "layout"
+      },
+      {
         "name": "The Drawn Line Rule",
         "body": "Structure is ruled, not lifted, and every line is 1px. Use `rule-strong` for the frames of the sheet's main objects and the interlock top edge, `--line` inside the table (frame, heads, the inputs | outputs seam), and `rule` hairlines for rows. Never draw a line in `ink`: on dark themes it reads as a glare, not a rule. Major divisions are made by tone (the output band), not by stroke weight.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Double Seam Rule",
+        "body": "When a division must outrank `--line` (the seam between Rules and the outcomes that are not Rules in the Rule impact table), it is drawn as two 1px `rule-strong` lines (a 3px double border), never as one heavier stroke, so the line weight stays one.",
         "section": "elevation"
       }
     ],

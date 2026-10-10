@@ -129,3 +129,76 @@ export interface SimulationReport {
   breakingChanges: BreakingChange[];
   latestVersion: number;
 }
+
+// ---------- Evaluation Trace ----------
+
+/** One node of a condition, evaluated: a cell's condition tree, or one item of a list iterated by some / all / none. */
+export interface TraceNode {
+  text: string;
+  /** null: a summary line with no verdict of its own (items left out). */
+  ok: boolean | null;
+  children?: TraceNode[];
+}
+
+export interface TraceCondition {
+  field: string;
+  /** null: the cell means "any". */
+  ok: boolean | null;
+  /** The Fact's value for this field, as the engine read it; absent when the Fact lacks the field. */
+  value?: unknown;
+  /** Present for condition trees (raw JSON AST cells). */
+  tree?: TraceNode;
+}
+
+/** How the Hit Policy treated a Rule for this Fact. */
+export type Disposition = 'won' | 'collected' | 'shadowed' | 'outweighed' | 'conflict' | 'missed';
+
+export interface TraceRule {
+  ruleId: string;
+  matched: boolean;
+  disposition: Disposition;
+  /** The Rule that took precedence over this one (shadowed, outweighed). */
+  by?: string;
+  conditions: TraceCondition[];
+}
+
+export interface EvaluationTrace {
+  /** "v7" or the Draft id. */
+  ruleSetVersion: string;
+  hitPolicy: HitPolicy;
+  engine: string;
+  evaluatedAt: string;
+  durationMs: number;
+  rules: TraceRule[];
+}
+
+// ---------- Simulation run ----------
+
+export type SimScope = { kind: 'draft'; draftId: string } | { kind: 'version'; version: number };
+
+export interface SimFact {
+  /** Test Case id, or "#0012" for the 12th row of the Fact Batch. */
+  key: string;
+  source: 'test-case' | 'batch';
+  facts: Record<string, unknown>;
+}
+
+export interface SimFactResult {
+  key: string;
+  source: SimFact['source'];
+  facts: Record<string, unknown>;
+  /** The scope under simulation (the Draft as edited, or a Published version). */
+  subject: EvalResult & { trace: EvaluationTrace };
+  /** The baseline version; absent when there is none to compare with. */
+  baseline?: EvalResult & { trace: EvaluationTrace };
+  changed: boolean;
+  /** Test Cases only: the subject's result against the expectation. */
+  status?: TestStatus;
+}
+
+export interface SimulationRun {
+  subjectLabel: string;
+  baselineVersion: number | null;
+  ranAt: string;
+  results: SimFactResult[];
+}

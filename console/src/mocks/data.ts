@@ -392,3 +392,83 @@ export function seed(): Record<string, DecisionRecord> {
     },
   };
 }
+
+// ---------------- sample Fact Batches (illustrative) ----------------
+
+/** Deterministic PRNG, so the sample batch is the same on every load. */
+function mulberry32(seed: number) {
+  let a = seed;
+  return () => {
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+type Rand = () => number;
+const pick = <T,>(r: Rand, xs: readonly T[]): T => xs[Math.floor(r() * xs.length)];
+const between = (r: Rand, lo: number, hi: number) => lo + Math.floor(r() * (hi - lo + 1));
+/** Spend-like amounts: many small, few large. */
+const logBetween = (r: Rand, lo: number, hi: number, step: number) =>
+  Math.round(Math.exp(Math.log(lo) + r() * (Math.log(hi) - Math.log(lo))) / step) * step;
+
+const CATALOG = [
+  { sku: 'NUOC-COLA-330', category: 'BEVERAGE', price: 12000 },
+  { sku: 'TRA-XANH-500', category: 'BEVERAGE', price: 10000 },
+  { sku: 'BANH-QUY-200', category: 'SNACK', price: 45000 },
+  { sku: 'SUA-TUOI-1L', category: 'DAIRY', price: 38000 },
+  { sku: 'NUOC-GIAT-2L', category: 'HOUSEHOLD', price: 165000 },
+] as const;
+
+const SAMPLE_BATCH: Record<string, (r: Rand) => Record<string, unknown>> = {
+  'calculate-pos-discounts': (r) => {
+    const tierRoll = r();
+    const facts: Record<string, unknown> = {
+      customerTier: tierRoll < 0.6 ? 'STANDARD' : tierRoll < 0.88 ? 'SILVER' : 'GOLD',
+      cartTotal: logBetween(r, 60000, 2600000, 1000),
+      items: Array.from({ length: between(r, 1, 4) }, () => ({ ...pick(r, CATALOG), qty: between(r, 1, 3) })),
+      weekday: pick(r, ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']),
+    };
+    // About one call in twelve comes from a POS build that does not send channel yet.
+    const ch = r();
+    if (ch < 0.7) facts.channel = 'POS';
+    else if (ch < 0.92) facts.channel = 'ONLINE';
+    return facts;
+  },
+  'determine-irrigation-action': (r) => {
+    const facts: Record<string, unknown> = {
+      tankLevel: between(r, 4, 100),
+      zoneType: r() < 0.55 ? 'OPEN_FIELD' : 'GREENHOUSE',
+      soilMoisture: between(r, 12, 85),
+      airTemp: between(r, 22, 40),
+    };
+    const rain = r();
+    if (rain < 0.6) facts.rainForecastMm = 0;
+    else if (rain < 0.95) facts.rainForecastMm = between(r, 1, 20);
+    return facts;
+  },
+  'classify-customer-tier': (r) => {
+    const annualSpend = logBetween(r, 500000, 60000000, 10000);
+    return { annualSpend, ordersLast12m: Math.max(1, Math.round(annualSpend / between(r, 600000, 2200000))) };
+  },
+  'determine-alert-level': (r) => {
+    const facts: Record<string, unknown> = {
+      tankLevel: between(r, 3, 100),
+      airTemp: between(r, 20, 41),
+      soilMoisture: between(r, 10, 80),
+    };
+    const off = r();
+    if (off < 0.55) facts.sensorOfflineMin = 0;
+    else if (off < 0.7) facts.sensorOfflineMin = between(r, 5, 90);
+    return facts;
+  },
+};
+
+/** An illustrative Fact Batch for a Decision, shaped like calls a Caller might send. */
+export function sampleBatch(decisionId: string, size = 512): Record<string, unknown>[] {
+  const make = SAMPLE_BATCH[decisionId];
+  if (!make) return [];
+  const r = mulberry32([...decisionId].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7));
+  return Array.from({ length: size }, () => make(r));
+}

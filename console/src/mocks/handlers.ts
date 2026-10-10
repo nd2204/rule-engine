@@ -2,9 +2,9 @@
 // service exists. Paths and payloads are placeholders for the OpenAPI contract.
 
 import { delay, http, HttpResponse } from 'msw';
-import type { DecisionSummary, Draft, Expected, RuleSet, SimulationReport, TestCase } from '../domain/types';
-import { seed, type DecisionRecord } from './data';
-import { breakingChanges, evaluate, simulate } from './engine';
+import type { DecisionSummary, Draft, Expected, RuleSet, SimFact, SimulationReport, SimulationRun, TestCase } from '../domain/types';
+import { sampleBatch, seed, type DecisionRecord } from './data';
+import { breakingChanges, evaluate, simulate, simulateRun } from './engine';
 
 const db = seed();
 let draftCounter = 10;
@@ -34,6 +34,17 @@ function latestRuleSet(d: DecisionRecord): RuleSet {
 }
 
 const LATENCY = 140;
+
+/** A run's latency grows with the batch, so the pending state is visible on big batches. */
+const runDelay = (n: number) => delay(LATENCY + Math.min(1200, Math.round(n / 8)));
+
+type RunBody = { ruleSet?: RuleSet; baseline: number | null; batch?: SimFact[] };
+
+function baselineOf(d: DecisionRecord, baseline: number | null) {
+  if (baseline === null) return null;
+  const v = d.versions[baseline - 1];
+  return v ? { ruleSet: v.ruleSet, label: `v${v.version}` } : undefined;
+}
 
 export const handlers = [
   http.get('/api/decisions', async () => {
@@ -155,6 +166,48 @@ export const handlers = [
       latestVersion: d.latest,
     };
     return HttpResponse.json(report);
+  }),
+
+  http.post('/api/decisions/:id/drafts/:draftId/simulation-runs', async ({ params, request }) => {
+    const d = findDecision(params.id as string);
+    const draft = d?.drafts.find((x) => x.id === params.draftId);
+    const body = (await request.json()) as RunBody;
+    await runDelay(body.batch?.length ?? 0);
+    if (!d || !draft) return problem(404, 'NOT_FOUND', 'Không tìm thấy Draft');
+    const baseline = baselineOf(d, body.baseline);
+    if (baseline === undefined) return problem(404, 'NOT_FOUND', `Không có v${body.baseline} để so sánh`);
+    const run: SimulationRun = {
+      subjectLabel: draft.id,
+      baselineVersion: body.baseline,
+      ranAt: new Date().toISOString(),
+      results: simulateRun({ ruleSet: body.ruleSet ?? draft.ruleSet, label: draft.id }, baseline, d.testCases, body.batch ?? []),
+    };
+    return HttpResponse.json(run);
+  }),
+
+  http.post('/api/decisions/:id/versions/:version/simulation-runs', async ({ params, request }) => {
+    const d = findDecision(params.id as string);
+    const v = d?.versions[Number(params.version) - 1];
+    const body = (await request.json()) as RunBody;
+    await runDelay(body.batch?.length ?? 0);
+    if (!d || !v) return problem(404, 'NOT_FOUND', 'Không tìm thấy Decision Version');
+    const baseline = baselineOf(d, body.baseline);
+    if (baseline === undefined) return problem(404, 'NOT_FOUND', `Không có v${body.baseline} để so sánh`);
+    const run: SimulationRun = {
+      subjectLabel: `v${v.version}`,
+      baselineVersion: body.baseline,
+      ranAt: new Date().toISOString(),
+      results: simulateRun({ ruleSet: v.ruleSet, label: `v${v.version}` }, baseline, d.testCases, body.batch ?? []),
+    };
+    return HttpResponse.json(run);
+  }),
+
+  // An illustrative Fact Batch, generated, for trying Simulation without real data.
+  http.get('/api/decisions/:id/sample-batch', async ({ params }) => {
+    await delay(LATENCY);
+    const d = findDecision(params.id as string);
+    if (!d) return problem(404, 'NOT_FOUND', 'Không tìm thấy Decision');
+    return HttpResponse.json({ name: `mau-${d.id}.json`, facts: sampleBatch(d.id) });
   }),
 
   // Evaluates one set of Facts against the Draft as edited, for a Test Case being written.

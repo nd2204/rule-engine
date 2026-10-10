@@ -334,7 +334,7 @@ export function TestCaseStrip(props: Props) {
   );
 }
 
-type TestCaseBody = { name: string; facts: Record<string, unknown>; expected: Expected };
+export type TestCaseBody = { name: string; facts: Record<string, unknown>; expected: Expected };
 
 type ExpectedKind = 'outputs' | 'UNIQUE_VIOLATION';
 type RowText = Record<string, string>;
@@ -403,7 +403,7 @@ function readRows(outputs: OutputField[], rows: RowText[]): { rows: OutputRow[];
   return { rows: out, error: null };
 }
 
-function TestCaseForm(props: {
+export function TestCaseForm(props: {
   ruleSet: RuleSet;
   /** The Test Case being edited; absent for a new one. */
   testCase?: TestCase;

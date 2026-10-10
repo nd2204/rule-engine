@@ -1,10 +1,10 @@
-import { FilePlus2, GitCompareArrows, PencilLine, RotateCcw, TriangleAlert } from 'lucide-react';
+import { FilePlus2, GitCompareArrows, PencilLine, RotateCcw, ScanSearch, TriangleAlert } from 'lucide-react';
 import { Lamp } from '../../components/Lamp';
 import { ScopePicker } from '../../components/ScopePicker';
 import { Workspace } from '../../components/Workspace';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { api, ApiError } from '../../api/client';
-import type { DecisionSummary, DecisionVersion, Draft, Expected, Rule, RuleSet, SimulationReport, TestCase } from '../../domain/types';
+import type { DecisionSummary, DecisionVersion, Draft, Expected, Rule, RuleSet, SimulationReport, TestCase, TestCaseResult } from '../../domain/types';
 import { href, navigate, type Route, type Tab } from '../../router';
 import { useDecisions, useNarrow, useToasts } from '../../state';
 import { InterlockRow, type Interlock, type PublishSummary } from './InterlockRow';
@@ -15,6 +15,9 @@ import { TestCaseStrip } from './TestCaseStrip';
 import { TitleBlock, type TitleCell } from './TitleBlock';
 import { diffCounts, diffRuleSets } from './diff';
 import { VersionDiffInspector, VersionsTab } from './VersionsTab';
+import { SimulationTab } from '../simulation/SimulationTab';
+import { TraceInspector } from '../simulation/TraceInspector';
+import { useSimulation, type Simulation } from '../simulation/useSimulation';
 
 type ScreenRoute = Extract<Route, { name: 'draft' | 'version' }>;
 
@@ -70,6 +73,7 @@ const timeFormat = new Intl.DateTimeFormat('vi-VN', { dateStyle: 'short', timeSt
 
 const INSPECTOR_LABEL: Record<Tab, string> = {
   rules: 'Test Case',
+  simulation: 'Evaluation Trace',
   versions: 'So với Latest',
   schema: 'Fact mẫu',
 };
@@ -116,6 +120,18 @@ function Skeleton() {
   );
 }
 
+/** The Simulation tab's verdict on the inspector toggle: how many Facts change against the baseline. */
+function simSummary(sim: Simulation) {
+  if (!sim.run) return undefined;
+  const changed = sim.run.results.filter((r) => r.changed).length;
+  return (
+    <>
+      <Lamp state={sim.running ? 'pending' : sim.run.baselineVersion === null ? 'idle' : changed ? 'caution' : 'clear'} size="sm" />
+      <span>{sim.run.baselineVersion === null ? `${sim.run.results.length} Facts` : `${changed.toLocaleString('vi-VN')} đổi`}</span>
+    </>
+  );
+}
+
 function newFieldsOf(ruleSet: RuleSet, latest: RuleSet | undefined) {
   if (!latest) return new Set<string>();
   const before = new Set(latest.inputs.map((f) => f.name));
@@ -154,6 +170,23 @@ function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: 
   const [drawerOpen, setDrawerOpen] = useState(false);
   // Test Cases deleted in this session: the release bay names them, since a deletion can turn a lock green.
   const [deletedTcs, setDeletedTcs] = useState<string[]>([]);
+  // A Simulation Fact lit in the Rules Table, the way a selected Test Case lights it. An edit puts it out.
+  const [litFact, setLitFact] = useState<TestCaseResult | null>(null);
+  useEffect(() => setLitFact(null), [ruleSet]);
+
+  const sim = useSimulation({
+    decisionId,
+    scope: { kind: 'draft', draftId },
+    ruleSet: ruleSet ?? undefined,
+    testCases,
+    defaultBaseline: decision?.latest ?? null,
+    active: tab === 'simulation',
+  });
+  // Below 1200px the trace is a drawer: picking a Fact opens it.
+  const stacked = useNarrow('(max-width: 1199px)');
+  useEffect(() => {
+    if (sim.selectedKey && stacked) setDrawerOpen(true);
+  }, [sim.selectedKey, stacked]);
 
   const dirty = useRef(false);
   const simSeq = useRef(0);
@@ -273,7 +306,7 @@ function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: 
   const breaking = report?.breakingChanges ?? [];
   const results = report?.results ?? null;
   const failing = results?.filter((r) => r.status !== 'pass') ?? [];
-  const selected = results?.find((r) => r.testCaseId === selectedId) ?? null;
+  const selected = litFact ?? results?.find((r) => r.testCaseId === selectedId) ?? null;
   const editable = !narrow && !compare;
   const counts = diff ? diffCounts(diff) : null;
   const lost = stale ? staleLoss(ruleSet, base, latest.ruleSet) : [];
@@ -520,6 +553,11 @@ function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: 
     cautions: [
       ...(deletedTcs.length ? [`đã xoá Test Case ${deletedTcs.join(', ')} trong phiên này`] : []),
       ...(unreached.length ? [`chưa Test Case nào match ${unreached.join(', ')}`] : []),
+      ...(sim.batch && sim.run && sim.run.baselineVersion !== null
+        ? [
+            `Fact Batch ${sim.batch.name}: ${sim.run.results.filter((r) => r.source === 'batch' && r.changed).length.toLocaleString('vi-VN')}/${sim.batch.facts.length.toLocaleString('vi-VN')} Facts đổi kết quả so với v${sim.run.baselineVersion}${sim.stale ? ' (kết quả cũ, chạy lại ở tab Simulation)' : ''}`,
+          ]
+        : []),
     ],
     unchanged,
   };
@@ -529,8 +567,30 @@ function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: 
       <VersionsTab decision={decision} scope={{ kind: 'draft', id: draft.id }} />
     ) : tab === 'schema' ? (
       <SchemaTab ruleSet={ruleSet} />
+    ) : tab === 'simulation' ? (
+      <SimulationTab
+        sim={sim}
+        decisionId={decisionId}
+        subject={ruleSet}
+        subjectLabel={draft.id}
+        versions={decision.versions.map((v) => v.version)}
+        latestNo={latestNo}
+        testCases={testCases}
+        canImport={!phone}
+      />
     ) : (
       <>
+        {litFact && (
+          <p className="banner banner--compare">
+            <ScanSearch size={16} aria-hidden="true" />
+            <span>
+              Đang soi Fact <code>{litFact.testCaseId}</code> từ Simulation: Rule khớp được tô sáng như khi chọn một Test Case.
+            </span>
+            <button type="button" className="btn btn--secondary" onClick={() => setLitFact(null)}>
+              Bỏ soi
+            </button>
+          </p>
+        )}
         {narrow && (
           <p className="banner">
             <TriangleAlert size={16} aria-hidden="true" />
@@ -578,6 +638,35 @@ function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: 
       <VersionDiffInspector label={draft.id} ruleSet={ruleSet} latest={latest.ruleSet} latestNo={latestNo} isLatest={false} />
     ) : tab === 'schema' ? (
       <SchemaInspector testCases={testCases} />
+    ) : tab === 'simulation' ? (
+      <TraceInspector
+        result={sim.run?.results.find((r) => r.key === sim.selectedKey) ?? null}
+        decisionId={decisionId}
+        subject={ruleSet}
+        subjectLabel={draft.id}
+        subjectVersion={{ version: decision.versions.length + 1, planned: true }}
+        baselineRules={sim.run?.baselineVersion === null ? null : sim.baselineRuleSet}
+        baseLabel={sim.run?.baselineVersion ? `v${sim.run.baselineVersion}` : null}
+        testCaseName={testCases?.find((t) => t.id === sim.selectedKey)?.name}
+        onSave={
+          narrow
+            ? undefined
+            : async (tc) => {
+                const created = await api.addTestCase(decisionId, tc);
+                setTestCases((all) => [...(all ?? []), created]);
+                return created.id;
+              }
+        }
+        evaluate={(facts) => api.evaluate(decisionId, draftId, ruleSet, facts)}
+        onLight={() => {
+          const r = sim.run?.results.find((x) => x.key === sim.selectedKey);
+          if (!r) return;
+          setSelectedId(null);
+          setLitFact({ testCaseId: r.key, status: r.status ?? 'pass', actual: r.subject, differsFromLatest: r.changed });
+          setDrawerOpen(false);
+          navigate(href.draft(decisionId, draftId));
+        }}
+      />
     ) : (
       <TestCaseStrip
         testCases={testCases}
@@ -585,7 +674,10 @@ function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: 
         running={running}
         simError={simError}
         selectedId={selectedId}
-        onSelect={setSelectedId}
+        onSelect={(id) => {
+          setLitFact(null);
+          setSelectedId(id);
+        }}
         ruleSet={ruleSet}
         canEdit={!narrow}
         onAdd={async (tc: { name: string; facts: Record<string, unknown>; expected: Expected }) => {
@@ -604,7 +696,9 @@ function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: 
     );
 
   const summary =
-    tab === 'rules' && results && total > 0 ? (
+    tab === 'simulation' ? (
+      simSummary(sim)
+    ) : tab === 'rules' && results && total > 0 ? (
       <>
         <Lamp state={running ? 'pending' : passed === total ? 'clear' : 'stop'} size="sm" />
         <span>
@@ -672,6 +766,19 @@ function VersionView({ decisionId, version, tab }: { decisionId: string; version
   const [busy, setBusy] = useState(false);
   const [latestRuleSet, setLatestRuleSet] = useState<RuleSet | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  // Simulation of a Published version compares with Latest; Latest itself compares with the version before it.
+  const sim = useSimulation({
+    decisionId,
+    scope: { kind: 'version', version },
+    testCases,
+    defaultBaseline: !decision ? null : decision.latest !== version ? decision.latest : version > 1 ? version - 1 : null,
+    active: tab === 'simulation',
+  });
+  const stacked = useNarrow('(max-width: 1199px)');
+  useEffect(() => {
+    if (sim.selectedKey && stacked) setDrawerOpen(true);
+  }, [sim.selectedKey, stacked]);
 
   const load = useCallback(async () => {
     setLoadError(null);
@@ -780,6 +887,17 @@ function VersionView({ decisionId, version, tab }: { decisionId: string; version
       <VersionsTab decision={decision} scope={{ kind: 'version', version }} />
     ) : tab === 'schema' ? (
       <SchemaTab ruleSet={dv.ruleSet} />
+    ) : tab === 'simulation' ? (
+      <SimulationTab
+        sim={sim}
+        decisionId={decisionId}
+        subject={dv.ruleSet}
+        subjectLabel={`v${version}`}
+        versions={decision.versions.map((v) => v.version).filter((v) => v !== version)}
+        latestNo={decision.latest}
+        testCases={testCases}
+        canImport={!phone}
+      />
     ) : (
       <>
         <p className="banner banner--published">
@@ -808,6 +926,17 @@ function VersionView({ decisionId, version, tab }: { decisionId: string; version
       <VersionDiffInspector label={`v${version}`} ruleSet={dv.ruleSet} latest={latestRuleSet} latestNo={decision.latest} isLatest={isLatest} />
     ) : tab === 'schema' ? (
       <SchemaInspector testCases={testCases} />
+    ) : tab === 'simulation' ? (
+      <TraceInspector
+        result={sim.run?.results.find((r) => r.key === sim.selectedKey) ?? null}
+        decisionId={decisionId}
+        subject={dv.ruleSet}
+        subjectLabel={`v${version}`}
+        subjectVersion={{ version, planned: false }}
+        baselineRules={sim.run?.baselineVersion === null ? null : sim.baselineRuleSet}
+        baseLabel={sim.run?.baselineVersion ? `v${sim.run.baselineVersion}` : null}
+        testCaseName={testCases?.find((t) => t.id === sim.selectedKey)?.name}
+      />
     ) : (
       <TestCaseStrip
         testCases={testCases}
@@ -818,7 +947,7 @@ function VersionView({ decisionId, version, tab }: { decisionId: string; version
         onSelect={setSelectedId}
         ruleSet={dv.ruleSet}
         canEdit={false}
-        readOnlyNote="Simulation chạy trên Draft. Tạo Draft từ version này để chạy Test Case."
+        readOnlyNote="Test Case chạy trên version này ở tab Simulation. Muốn sửa Rule, tạo Draft từ version này."
       />
     );
 
@@ -838,6 +967,7 @@ function VersionView({ decisionId, version, tab }: { decisionId: string; version
       primary={primary}
       inspector={inspector}
       inspectorLabel={INSPECTOR_LABEL[tab]}
+      inspectorSummary={tab === 'simulation' ? simSummary(sim) : undefined}
       drawerOpen={drawerOpen}
       onDrawerOpenChange={setDrawerOpen}
       commit={

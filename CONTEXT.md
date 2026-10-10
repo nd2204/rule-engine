@@ -97,6 +97,10 @@ _Avoid_: Active rule, production rule
 An evaluation of a Draft against sample Facts or the Decision's Test Cases, yielding Decision Results and Evaluation Traces, that leaves every Published version unchanged. It also reports which Facts produce a different Decision Result under the Draft than under the Latest Pointer.
 _Avoid_: Dry-run, sandbox, shadow mode
 
+### Fact Batch
+A set of sample Facts the Rule Author supplies to a Simulation (pasted or imported, often copied from real calls), used to measure how many Decision Results a Draft would change. It carries no expectations and lives only in the open session; a Fact from it can be saved as a Test Case.
+_Avoid_: Dataset, sample set, replay log
+
 ### Test Case
 A pair of sample Facts and the Decision Result the Rule Author expects for them, owned by a Decision and used by Simulation.
 _Avoid_: Fixture, example, scenario
