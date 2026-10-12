@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 /** Tabs of the Decision Workspace, in their fixed order (DESIGN.md, Layout). */
-export const TABS = ['rules', 'simulation', 'versions', 'schema'] as const;
+export const TABS = ['rules', 'flow', 'simulation', 'versions', 'schema'] as const;
 export type Tab = (typeof TABS)[number];
 
 export type Route =

@@ -18,6 +18,9 @@ import { VersionDiffInspector, VersionsTab } from './VersionsTab';
 import { SimulationTab } from '../simulation/SimulationTab';
 import { TraceInspector } from '../simulation/TraceInspector';
 import { useSimulation, type Simulation } from '../simulation/useSimulation';
+import { FlowInspector } from '../flow/FlowInspector';
+import { FlowTab } from '../flow/FlowTab';
+import { useFlow } from '../flow/useFlow';
 
 type ScreenRoute = Extract<Route, { name: 'draft' | 'version' }>;
 
@@ -73,6 +76,7 @@ const timeFormat = new Intl.DateTimeFormat('vi-VN', { dateStyle: 'short', timeSt
 
 const INSPECTOR_LABEL: Record<Tab, string> = {
   rules: 'Test Case',
+  flow: 'Luồng evaluation',
   simulation: 'Evaluation Trace',
   versions: 'So với Latest',
   schema: 'Fact mẫu',
@@ -180,12 +184,15 @@ function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: 
     ruleSet: ruleSet ?? undefined,
     testCases,
     defaultBaseline: decision?.latest ?? null,
-    active: tab === 'simulation',
+    active: tab === 'simulation' || tab === 'flow',
   });
+  const flow = useFlow(sim, ruleSet, testCases);
   // Below 1200px the trace is a drawer: picking a Fact opens it.
   const stacked = useNarrow('(max-width: 1199px)');
   useEffect(() => {
-    if (sim.selectedKey && stacked) setDrawerOpen(true);
+    if (sim.selectedKey && stacked && tab === 'simulation') setDrawerOpen(true);
+    // Only a pick in the Simulation tab opens the trace; the Sơ đồ tab shows it on the canvas.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sim.selectedKey, stacked]);
 
   const dirty = useRef(false);
@@ -567,6 +574,8 @@ function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: 
       <VersionsTab decision={decision} scope={{ kind: 'draft', id: draft.id }} />
     ) : tab === 'schema' ? (
       <SchemaTab ruleSet={ruleSet} />
+    ) : tab === 'flow' ? (
+      <FlowTab flow={flow} sim={sim} testCases={testCases} />
     ) : tab === 'simulation' ? (
       <SimulationTab
         sim={sim}
@@ -638,6 +647,8 @@ function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: 
       <VersionDiffInspector label={draft.id} ruleSet={ruleSet} latest={latest.ruleSet} latestNo={latestNo} isLatest={false} />
     ) : tab === 'schema' ? (
       <SchemaInspector testCases={testCases} />
+    ) : tab === 'flow' ? (
+      <FlowInspector flow={flow} subjectLabel={draft.id} baseLabel={sim.run?.baselineVersion ? `v${sim.run.baselineVersion}` : null} />
     ) : tab === 'simulation' ? (
       <TraceInspector
         result={sim.run?.results.find((r) => r.key === sim.selectedKey) ?? null}
@@ -773,11 +784,14 @@ function VersionView({ decisionId, version, tab }: { decisionId: string; version
     scope: { kind: 'version', version },
     testCases,
     defaultBaseline: !decision ? null : decision.latest !== version ? decision.latest : version > 1 ? version - 1 : null,
-    active: tab === 'simulation',
+    active: tab === 'simulation' || tab === 'flow',
   });
+  const flow = useFlow(sim, dv?.ruleSet ?? null, testCases);
   const stacked = useNarrow('(max-width: 1199px)');
   useEffect(() => {
-    if (sim.selectedKey && stacked) setDrawerOpen(true);
+    if (sim.selectedKey && stacked && tab === 'simulation') setDrawerOpen(true);
+    // Only a pick in the Simulation tab opens the trace; the Sơ đồ tab shows it on the canvas.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sim.selectedKey, stacked]);
 
   const load = useCallback(async () => {
@@ -887,6 +901,8 @@ function VersionView({ decisionId, version, tab }: { decisionId: string; version
       <VersionsTab decision={decision} scope={{ kind: 'version', version }} />
     ) : tab === 'schema' ? (
       <SchemaTab ruleSet={dv.ruleSet} />
+    ) : tab === 'flow' ? (
+      <FlowTab flow={flow} sim={sim} testCases={testCases} />
     ) : tab === 'simulation' ? (
       <SimulationTab
         sim={sim}
@@ -926,6 +942,8 @@ function VersionView({ decisionId, version, tab }: { decisionId: string; version
       <VersionDiffInspector label={`v${version}`} ruleSet={dv.ruleSet} latest={latestRuleSet} latestNo={decision.latest} isLatest={isLatest} />
     ) : tab === 'schema' ? (
       <SchemaInspector testCases={testCases} />
+    ) : tab === 'flow' ? (
+      <FlowInspector flow={flow} subjectLabel={`v${version}`} baseLabel={sim.run?.baselineVersion ? `v${sim.run.baselineVersion}` : null} />
     ) : tab === 'simulation' ? (
       <TraceInspector
         result={sim.run?.results.find((r) => r.key === sim.selectedKey) ?? null}

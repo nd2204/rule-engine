@@ -4,6 +4,7 @@ import { TABS, type Tab } from '../router';
 
 const TAB_LABEL: Record<Tab, string> = {
   rules: 'Rules',
+  flow: 'Sơ đồ',
   simulation: 'Simulation',
   versions: 'Version',
   schema: 'Schema',
