@@ -4,6 +4,7 @@
 // once the real HTTP API is up, it is deleted with the rest of src/mocks.
 
 import { cellAst, describeAst } from '../domain/cell';
+import { COMPOUND, ruleTree } from '../domain/compound';
 import type {
   AstNode,
   BreakingChange,
@@ -108,6 +109,7 @@ export function evaluate(ruleSet: RuleSet, facts: Record<string, unknown>): Eval
 
   const warnings = new Set<string>();
   const cellOutcomes: EvalResult['cellOutcomes'] = {};
+  const conditionOutcomes: Record<string, boolean> = {};
   const matched = ruleSet.rules.filter((rule) => {
     const outcomes: Record<string, boolean | null> = {};
     let all = true;
@@ -122,10 +124,15 @@ export function evaluate(ruleSet: RuleSet, facts: Record<string, unknown>): Eval
       if (!ok) all = false;
     }
     cellOutcomes[rule.id] = outcomes;
+    if (rule.condition) {
+      const ok = evalNode(rule.condition, facts, warnings);
+      conditionOutcomes[rule.id] = ok;
+      if (!ok) all = false;
+    }
     return all;
   });
 
-  const base = { matchedRuleIds: matched.map((r) => r.id), cellOutcomes, warnings: [...warnings] };
+  const base = { matchedRuleIds: matched.map((r) => r.id), cellOutcomes, conditionOutcomes, warnings: [...warnings] };
   let winners = matched;
   switch (ruleSet.hitPolicy) {
     case 'FIRST':
@@ -177,7 +184,7 @@ function sameResult(a: EvalResult, b: EvalResult): boolean {
 
 export function simulate(draft: RuleSet, latest: RuleSet, testCases: TestCase[]): TestCaseResult[] {
   return testCases.map((tc) => {
-    const actual = evaluate(draft, tc.facts);
+    const actual = traced(draft, tc.facts, 'draft');
     const status = matchesExpected(actual, tc.expected) ? 'pass' : actual.error && !('error' in tc.expected) ? 'error' : 'fail';
     return {
       testCaseId: tc.id,
@@ -235,8 +242,10 @@ function traceNode(node: AstNode, scope: unknown): TraceNode {
         children,
       };
     }
-    default:
-      return { text: describeAst(node), ok };
+    default: {
+      const { found, value } = lookup(scope, node.path);
+      return { text: describeAst(node), ok, ...(found ? { value } : { missing: true }) };
+    }
   }
 }
 
@@ -256,6 +265,7 @@ export function traceOf(ruleSet: RuleSet, facts: Record<string, unknown>, result
       ? []
       : ruleSet.rules.map((rule) => {
           const { disposition, by } = dispositionOf(ruleSet, result, rule.id);
+          const whole = ruleTree(rule, ruleSet.inputs);
           return {
             ruleId: rule.id,
             matched: result.matchedRuleIds.includes(rule.id),
@@ -268,7 +278,12 @@ export function traceOf(ruleSet: RuleSet, facts: Record<string, unknown>, result
               const ok = result.cellOutcomes[rule.id]?.[field.name] ?? false;
               const tree = rule.when[field.name]?.kind === 'ast' ? traceNode(ast, facts) : undefined;
               return { field: field.name, ok, ...(found ? { value } : {}), ...(tree ? { tree } : {}) };
-            }),
+            }).concat(
+              rule.condition
+                ? [{ field: COMPOUND, ok: result.conditionOutcomes?.[rule.id] ?? false, tree: traceNode(rule.condition, facts) }]
+                : [],
+            ),
+            ...(whole ? { whole: traceNode(whole, facts) } : {}),
           };
         });
   return {

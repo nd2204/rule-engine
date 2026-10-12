@@ -48,7 +48,7 @@ Success means a policy change goes from edit to Published safely, with fewer ste
 - A missing Fact field resolves to `false` with a warning in the trace. No match is an empty result, not an error. `UNIQUE` with several matches is an evaluation error.
 - No authentication or authorization (out of scope; provided by the surrounding ecosystem).
 - No server-side decision log; the console cannot browse past production evaluations, only replay what is supplied.
-- Drag-and-drop visual rule building is named in the BRD as the Phase 2 aspiration. Its exact scope versus a table editor is **undecided**.
+- Drag-and-drop visual rule building is named in the BRD as the Phase 2 aspiration. Decided 2026-10-12: a per-Rule node graph in the style of n8n (Điều kiện, VÀ, HOẶC, KHÔNG, Mỗi phần tử nodes wired into the Rule), editing the same Rule as the table. Decided 2026-10-12 (later): the graph is the Rules tab's second view (Bảng | Node), one Rule on the canvas at a time with the Rule Set listed beside it, for seeing and editing Rules visually; the canvas bleeds full-width and the inspector is a drawer opened from a node. A relay-circuit design was tried first and dropped as hard to read. Conditions spanning several fields live in the Rule's Compound Condition.
 - Phase 2 is "if time allows" in the spec: the console is secondary to the core engine's correctness.
 - Terminology is fixed by `CONTEXT.md` and must be used verbatim in the UI, including its "Avoid" lists (e.g. "Simulation" not "dry-run", "Rollback" not "revert", "Test Case" not "scenario", "Latest Pointer" not "current version").
 

@@ -9,7 +9,7 @@ import {
 } from '@dnd-kit/core';
 import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Check, ChevronLeft, ChevronRight, Copy, GripVertical, Plus, RotateCcw, Trash2, X } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, Copy, GripVertical, Plus, RotateCcw, Trash2, Workflow, X } from 'lucide-react';
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from 'react';
 import {
   OP_LABEL,
@@ -45,6 +45,8 @@ interface Props {
   onRestore?: (rule: Rule) => void;
   /** Version the comparison is against, for the restore label. */
   latestNo?: number;
+  /** Where a Rule's condition opens as a node graph. */
+  circuitHref?: (ruleId: string) => string;
 }
 
 interface Edges {
@@ -65,7 +67,7 @@ const POLICY_ORDER_NOTE: Record<RuleSet['hitPolicy'], string> = {
 };
 
 export function RuleTable(props: Props) {
-  const { ruleSet, editable, onChange, results, selected, diff, newFields, expandedId, onExpand, onRestore, latestNo } = props;
+  const { ruleSet, editable, onChange, results, selected, diff, newFields, expandedId, onExpand, onRestore, latestNo, circuitHref } = props;
   const reorderable = editable && !diff && (ruleSet.hitPolicy === 'FIRST' || ruleSet.hitPolicy === 'COLLECT');
   const showWeight = ruleSet.hitPolicy === 'PRIORITY';
   const sensors = useSensors(
@@ -199,16 +201,7 @@ export function RuleTable(props: Props) {
   }
 
   function addRule() {
-    const used = new Set(ruleSet.rules.map((r) => r.id));
-    let n = ruleSet.rules.length + 1;
-    while (used.has(`R${n}`)) n++;
-    const rule: Rule = {
-      id: `R${n}`,
-      description: '',
-      when: Object.fromEntries(ruleSet.inputs.map((f) => [f.name, { kind: 'expr', text: '-' } as Cell])),
-      then: Object.fromEntries(ruleSet.outputs.map((f) => [f.name, null])),
-      ...(showWeight ? { weight: 0 } : {}),
-    };
+    const rule = blankRule(ruleSet);
     onChange({ ...ruleSet, rules: [...ruleSet.rules, rule] }, `Thêm ${rule.id}`);
     onExpand(rule.id);
   }
@@ -339,6 +332,7 @@ export function RuleTable(props: Props) {
               hidden={hiddenSet}
               onRestore={onRestore && row.kind === 'removed' ? () => onRestore(row.rule) : undefined}
               latestNo={latestNo}
+              circuitHref={row.kind === 'removed' ? undefined : circuitHref?.(row.rule.id)}
             />
           );
         })}
@@ -421,6 +415,7 @@ export function RuleTable(props: Props) {
           editable={editable && !diff}
           onUpdate={(patch, summary) => updateRule(expandedRule.id, patch, summary)}
           onStep={(d) => onExpand(ruleSet.rules[expandedIndex + d]?.id ?? expandedRule.id)}
+          circuitHref={circuitHref?.(expandedRule.id)}
           onClose={() => {
             document.querySelector<HTMLElement>(`[aria-controls="${PANEL_ID}"]`)?.focus();
             onExpand(null);
@@ -492,6 +487,7 @@ interface RowProps {
   hidden: Set<string>;
   onRestore?: () => void;
   latestNo?: number;
+  circuitHref?: string;
 }
 
 function RuleRow(p: RowProps) {
@@ -547,30 +543,39 @@ function RuleRow(p: RowProps) {
       </td>
       <td className="rule__ident">
         <span className="rule__line">
-          <button
-            type="button"
-            className="rule__toggle"
-            aria-expanded={expanded}
-            aria-controls={expanded ? PANEL_ID : undefined}
-            onClick={p.onToggle}
-          >
-            <ChevronRight size={14} aria-hidden="true" className="rule__chevron" />
+          <button type="button" className="rule__toggle" aria-expanded={expanded} aria-controls={expanded ? PANEL_ID : undefined} onClick={p.onToggle} title="Mở trong bảng bên">
             <span className="rule__id">{rule.id}</span>
           </button>
-          {editable && (
-            <span className="rule__actions">
-              <button type="button" className="icon-btn" aria-label={`Nhân bản ${rule.id}`} title="Nhân bản" onClick={p.onDuplicate}>
-                <Copy size={14} aria-hidden="true" />
-              </button>
-              <button type="button" className="icon-btn icon-btn--danger" aria-label={`Xoá ${rule.id}`} title="Xoá" onClick={p.onRemove}>
-                <Trash2 size={14} aria-hidden="true" />
-              </button>
-            </span>
-          )}
+          <span className="rule__actions">
+            {p.circuitHref && (
+              <a className="icon-btn rule__circuit" href={p.circuitHref} aria-label={`Mở trình sửa node của ${rule.id}`} title="Mở trình sửa node">
+                <Workflow size={14} aria-hidden="true" />
+              </a>
+            )}
+            {editable && (
+              <>
+                {p.circuitHref && <span className="rule__sep" aria-hidden="true" />}
+                <button type="button" className="icon-btn" aria-label={`Nhân bản ${rule.id}`} title="Nhân bản" onClick={p.onDuplicate}>
+                  <Copy size={14} aria-hidden="true" />
+                </button>
+                <button type="button" className="icon-btn icon-btn--danger" aria-label={`Xoá ${rule.id}`} title="Xoá" onClick={p.onRemove}>
+                  <Trash2 size={14} aria-hidden="true" />
+                </button>
+              </>
+            )}
+          </span>
         </span>
         <span className="rule__desc" title={rule.description || undefined}>
           {rule.description || <em>Chưa có mô tả</em>}
         </span>
+        {rule.condition && (
+          <CompoundLine
+            rule={rule}
+            href={p.circuitHref}
+            outcome={selected?.actual.conditionOutcomes?.[rule.id]}
+            changed={row.kind === 'changed' && row.changed.has('condition')}
+          />
+        )}
         {(() => {
           const off = ruleSet.inputs
             .filter((f) => p.hidden.has(f.name))
@@ -646,6 +651,29 @@ function RuleRow(p: RowProps) {
         </span>
       </td>
     </tr>
+  );
+}
+
+/** The Compound Condition under a Rule's description: the part of its condition no column holds. */
+function CompoundLine({ rule, href, outcome, changed }: { rule: Rule; href?: string; outcome: boolean | undefined; changed: boolean }) {
+  const text = describeAst(rule.condition!);
+  const body = (
+    <>
+      <span className="rule__compound-tag">Compound</span>
+      {outcome === false && <X size={10} strokeWidth={3} aria-label="sai" />}
+      {outcome === true && <Check size={10} strokeWidth={3} aria-label="đúng" />}
+      <span className="rule__compound-text">{text}</span>
+    </>
+  );
+  const cls = `rule__compound${outcome === false ? ' is-miss' : outcome === true ? ' is-hit' : ''}${changed ? ' is-changed' : ''}`;
+  return href ? (
+    <a className={cls} href={href} title={`Compound Condition: ${text}. Mở trình sửa node để sửa.`}>
+      {body}
+    </a>
+  ) : (
+    <span className={cls} title={`Compound Condition: ${text}`}>
+      {body}
+    </span>
   );
 }
 
@@ -853,7 +881,7 @@ function ConditionCell(props: {
   );
 }
 
-function parseValue(raw: string, numeric: boolean): Scalar | null | { error: string } {
+export function parseValue(raw: string, numeric: boolean): Scalar | null | { error: string } {
   const s = raw.trim();
   if (s === '' || s === '—' || s === '-') return null;
   if (!numeric) return s;
@@ -1076,7 +1104,7 @@ function AstEditor({ field, cell, editable, onCommit }: { field: InputField; cel
             <button type="button" className="btn btn--secondary" onClick={apply} disabled={text === initial}>
               Áp dụng JSON
             </button>
-            <span className="detail__muted">Kéo thả cây điều kiện sẽ có ở vòng sau.</span>
+            <span className="detail__muted">Hoặc soạn bằng kéo thả trong trình sửa node.</span>
           </div>
         </>
       )}
@@ -1096,6 +1124,7 @@ function RulePanel(props: {
   onUpdate: (patch: (r: Rule) => Rule, summary: string) => void;
   onStep: (delta: -1 | 1) => void;
   onClose: () => void;
+  circuitHref?: string;
 }) {
   const { rule, index, count, ruleSet, editable } = props;
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -1110,7 +1139,8 @@ function RulePanel(props: {
       if (!t) return null;
       return rule.when[f.name]?.kind === 'ast' ? t : `${f.name} ${/^[=≠<>≥≤[(]|^in |^not in /.test(t) ? t : `= ${t}`}`;
     })
-    .filter(Boolean);
+    .filter(Boolean)
+    .concat(rule.condition ? [describeAst(rule.condition)] : []);
 
   return (
     <section
@@ -1155,6 +1185,11 @@ function RulePanel(props: {
             {' → '}
             {ruleSet.outputs.map((f) => `${f.name} = ${formatScalar(rule.then[f.name] ?? null)}`).join(', ')}
           </p>
+          {props.circuitHref && (
+            <a className="btn btn--secondary rule-panel__circuit" href={props.circuitHref}>
+              <Workflow size={15} aria-hidden="true" /> Mở trình sửa node
+            </a>
+          )}
           {editable ? (
             <>
               <label className="detail__label" htmlFor={`desc-${rule.id}`}>
@@ -1188,4 +1223,18 @@ function RulePanel(props: {
       </div>
     </section>
   );
+}
+
+/** A new Rule at the end of the Rule Set: every condition "-" (any value), every output empty. */
+export function blankRule(ruleSet: RuleSet): Rule {
+  const used = new Set(ruleSet.rules.map((r) => r.id));
+  let n = ruleSet.rules.length + 1;
+  while (used.has(`R${n}`)) n++;
+  return {
+    id: `R${n}`,
+    description: '',
+    when: Object.fromEntries(ruleSet.inputs.map((f) => [f.name, { kind: 'expr', text: '-' } as Cell])),
+    then: Object.fromEntries(ruleSet.outputs.map((f) => [f.name, null])),
+    ...(ruleSet.hitPolicy === 'PRIORITY' ? { weight: 0 } : {}),
+  };
 }

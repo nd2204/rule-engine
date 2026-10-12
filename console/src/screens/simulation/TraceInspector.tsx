@@ -1,4 +1,5 @@
 import { Check, Copy, Minus, Save, ScanSearch, X } from 'lucide-react';
+import { conditionFields, whenOf } from '../../domain/compound';
 import { useMemo, useState } from 'react';
 import { Lamp } from '../../components/Lamp';
 import { conditionReading, formatScalar } from '../../domain/cell';
@@ -325,7 +326,7 @@ function TraceRuleView({ tr, index, ruleSet, note }: { tr: TraceRule; index: num
       {shown.length > 0 && (
         <ul className="trace-conds">
           {shown.map((c) => (
-            <ConditionView key={c.field} c={c} ruleSet={ruleSet} cell={rule?.when[c.field]} />
+            <ConditionView key={c.field} c={c} ruleSet={ruleSet} cell={rule ? whenOf(rule, c.field) : undefined} />
           ))}
         </ul>
       )}
@@ -336,7 +337,7 @@ function TraceRuleView({ tr, index, ruleSet, note }: { tr: TraceRule; index: num
 }
 
 function ConditionView({ c, ruleSet, cell }: { c: TraceCondition; ruleSet: RuleSet; cell: Parameters<typeof conditionReading>[0] }) {
-  const field = ruleSet.inputs.find((f) => f.name === c.field);
+  const field = conditionFields(ruleSet).find((f) => f.name === c.field);
   const reading = field ? conditionReading(cell, field) : c.field;
   const missing = !('value' in c);
   return (

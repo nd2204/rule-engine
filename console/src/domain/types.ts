@@ -43,6 +43,8 @@ export interface Rule {
   /** Only meaningful under PRIORITY. */
   weight?: number;
   when: Record<string, Cell>;
+  /** Compound Condition: the part of the condition no single cell can hold (several fields, or, not), ANDed with the cells. */
+  condition?: AstNode;
   then: OutputRow;
 }
 
@@ -104,6 +106,8 @@ export interface EvalResult {
   winnerRuleIds: string[];
   /** Per Rule, per input field: true / false, or null for "any". */
   cellOutcomes: Record<string, Record<string, boolean | null>>;
+  /** Per Rule with a Compound Condition: whether it held. */
+  conditionOutcomes?: Record<string, boolean>;
   warnings: string[];
   error?: EvalError;
 }
@@ -113,7 +117,7 @@ export type TestStatus = 'pass' | 'fail' | 'error';
 export interface TestCaseResult {
   testCaseId: string;
   status: TestStatus;
-  actual: EvalResult;
+  actual: EvalResult & { trace?: EvaluationTrace };
   /** Simulation's diff report: the Latest version answers differently. */
   differsFromLatest: boolean;
 }
@@ -138,6 +142,9 @@ export interface TraceNode {
   /** null: a summary line with no verdict of its own (items left out). */
   ok: boolean | null;
   children?: TraceNode[];
+  /** Comparisons: the value the engine read; absent when the Fact lacks the field. */
+  value?: unknown;
+  missing?: boolean;
 }
 
 export interface TraceCondition {
@@ -160,6 +167,8 @@ export interface TraceRule {
   /** The Rule that took precedence over this one (shadowed, outweighed). */
   by?: string;
   conditions: TraceCondition[];
+  /** The Rule's whole condition (cells, then Compound Condition) evaluated node by node: what the node graph lights. */
+  whole?: TraceNode;
 }
 
 export interface EvaluationTrace {

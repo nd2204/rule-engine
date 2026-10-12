@@ -583,8 +583,8 @@ function ImpactRowView(props: {
           {row.kind === 'added' && <span className="tag tag--clear">mới ở {props.subjectLabel}</span>}
           {row.kind === 'removed' && <span className="tag tag--stop">chỉ có ở {props.baseLabel}</span>}
           {row.kind === 'changed' && (
-            <span className="tag tag--caution" title={[...row.changed].join(', ')}>
-              sửa {[...row.changed].slice(0, 2).join(', ')}
+            <span className="tag tag--caution" title={changedNames(row.changed).join(', ')}>
+              sửa {changedNames(row.changed).slice(0, 2).join(', ')}
               {row.changed.size > 2 ? ` +${row.changed.size - 2}` : ''}
             </span>
           )}
@@ -794,4 +794,9 @@ function FactLedger(props: {
       )}
     </section>
   );
+}
+
+/** Changed parts of a Rule as the tag names them: the Compound Condition by its domain name. */
+function changedNames(changed: Set<string>): string[] {
+  return [...changed].map((k) => (k === 'condition' ? 'Compound' : k));
 }

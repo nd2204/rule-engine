@@ -105,7 +105,23 @@ const posDraft: RuleSet = {
   rules: [
     clone(posV6.rules[0]),
     rule('BIGCART', 'Giỏ lớn được trừ thẳng 50.000 ₫', { cartTotal: '>= 1000000' }, { discountCode: 'BIGCART', percent: null, amount: 50000 }),
-    clone(posV6.rules[2]),
+    // The Draft narrows BEV2 with a Compound Condition: GOLD or a 300.000 ₫ cart, and never an online order.
+    {
+      ...clone(posV6.rules[2]),
+      condition: {
+        op: 'and',
+        args: [
+          {
+            op: 'or',
+            args: [
+              { op: '==', path: 'customerTier', value: 'GOLD' },
+              { op: '>=', path: 'cartTotal', value: 300000 },
+            ],
+          },
+          { op: 'not', arg: { op: '==', path: 'channel', value: 'ONLINE' } },
+        ],
+      },
+    },
     rule('ONL30', 'Đơn online từ 300.000 ₫ trừ 30.000 ₫', { channel: 'ONLINE', cartTotal: '>= 300000' }, { discountCode: 'ONL30', percent: null, amount: 30000 }),
   ],
 };

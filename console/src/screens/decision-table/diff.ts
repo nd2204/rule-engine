@@ -10,11 +10,12 @@ function cellKey(cell: Cell | undefined): string {
   return JSON.stringify(cell.ast);
 }
 
-/** Field-level changes of a Rule against its Latest counterpart; keys are field names or 'description' / 'weight'. */
+/** Field-level changes of a Rule against its Latest counterpart; keys are field names or 'condition' / 'description' / 'weight'. */
 function changedFields(rule: Rule, prev: Rule, ruleSet: RuleSet): Set<string> {
   const changed = new Set<string>();
   for (const f of ruleSet.inputs) if (cellKey(rule.when[f.name]) !== cellKey(prev.when[f.name])) changed.add(f.name);
   for (const f of ruleSet.outputs) if ((rule.then[f.name] ?? null) !== (prev.then[f.name] ?? null)) changed.add(f.name);
+  if (JSON.stringify(rule.condition ?? null) !== JSON.stringify(prev.condition ?? null)) changed.add('condition');
   if (rule.description !== prev.description) changed.add('description');
   if ((rule.weight ?? 0) !== (prev.weight ?? 0)) changed.add('weight');
   return changed;

@@ -9,7 +9,8 @@ import { href, navigate, type Route, type Tab } from '../../router';
 import { useDecisions, useNarrow, useToasts } from '../../state';
 import { InterlockRow, type Interlock, type PublishSummary } from './InterlockRow';
 import { RuleList } from './RuleList';
-import { RuleTable } from './RuleTable';
+import { RuleTable, blankRule } from './RuleTable';
+import { RulesViewSwitch } from './RulesViewSwitch';
 import { SchemaInspector, SchemaTab } from './SchemaTab';
 import { TestCaseStrip } from './TestCaseStrip';
 import { TitleBlock, type TitleCell } from './TitleBlock';
@@ -21,6 +22,9 @@ import { useSimulation, type Simulation } from '../simulation/useSimulation';
 import { FlowInspector } from '../flow/FlowInspector';
 import { FlowTab } from '../flow/FlowTab';
 import { useFlow } from '../flow/useFlow';
+import { RuleGraphInspector } from '../rule-graph/RuleGraphInspector';
+import { RuleGraphView, ruleTrace } from '../rule-graph/RuleGraphView';
+import { useRuleGraph, type GraphUpdate } from '../rule-graph/useRuleGraph';
 
 type ScreenRoute = Extract<Route, { name: 'draft' | 'version' }>;
 
@@ -84,9 +88,23 @@ const INSPECTOR_LABEL: Record<Tab, string> = {
 
 export function DecisionTableScreen({ route }: { route: ScreenRoute }) {
   return route.name === 'draft' ? (
-    <DraftView key={`${route.decisionId}/${route.draftId}`} decisionId={route.decisionId} draftId={route.draftId} tab={route.tab} />
+    <DraftView key={`${route.decisionId}/${route.draftId}`} decisionId={route.decisionId} draftId={route.draftId} tab={route.tab} ruleId={route.ruleId} />
   ) : (
-    <VersionView key={`${route.decisionId}/${route.version}`} decisionId={route.decisionId} version={route.version} tab={route.tab} />
+    <VersionView key={`${route.decisionId}/${route.version}`} decisionId={route.decisionId} version={route.version} tab={route.tab} ruleId={route.ruleId} />
+  );
+}
+
+/** A node graph link to a Rule the scope no longer has (deleted, or never there). */
+function MissingRule({ ruleId, backHref }: { ruleId: string; backHref: string }) {
+  return (
+    <div className="screen-state" role="alert">
+      <TriangleAlert size={22} aria-hidden="true" />
+      <h1 className="screen-state__title">Không có Rule {ruleId} ở đây</h1>
+      <p>Rule này đã bị xoá hoặc chưa từng có trong phạm vi đang mở.</p>
+      <a className="btn btn--primary" href={backHref}>
+        Về Rules Table
+      </a>
+    </div>
   );
 }
 
@@ -146,7 +164,7 @@ function newFieldsOf(ruleSet: RuleSet, latest: RuleSet | undefined) {
 
 type SaveState = { kind: 'saved'; at: string } | { kind: 'saving' } | { kind: 'error'; message: string };
 
-function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: string; tab: Tab }) {
+function DraftView({ decisionId, draftId, tab, ruleId }: { decisionId: string; draftId: string; tab: Tab; ruleId?: string }) {
   const narrow = useNarrow();
   const phone = useNarrow('(max-width: 599px)');
   const { refresh } = useDecisions();
@@ -172,6 +190,7 @@ function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: 
   const [confirmBreaking, setConfirmBreaking] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  useEffect(() => setDrawerOpen(false), [ruleId]);
   // Test Cases deleted in this session: the release bay names them, since a deletion can turn a lock green.
   const [deletedTcs, setDeletedTcs] = useState<string[]>([]);
   // A Simulation Fact lit in the Rules Table, the way a selected Test Case lights it. An edit puts it out.
@@ -287,7 +306,7 @@ function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: 
       if (summary.startsWith('Xoá') && before) {
         push({
           tone: 'info',
-          message: `Đã ${summary.toLowerCase()}.`,
+          message: `Đã ${summary.charAt(0).toLowerCase()}${summary.slice(1)}.`,
           action: {
             label: 'Hoàn tác',
             run: () => {
@@ -300,6 +319,35 @@ function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: 
     },
     [ruleSet, push],
   );
+
+  // The node graph of one Rule, opened from the Rules tab: it edits the same Draft through the same onChange.
+  const openRule = (ruleId && ruleSet?.rules.find((r) => r.id === ruleId)) || null;
+  const graphUpdate = useCallback<GraphUpdate>(
+    (patch, summary) => {
+      if (!ruleSet || !ruleId) return;
+      onChange({ ...ruleSet, rules: ruleSet.rules.map((r) => (r.id === ruleId ? patch(r) : r)) }, summary);
+    },
+    [ruleSet, ruleId, onChange],
+  );
+  const graph = useRuleGraph(
+    openRule,
+    ruleSet,
+    narrow ? null : graphUpdate,
+    openRule ? ruleTrace(report?.results ?? null, selectedId, openRule.id) : null,
+    `${decisionId}/${draftId}`,
+  );
+  // The canvas takes the whole body and the form lives in a drawer: asking to edit (Enter, double click, a new node) opens it.
+  useEffect(() => {
+    if (graph.editRequest) setDrawerOpen(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [graph.editRequest]);
+  // Picking a node opens its form; clicking the empty canvas puts it away again.
+  const hadNode = useRef(false);
+  useEffect(() => {
+    if (graph.selected) setDrawerOpen(true);
+    else if (hadNode.current) setDrawerOpen(false);
+    hadNode.current = !!graph.selected;
+  }, [graph.selected]);
 
   const diff = useMemo(() => (compare && ruleSet && latest ? diffRuleSets(ruleSet, latest.ruleSet) : null), [compare, ruleSet, latest]);
   const newFields = useMemo(() => (ruleSet ? newFieldsOf(ruleSet, latest?.ruleSet) : new Set<string>()), [ruleSet, latest]);
@@ -576,6 +624,37 @@ function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: 
       <SchemaTab ruleSet={ruleSet} />
     ) : tab === 'flow' ? (
       <FlowTab flow={flow} sim={sim} testCases={testCases} />
+    ) : ruleId ? (
+      openRule ? (
+        <RuleGraphView
+          graph={graph}
+          rule={openRule}
+          index={ruleSet.rules.indexOf(openRule)}
+          ruleSet={ruleSet}
+          testCases={testCases}
+          results={results}
+          running={running}
+          selectedTc={selectedId}
+          onSelectTc={(id) => {
+            setLitFact(null);
+            setSelectedId(id);
+          }}
+          ruleHref={(id) => href.draftRule(decisionId, draftId, id)}
+          onAddRule={
+            narrow
+              ? undefined
+              : () => {
+                  const rule = blankRule(ruleSet);
+                  onChange({ ...ruleSet, rules: [...ruleSet.rules, rule] }, `Thêm ${rule.id}`);
+                  navigate(href.draftRule(decisionId, draftId, rule.id));
+                }
+          }
+          inspectorOpen={drawerOpen}
+          onToggleInspector={() => setDrawerOpen((o) => !o)}
+        />
+      ) : (
+        <MissingRule ruleId={ruleId} backHref={href.draft(decisionId, draftId)} />
+      )
     ) : tab === 'simulation' ? (
       <SimulationTab
         sim={sim}
@@ -623,7 +702,7 @@ function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: 
           </p>
         )}
         {phone ? (
-          <RuleList ruleSet={ruleSet} />
+          <RuleList ruleSet={ruleSet} circuitHref={(id) => href.draftRule(decisionId, draftId, id)} />
         ) : (
           <RuleTable
             ruleSet={ruleSet}
@@ -637,6 +716,7 @@ function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: 
             onExpand={setExpandedId}
             onRestore={narrow ? undefined : (rule) => takeFromLatest([rule.id])}
             latestNo={latestNo}
+            circuitHref={(id) => href.draftRule(decisionId, draftId, id)}
           />
         )}
       </>
@@ -649,6 +729,8 @@ function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: 
       <SchemaInspector testCases={testCases} />
     ) : tab === 'flow' ? (
       <FlowInspector flow={flow} subjectLabel={draft.id} baseLabel={sim.run?.baselineVersion ? `v${sim.run.baselineVersion}` : null} />
+    ) : openRule ? (
+      <RuleGraphInspector graph={graph} rule={openRule} ruleSet={ruleSet} onUpdateRule={narrow ? undefined : graphUpdate} />
     ) : tab === 'simulation' ? (
       <TraceInspector
         result={sim.run?.results.find((r) => r.key === sim.selectedKey) ?? null}
@@ -729,13 +811,22 @@ function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: 
           cells={cells}
           actions={
             tab === 'rules' ? (
-              <div className="mode" role="group" aria-label="Chế độ xem">
-                <button type="button" className="mode__btn" aria-pressed={!compare} onClick={() => setCompare(false)}>
-                  <PencilLine size={15} aria-hidden="true" /> {narrow ? 'Xem' : 'Sửa'}
-                </button>
-                <button type="button" className="mode__btn" aria-pressed={compare} onClick={() => setCompare(true)}>
-                  <GitCompareArrows size={15} aria-hidden="true" /> So sánh với Latest v{latestNo}
-                </button>
+              <div className="titleblock__buttons">
+                {!ruleId && (
+                  <div className="mode" role="group" aria-label="Chế độ xem">
+                    <button type="button" className="mode__btn" aria-pressed={!compare} onClick={() => setCompare(false)}>
+                      <PencilLine size={15} aria-hidden="true" /> {narrow ? 'Xem' : 'Sửa'}
+                    </button>
+                    <button type="button" className="mode__btn" aria-pressed={compare} onClick={() => setCompare(true)}>
+                      <GitCompareArrows size={15} aria-hidden="true" /> So sánh với Latest v{latestNo}
+                    </button>
+                  </div>
+                )}
+                <RulesViewSwitch
+                  view={ruleId ? 'node' : 'table'}
+                  tableHref={href.draft(decisionId, draftId)}
+                  nodeHref={ruleSet.rules[0] ? href.draftRule(decisionId, draftId, ruleSet.rules[0].id) : null}
+                />
               </div>
             ) : undefined
           }
@@ -744,8 +835,9 @@ function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: 
       tabs={{ active: tab, href: (t) => href.draft(decisionId, draftId, t) }}
       primary={primary}
       inspector={inspector}
-      inspectorLabel={INSPECTOR_LABEL[tab]}
-      inspectorSummary={summary}
+      className={openRule ? 'screen--canvas' : undefined}
+      inspectorLabel={openRule ? 'Điều kiện của Rule' : INSPECTOR_LABEL[tab]}
+      inspectorSummary={openRule ? undefined : summary}
       drawerOpen={drawerOpen}
       onDrawerOpenChange={setDrawerOpen}
       commit={
@@ -764,7 +856,7 @@ function DraftView({ decisionId, draftId, tab }: { decisionId: string; draftId: 
 
 // ---------------- Published version ----------------
 
-function VersionView({ decisionId, version, tab }: { decisionId: string; version: number; tab: Tab }) {
+function VersionView({ decisionId, version, tab, ruleId }: { decisionId: string; version: number; tab: Tab; ruleId?: string }) {
   const phone = useNarrow('(max-width: 599px)');
   const { refresh } = useDecisions();
   const { push } = useToasts();
@@ -777,6 +869,7 @@ function VersionView({ decisionId, version, tab }: { decisionId: string; version
   const [busy, setBusy] = useState(false);
   const [latestRuleSet, setLatestRuleSet] = useState<RuleSet | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  useEffect(() => setDrawerOpen(false), [ruleId]);
 
   // Simulation of a Published version compares with Latest; Latest itself compares with the version before it.
   const sim = useSimulation({
@@ -784,9 +877,28 @@ function VersionView({ decisionId, version, tab }: { decisionId: string; version
     scope: { kind: 'version', version },
     testCases,
     defaultBaseline: !decision ? null : decision.latest !== version ? decision.latest : version > 1 ? version - 1 : null,
-    active: tab === 'simulation' || tab === 'flow',
+    active: tab === 'simulation' || tab === 'flow' || !!ruleId,
   });
   const flow = useFlow(sim, dv?.ruleSet ?? null, testCases);
+  // A Published version's node graph is read-only; its Test Cases run through the version's Simulation.
+  const openRule = (ruleId && dv?.ruleSet.rules.find((r) => r.id === ruleId)) || null;
+  const graphResults = useMemo<TestCaseResult[] | null>(
+    () =>
+      sim.run
+        ? sim.run.results
+            .filter((r) => r.source === 'test-case')
+            .map((r) => ({ testCaseId: r.key, status: r.status ?? 'pass', actual: r.subject, differsFromLatest: r.changed }))
+        : null,
+    [sim.run],
+  );
+  const graph = useRuleGraph(openRule, dv?.ruleSet ?? null, null, openRule ? ruleTrace(graphResults, selectedId, openRule.id) : null, `${decisionId}/v${version}`);
+  // Picking a node opens its reading; clicking the empty canvas puts it away again.
+  const hadNode = useRef(false);
+  useEffect(() => {
+    if (graph.selected) setDrawerOpen(true);
+    else if (hadNode.current) setDrawerOpen(false);
+    hadNode.current = !!graph.selected;
+  }, [graph.selected]);
   const stacked = useNarrow('(max-width: 1199px)');
   useEffect(() => {
     if (sim.selectedKey && stacked && tab === 'simulation') setDrawerOpen(true);
@@ -903,6 +1015,25 @@ function VersionView({ decisionId, version, tab }: { decisionId: string; version
       <SchemaTab ruleSet={dv.ruleSet} />
     ) : tab === 'flow' ? (
       <FlowTab flow={flow} sim={sim} testCases={testCases} />
+    ) : ruleId ? (
+      openRule ? (
+        <RuleGraphView
+          graph={graph}
+          rule={openRule}
+          index={dv.ruleSet.rules.indexOf(openRule)}
+          ruleSet={dv.ruleSet}
+          testCases={testCases}
+          results={graphResults}
+          running={sim.running}
+          selectedTc={selectedId}
+          onSelectTc={setSelectedId}
+          ruleHref={(id) => href.versionRule(decisionId, version, id)}
+          inspectorOpen={drawerOpen}
+          onToggleInspector={() => setDrawerOpen((o) => !o)}
+        />
+      ) : (
+        <MissingRule ruleId={ruleId} backHref={href.version(decisionId, version)} />
+      )
     ) : tab === 'simulation' ? (
       <SimulationTab
         sim={sim}
@@ -920,7 +1051,7 @@ function VersionView({ decisionId, version, tab }: { decisionId: string; version
           Decision Version đã Published không bao giờ thay đổi. Muốn sửa, tạo một Draft từ version này.
         </p>
         {phone ? (
-          <RuleList ruleSet={dv.ruleSet} />
+          <RuleList ruleSet={dv.ruleSet} circuitHref={(id) => href.versionRule(decisionId, version, id)} />
         ) : (
           <RuleTable
             ruleSet={dv.ruleSet}
@@ -932,6 +1063,7 @@ function VersionView({ decisionId, version, tab }: { decisionId: string; version
             newFields={new Set()}
             expandedId={expandedId}
             onExpand={setExpandedId}
+            circuitHref={(id) => href.versionRule(decisionId, version, id)}
           />
         )}
       </>
@@ -944,6 +1076,8 @@ function VersionView({ decisionId, version, tab }: { decisionId: string; version
       <SchemaInspector testCases={testCases} />
     ) : tab === 'flow' ? (
       <FlowInspector flow={flow} subjectLabel={`v${version}`} baseLabel={sim.run?.baselineVersion ? `v${sim.run.baselineVersion}` : null} />
+    ) : openRule ? (
+      <RuleGraphInspector graph={graph} rule={openRule} ruleSet={dv.ruleSet} />
     ) : tab === 'simulation' ? (
       <TraceInspector
         result={sim.run?.results.find((r) => r.key === sim.selectedKey) ?? null}
@@ -971,7 +1105,7 @@ function VersionView({ decisionId, version, tab }: { decisionId: string; version
 
   return (
     <Workspace
-      className="screen--published"
+      className={`screen--published${openRule ? ' screen--canvas' : ''}`}
       head={
         <TitleBlock
           identifier={decision.id}
@@ -979,12 +1113,21 @@ function VersionView({ decisionId, version, tab }: { decisionId: string; version
           title={decision.title}
           domain={decision.domain}
           cells={cells}
+          actions={
+            tab === 'rules' ? (
+              <RulesViewSwitch
+                view={ruleId ? 'node' : 'table'}
+                tableHref={href.version(decisionId, version)}
+                nodeHref={dv.ruleSet.rules[0] ? href.versionRule(decisionId, version, dv.ruleSet.rules[0].id) : null}
+              />
+            ) : undefined
+          }
         />
       }
       tabs={{ active: tab, href: (t) => href.version(decisionId, version, t) }}
       primary={primary}
       inspector={inspector}
-      inspectorLabel={INSPECTOR_LABEL[tab]}
+      inspectorLabel={openRule ? 'Điều kiện của Rule' : INSPECTOR_LABEL[tab]}
       inspectorSummary={tab === 'simulation' ? simSummary(sim) : undefined}
       drawerOpen={drawerOpen}
       onDrawerOpenChange={setDrawerOpen}

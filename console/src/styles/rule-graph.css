@@ -1,0 +1,1347 @@
+/* ================= Trình sửa node: one Rule's condition as a node graph ================= */
+
+/* Data runs left to right, the way n8n reads: Điều kiện nodes compare the Fact, VÀ / HOẶC / KHÔNG combine,
+   the Rule node takes the last wire. Logic is a node with its own word, never a convention to learn.
+   Under a Test Case a wire carries its source's answer: clear when true, stop when false. */
+
+.screen__primary:has(> .rgraph) {
+  padding: 0;
+}
+
+/* The canvas bleeds to the edges of the primary slot, the way the Sơ đồ tab does: everything else floats on it. */
+.rgraph {
+  --wire: color-mix(in srgb, var(--ink-3) 70%, var(--sheet));
+  --rail-w: 232px;
+  position: relative;
+  container-type: inline-size;
+  height: max(460px, calc(100dvh - var(--graph-top, 260px) - var(--commit-h, 72px)));
+  min-width: 0;
+  background: var(--sheet);
+}
+
+/* ---------- floating head: the Rule, the Test Case, the verdict ---------- */
+
+.rgraph__hud {
+  position: absolute;
+  top: 12px;
+  left: calc(var(--rail-w) + 24px);
+  z-index: 6;
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  max-width: calc(100% - var(--rail-w) - 200px);
+  pointer-events: none;
+}
+
+.rgraph__hud > * {
+  pointer-events: auto;
+}
+
+.rgraph__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.rgraph__fact {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  min-width: 0;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--sheet);
+}
+
+/* ---------- the Rule Set down the left edge ---------- */
+
+.rgraph__rail {
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: 12px;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  width: var(--rail-w);
+  max-height: calc(100% - 24px);
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--sheet);
+  box-shadow: 0 6px 16px -8px rgb(0 0 0 / 0.55);
+}
+
+.rgraph__rail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.rgraph__rail-count {
+  font-family: var(--font-tech);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  color: var(--ink-3);
+  font-feature-settings: 'tnum' 1;
+}
+
+.rgraph__rules {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0;
+  padding: 4px 0;
+  overflow-y: auto;
+  list-style: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule-strong) transparent;
+}
+
+.rgraph__rule {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  color: var(--ink);
+  text-decoration: none;
+  transition: background-color 150ms var(--ease-out);
+}
+
+.rgraph__rule:hover {
+  background: var(--row-hover);
+}
+
+.rgraph__rule:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.rgraph__rule[aria-current='page'] {
+  background: var(--accent-tint);
+  box-shadow: inset 0 -1px 0 var(--accent), inset 0 1px 0 var(--accent);
+}
+
+.rgraph__rule[aria-current='page'] .rule__index {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.rgraph__rule-text {
+  display: grid;
+  min-width: 0;
+}
+
+.rgraph__rule-id {
+  font-family: var(--font-code);
+  font-size: var(--t-md);
+  font-weight: 600;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.rgraph__rule[aria-current='page'] .rgraph__rule-id {
+  color: var(--accent-hover);
+}
+
+.rgraph__rule-desc {
+  overflow: hidden;
+  font-size: var(--t-xs);
+  line-height: 1.4;
+  color: var(--ink-3);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.rgraph__rail-add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 12px;
+  border: 0;
+  border-top: 1px solid var(--rule);
+  background: none;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.rgraph__rail-add:hover {
+  background: var(--accent-tint);
+}
+
+.rgraph__rail-add:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.icon-btn.is-off {
+  color: var(--rule-strong);
+  cursor: default;
+}
+
+.rgraph__fact {
+  gap: 0;
+}
+
+.rgraph__fact .rgraph__label {
+  display: inline-flex;
+  white-space: nowrap;
+  align-items: center;
+  height: 100%;
+  padding: 0 10px;
+  border-right: 1px solid var(--rule);
+}
+
+.rgraph__label {
+  font-family: var(--font-tech);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.rgraph__fact .sim-source__select {
+  max-width: 320px;
+  height: 34px;
+  border: 0;
+  background: transparent;
+}
+
+.rgraph__readout {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  max-width: 62ch;
+  padding: 7px 12px 7px 9px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--panel);
+  font-size: var(--t-sm);
+  line-height: 1.45;
+  color: var(--ink);
+  box-shadow: 0 4px 12px -6px rgb(0 0 0 / 0.5);
+}
+
+.rgraph__readout .lamp {
+  flex: none;
+  margin-top: 1px;
+}
+
+.rgraph__readout.is-idle {
+  color: var(--ink-2);
+}
+
+.rgraph__readout.is-clear {
+  border-color: color-mix(in srgb, var(--clear) 55%, var(--rule));
+}
+
+.rgraph__readout.is-stop {
+  border-color: color-mix(in srgb, var(--stop) 60%, var(--rule));
+}
+
+.rgraph__readout.is-caution {
+  border-color: color-mix(in srgb, var(--caution) 55%, var(--rule));
+}
+
+@media (max-width: 639px) {
+  .rgraph {
+    --rail-w: 112px;
+  }
+
+  .rgraph__hud {
+    top: 56px;
+    max-width: calc(100% - var(--rail-w) - 36px);
+  }
+
+  .rgraph__rule-desc {
+    display: none;
+  }
+}
+
+/* ---------- canvas ---------- */
+
+.rgraph__frame {
+  position: absolute;
+  inset: 0;
+}
+
+.rgraph__flow {
+  position: absolute;
+  inset: 0;
+}
+
+.rgraph .react-flow {
+  --xy-background-color: var(--sheet);
+  background: var(--sheet);
+  font-family: var(--font-ui);
+  color: var(--ink);
+}
+
+.rgraph__grid {
+  --xy-background-pattern-color: color-mix(in srgb, var(--rule-strong) 55%, var(--sheet));
+}
+
+.rgraph .react-flow__pane {
+  cursor: grab;
+}
+
+.rgraph .react-flow__pane.dragging {
+  cursor: grabbing;
+}
+
+.rgraph .react-flow__node:focus-visible {
+  outline: none;
+}
+
+.rgraph .react-flow__node:focus-visible .gn {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ---------- palette: a tool strip floating at the foot of the canvas ---------- */
+
+.rgraph__palette {
+  position: absolute;
+  bottom: 12px;
+  /* Centred in the canvas the Rule list leaves free. */
+  left: calc(var(--rail-w) + 12px + (100% - var(--rail-w) - 12px) / 2);
+  z-index: 6;
+  display: flex;
+  align-items: stretch;
+  max-width: calc(100% - var(--rail-w) - 36px);
+  translate: -50% 0;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--sheet);
+  box-shadow: 0 6px 16px -8px rgb(0 0 0 / 0.55);
+}
+
+.rgraph__palette .rgraph__label {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border-right: 1px solid var(--rule);
+  white-space: nowrap;
+}
+
+.rgraph__part {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 14px 0 12px;
+  border: 0;
+  background: none;
+  font-size: var(--t-base);
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--ink);
+  cursor: grab;
+  transition:
+    background-color 150ms var(--ease-out),
+    color 150ms var(--ease-out);
+}
+
+.rgraph__part + .rgraph__part {
+  border-left: 1px solid var(--rule);
+}
+
+.rgraph__part:hover {
+  background: var(--accent-tint);
+  color: var(--accent-hover);
+}
+
+.rgraph__part:active {
+  cursor: grabbing;
+}
+
+.rgraph__part:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -3px;
+}
+
+.rgraph__part--and,
+.rgraph__part--or,
+.rgraph__part--not {
+  font-family: var(--font-tech);
+  font-size: var(--t-base);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.rgraph__chip {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid currentColor;
+  border-radius: 3px;
+}
+
+.rgraph__chip--or {
+  border-style: dashed;
+}
+
+.rgraph__chip--not {
+  border-radius: 50%;
+}
+
+.rgraph__view {
+  margin: 12px !important;
+}
+
+/* status */
+
+.rgraph__status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  margin: 12px !important;
+}
+
+.rgraph__panel-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--sheet);
+  color: var(--ink-2);
+  cursor: pointer;
+  transition:
+    background-color 150ms var(--ease-out),
+    color 150ms var(--ease-out);
+}
+
+.rgraph__panel-btn:hover {
+  background: var(--panel);
+  color: var(--ink);
+}
+
+.rgraph__panel-btn[aria-expanded='true'] {
+  border-color: var(--accent);
+  background: var(--accent-tint);
+  color: var(--accent);
+}
+
+.rgraph__panel-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.rgraph__save {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 10px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--sheet);
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.rgraph__save.is-stop {
+  border-color: var(--stop);
+  background: var(--stop-tint);
+  color: var(--stop-ink);
+}
+
+.rgraph__save.is-caution {
+  border-color: var(--caution);
+  background: var(--caution-tint);
+  color: var(--caution-ink);
+}
+
+.rgraph__scope {
+  font-size: var(--t-sm);
+  color: var(--ink-3);
+}
+
+.rgraph__notice {
+  position: absolute;
+  left: 50%;
+  bottom: 64px;
+  z-index: 7;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: min(560px, 90%);
+  padding: 8px 6px 8px 14px;
+  translate: -50% 0;
+  border-radius: var(--radius);
+  background: var(--toast-bg);
+  color: var(--toast-ink);
+  font-size: var(--t-sm);
+  line-height: 1.4;
+  box-shadow: var(--shadow-pop);
+}
+
+.rgraph__notice .icon-btn {
+  color: inherit;
+}
+
+/* wire-drop picker */
+
+.rgraph__picker {
+  position: absolute;
+  z-index: 7;
+  display: grid;
+  min-width: 248px;
+  padding: 6px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--sheet);
+  box-shadow: var(--shadow-pop);
+}
+
+.rgraph__picker-head {
+  padding: 4px 8px 6px;
+  font-family: var(--font-tech);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.rgraph__picker-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.rgraph__picker-item:hover,
+.rgraph__picker-item:focus-visible {
+  background: var(--accent-tint);
+  outline: none;
+}
+
+.rgraph__picker-item span {
+  display: grid;
+}
+
+.rgraph__picker-item strong {
+  font-weight: 600;
+}
+
+.rgraph__picker-item small {
+  font-size: var(--t-sm);
+  color: var(--ink-3);
+}
+
+/* ---------- nodes ---------- */
+
+.gn {
+  position: relative;
+  display: grid;
+  border: 1px solid var(--rule-strong);
+  border-radius: 4px;
+  background: var(--sheet);
+  box-shadow: 0 2px 6px -3px rgb(0 0 0 / 0.25);
+  transition:
+    border-color 160ms var(--ease-out),
+    box-shadow 160ms var(--ease-out);
+}
+
+.gn--cond {
+  width: 224px;
+}
+
+.gn--each {
+  width: 236px;
+}
+
+.gn--logic {
+  width: 144px;
+}
+
+.gn--rule {
+  width: 240px;
+}
+
+.gn.is-selected {
+  border-color: var(--accent);
+  box-shadow:
+    0 0 0 1px var(--accent),
+    0 4px 10px -4px rgb(0 0 0 / 0.3);
+}
+
+.gn.is-true {
+  border-color: var(--clear);
+}
+
+.gn.is-false {
+  border-color: color-mix(in srgb, var(--stop) 70%, var(--rule-strong));
+}
+
+.gn.is-missing {
+  border-color: var(--caution);
+}
+
+.gn.is-loose {
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.gn.has-problem {
+  border-color: var(--stop);
+}
+
+.gn__head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 7px 12px 6px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-2);
+}
+
+.gn__kind {
+  flex: none;
+  font-family: var(--font-tech);
+  font-size: var(--t-sm);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.gn__meta {
+  min-width: 0;
+  margin-left: auto;
+  overflow: hidden;
+  font-size: var(--t-sm);
+  color: var(--ink-3);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.gn__meta--code {
+  font-family: var(--font-code);
+  color: var(--accent);
+}
+
+.gn__body {
+  display: grid;
+  gap: 6px;
+  padding: 10px 12px 11px;
+}
+
+.gn__expr {
+  font-family: var(--font-code);
+  font-size: var(--t-base);
+  font-weight: 500;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.gn__empty {
+  font-size: var(--t-sm);
+  font-style: normal;
+  color: var(--ink-3);
+}
+
+.gn__fact,
+.gn__items,
+.gn__verdict {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--t-sm);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-2);
+}
+
+.gn__fact strong {
+  margin-left: auto;
+  font-family: var(--font-tech);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.gn.is-true .gn__fact strong {
+  color: var(--clear-ink);
+}
+
+.gn.is-false .gn__fact strong {
+  color: var(--stop-ink);
+}
+
+.gn.is-missing .gn__fact strong {
+  color: var(--caution-ink);
+}
+
+.gn__logic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 12px 2px;
+}
+
+.gn__word {
+  font-family: var(--font-tech);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.06em;
+}
+
+.gn__gloss {
+  padding: 4px 12px 11px;
+  font-size: var(--t-sm);
+  line-height: 1.35;
+  text-align: center;
+  color: var(--ink-3);
+}
+
+.gn--or .gn__word {
+  font-style: normal;
+}
+
+.gn__quant {
+  font-size: var(--t-sm);
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+.gn__quant strong {
+  color: var(--ink);
+}
+
+.gn__quant code {
+  font-family: var(--font-code);
+  color: var(--accent);
+}
+
+.gn__stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.gn__stepper button {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.gn__stepper button:hover:not(:disabled) {
+  background: var(--panel);
+}
+
+.gn__stepper button:disabled {
+  color: var(--rule-strong);
+  cursor: default;
+}
+
+.gn__stepper code {
+  font-family: var(--font-code);
+  font-size: var(--t-sm);
+  color: var(--accent);
+}
+
+.gn__rule-id {
+  margin-left: auto;
+  font-family: var(--font-code);
+  font-size: var(--t-base);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.gn--rule .gn__head {
+  background: color-mix(in srgb, var(--panel) 70%, var(--sheet));
+}
+
+.gn--rule.is-clear {
+  border-color: var(--clear);
+}
+
+.gn__verdict {
+  padding: 8px 12px 0;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.gn__outputs {
+  display: grid;
+  margin: 0;
+  padding: 8px 12px 10px;
+}
+
+.gn__outputs div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 3px 0;
+}
+
+.gn__outputs dt {
+  font-family: var(--font-code);
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.gn__outputs dd {
+  margin: 0;
+  font-family: var(--font-code);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.gn__problem,
+.gn__loose {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 7px 12px 8px;
+  border-top: 1px solid var(--rule);
+  font-size: var(--t-sm);
+  line-height: 1.35;
+}
+
+.gn__problem {
+  border-radius: 0 0 3px 3px;
+  background: var(--stop-tint);
+  color: var(--stop-ink);
+}
+
+.gn__problem svg,
+.gn__loose svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+.gn__loose {
+  color: var(--caution-ink);
+}
+
+/* ports */
+
+.rgraph .gport {
+  width: 14px;
+  height: 14px;
+  min-width: 0;
+  min-height: 0;
+  border: 2px solid var(--ink-3);
+  border-radius: 50%;
+  background: var(--sheet);
+  transition:
+    border-color 150ms var(--ease-out),
+    background-color 150ms var(--ease-out),
+    scale 150ms var(--ease-out);
+}
+
+.rgraph .gport--many {
+  width: 12px;
+  height: 30px;
+  border-radius: 6px;
+}
+
+.rgraph .gport.connectable:hover,
+.rgraph .gport.connectingto,
+.rgraph .gport.valid {
+  border-color: var(--accent);
+  background: var(--accent);
+  scale: 1.15;
+}
+
+/* wires */
+
+.rgraph .react-flow__edge-path,
+.rgraph .react-flow__connection-path {
+  stroke: var(--wire);
+  stroke-width: 2px;
+}
+
+.rgraph .gedge.is-true .react-flow__edge-path {
+  stroke: var(--clear);
+  stroke-width: 2.5px;
+}
+
+.rgraph .gedge.is-false .react-flow__edge-path {
+  stroke: color-mix(in srgb, var(--stop) 65%, var(--sheet));
+}
+
+.rgraph .gedge.is-loose .react-flow__edge-path {
+  stroke-dasharray: 4 5;
+}
+
+.rgraph .react-flow__edge.selected .react-flow__edge-path,
+.rgraph .react-flow__edge:focus-visible .react-flow__edge-path {
+  stroke: var(--accent);
+  stroke-width: 3px;
+}
+
+.rgraph .react-flow__edge.animated .react-flow__edge-path {
+  stroke-dasharray: 6 5;
+  animation: gwire 900ms linear infinite;
+}
+
+@keyframes gwire {
+  to {
+    stroke-dashoffset: -11;
+  }
+}
+
+/* ---------- inspector ---------- */
+
+.rgraph-inspect__save {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.rgraph-inspect__problems {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--t-sm);
+  color: var(--stop-ink);
+}
+
+.rgraph-inspect__problems li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+}
+
+.rgraph-inspect__problems .btn {
+  height: 26px;
+  padding: 0 6px;
+  font-family: var(--font-code);
+  font-size: var(--t-sm);
+}
+
+.rgraph-inspect__how {
+  display: grid;
+  gap: 4px;
+  margin: 12px 0 0;
+  padding-left: 18px;
+  font-size: var(--t-sm);
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+/* ---------- sizes ---------- */
+
+@media (min-width: 1200px) and (min-height: 720px) {
+  .screen__primary:has(> .rgraph) {
+    overflow: hidden;
+  }
+
+  .rgraph {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+  }
+}
+
+@media (max-width: 599px) {
+  .rgraph {
+    height: 62dvh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rgraph .react-flow__edge.animated .react-flow__edge-path {
+    animation: none;
+  }
+}
+
+.rgraph kbd,
+.cform kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 19px;
+  padding: 0 4px;
+  border: 1px solid var(--rule-strong);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  background: var(--sheet);
+  font-family: var(--font-tech);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+/* ---------- inspector ---------- */
+
+.cform {
+  display: grid;
+  gap: 2px;
+}
+
+.cform__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-tech);
+  font-size: var(--t-base);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cform__where {
+  margin-top: 4px;
+  font-size: var(--t-sm);
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+.cform__trace {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin-top: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  background: var(--panel);
+  font-size: var(--t-sm);
+  line-height: 1.45;
+}
+
+.cform__trace .lamp {
+  margin-top: 1px;
+}
+
+.cform__reading {
+  margin-top: 10px;
+  font-family: var(--font-code);
+  font-size: var(--t-md);
+}
+
+.cform__form {
+  display: grid;
+  margin-top: 4px;
+}
+
+.cform__select {
+  width: 100%;
+  height: 34px;
+  padding: 0 8px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  background: var(--sheet);
+  color: var(--ink);
+}
+
+.cform__select:focus,
+.cform__value:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-tint);
+}
+
+.cform__pair {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.cform__value {
+  font-family: var(--font-code);
+  font-size: var(--t-md);
+}
+
+.cform__tip {
+  margin-top: 6px;
+  min-height: 1.45em;
+  font-size: var(--t-sm);
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+
+.cform__tip code {
+  font-family: var(--font-code);
+  color: var(--ink);
+}
+
+.cform__quants {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.cform__quant {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--t-sm);
+  cursor: pointer;
+}
+
+.cform__quant input {
+  accent-color: var(--accent);
+}
+
+.cform__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+}
+
+.cform__actions .btn {
+  height: 32px;
+  padding: 0 10px;
+  font-size: var(--t-sm);
+}
+
+.cform__actions kbd {
+  margin-left: 2px;
+}
+
+.cform__sentence {
+  max-width: 60ch;
+  font-size: var(--t-base);
+  line-height: 1.55;
+}
+
+.cform__counts {
+  margin-top: 14px;
+}
+
+.cform--overview .inspect__note {
+  margin-top: 10px;
+}
+
+/* ---------- entry points in the Rules Table ---------- */
+
+.rule__circuit {
+  width: 24px;
+  height: 24px;
+  color: var(--ink-3);
+}
+
+.rule__circuit:hover {
+  color: var(--accent);
+}
+
+.rule__compound {
+  display: -webkit-box;
+  max-width: 24ch;
+  margin-top: 4px;
+  overflow: hidden;
+  font-family: var(--font-code);
+  font-size: var(--t-xs);
+  line-height: 1.45;
+  color: var(--ink-2);
+  text-decoration: none;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+a.rule__compound:hover .rule__compound-text {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.rule__compound svg {
+  margin-right: 3px;
+  vertical-align: -1px;
+}
+
+.rule__compound-tag {
+  margin-right: 6px;
+  padding: 0 4px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 2px;
+  font-family: var(--font-tech);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.rule__compound.is-miss {
+  color: var(--stop-ink);
+}
+
+.rule__compound.is-hit {
+  color: var(--clear-ink);
+}
+
+.rule__compound.is-changed .rule__compound-tag {
+  border-color: var(--caution);
+  background: var(--caution-tint);
+  color: var(--caution-ink);
+}
+
+.rule-panel__circuit {
+  justify-self: start;
+  margin-top: 12px;
+}
+
+.rule-list__circuit {
+  margin-left: auto;
+}
+
+
+/* ---------- the canvas takes the whole body ---------- */
+
+/* The inspector opens from the canvas itself (a node, or the toggle beside the save state), never from the tab row. */
+.screen--canvas .tabs__inspector {
+  display: none;
+}
+
+/* With a Rule open the inspector gives its column to the canvas and becomes a drawer at every width:
+   shut by default, opened by its toggle in the tab row or by asking to edit a node. On wide screens
+   it pushes the canvas instead of covering it, so the view controls stay in reach. */
+@media (min-width: 1200px) {
+  .screen--canvas .screen__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .screen--canvas .screen__body:has(> .screen__inspector.is-open) {
+    grid-template-columns: minmax(0, 1fr) var(--inspector-w);
+  }
+
+  .screen--canvas .screen__inspector {
+    position: relative;
+  }
+
+  .screen--canvas .screen__inspector:not(.is-open) {
+    display: none;
+  }
+
+  .screen--canvas .screen__inspector.is-open {
+    animation: rule-panel-in 220ms var(--ease-out);
+  }
+
+  .screen--canvas .screen__inspector-close {
+    position: absolute;
+    z-index: 1;
+    top: 12px;
+    right: 10px;
+    display: inline-grid;
+  }
+
+  .screen--canvas .screen__inspector .inspect__head {
+    padding-right: 36px;
+  }
+}
+
+/* ---------- the Rule node's form: description, outputs, weight ---------- */
+
+.rform .detail__label {
+  margin-top: 6px;
+}
+
+.rform__group {
+  margin-top: 18px !important;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule);
+}
+
+.rform__field {
+  display: grid;
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.rform__name {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
+.rform__name code {
+  font-family: var(--font-code);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.rform__num {
+  text-align: right;
+  font-feature-settings: 'tnum' 1;
+}
+
+.rform input[aria-invalid='true'] {
+  border-color: var(--stop);
+}
+
+.rform__error {
+  font-size: var(--t-xs);
+  color: var(--stop-ink);
+}
+
+.rform__read {
+  display: grid;
+  gap: 6px;
+  margin: 12px 0 0;
+}
+
+.rform__read > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.rform__read dt code {
+  font-family: var(--font-code);
+  font-size: var(--t-sm);
+}
+
+.rform__read dd {
+  margin: 0;
+  font-family: var(--font-code);
+  font-size: var(--t-sm);
+  font-weight: 600;
+}
+
+/* The inspector shows the save state itself; on a narrowed canvas the palette drops its label. */
+.screen__body:has(> .screen__inspector.is-open) .rgraph__status .rgraph__save {
+  display: none;
+}
+
+@container (max-width: 1040px) {
+  .rgraph__palette > .rgraph__label {
+    display: none;
+  }
+}

@@ -45,6 +45,10 @@ Produced on request by a Caller and always during Simulation. Any evaluation can
 The minimal record returned with every Decision Result: the Decision Version, the matched Rules, the winning Rule(s) and the execution time.
 _Avoid_: Short trace, lite trace
 
+### Compound Condition
+The part of a Rule's Condition that no single Decision Table cell can hold: a comparison across several Fact fields, or one combined with `or` or `not`. It is a condition tree held on the Rule beside its cells and ANDed with them. Whatever one cell can hold always lives in that cell, so a Rule's cells and its Compound Condition never overlap.
+_Avoid_: Cross-field condition, rule-level AST, extra condition
+
 ### Rule Set
 A collection of Rules associated with a specific Decision; each Decision Version holds exactly one.
 

@@ -5,6 +5,7 @@
 import type { Edge, Node } from '@xyflow/react';
 import type { LampState } from '../../components/Lamp';
 import { describeCell, formatScalar, isAnyCell } from '../../domain/cell';
+import { COMPOUND, conditionFields, whenOf } from '../../domain/compound';
 import type { Disposition, EvalResult, EvaluationTrace, Expected, InputField, OutputRow, RuleSet, TraceCondition, TraceRule } from '../../domain/types';
 
 export type Traced = EvalResult & { trace: EvaluationTrace };
@@ -96,9 +97,9 @@ function signalWidth(text: string, tree: boolean): number {
 export function layoutOf(ruleSet: RuleSet, orientation: Orientation): Layout {
   const positions: Layout['positions'] = {};
   const widths: Layout['widths'] = {};
-  const columns = ruleSet.inputs.filter((f) => ruleSet.rules.some((r) => !isAnyCell(r.when[f.name])));
+  const columns = conditionFields(ruleSet).filter((f) => ruleSet.rules.some((r) => !isAnyCell(whenOf(r, f.name))));
   const width = (rule: RuleSet['rules'][number], f: InputField) =>
-    isAnyCell(rule.when[f.name]) ? 0 : signalWidth(describeCell(rule.when[f.name], f) ?? '', rule.when[f.name]?.kind === 'ast');
+    isAnyCell(whenOf(rule, f.name)) ? 0 : signalWidth(describeCell(whenOf(rule, f.name), f) ?? '', whenOf(rule, f.name)?.kind === 'ast');
   const sig = (rule: RuleSet['rules'][number], f: InputField) => `sig:${rule.id}:${f.name}`;
 
   if (orientation === 'lr') {
@@ -128,7 +129,7 @@ export function layoutOf(ruleSet: RuleSet, orientation: Orientation): Layout {
       positions[`route:${rule.id}`] = { x: xRoute, y };
       widths[`route:${rule.id}`] = ROUTE_W;
       columns.forEach((f, c) => {
-        if (isAnyCell(rule.when[f.name])) return;
+        if (isAnyCell(whenOf(rule, f.name))) return;
         positions[sig(rule, f)] = { x: colX[c], y };
         widths[sig(rule, f)] = colW[c];
       });
@@ -162,7 +163,7 @@ export function layoutOf(ruleSet: RuleSet, orientation: Orientation): Layout {
     positions[`route:${rule.id}`] = { x: ruleX[r], y: yRoute };
     widths[`route:${rule.id}`] = ruleW[r];
     columns.forEach((f, i) => {
-      if (isAnyCell(rule.when[f.name])) return;
+      if (isAnyCell(whenOf(rule, f.name))) return;
       positions[sig(rule, f)] = { x: ruleX[r], y: rowY(i) };
       widths[sig(rule, f)] = ruleW[r];
     });
@@ -321,12 +322,12 @@ export function stepsOf(
       const tr = traced.trace.rules.find((t) => t.ruleId === rule.id);
       if (!tr) continue;
       const diverges = mismatch && expect!.ruleIds.includes(rule.id);
-      const conditions: StepCondition[] = ruleSet.inputs
-        .filter((f) => !isAnyCell(rule.when[f.name]))
+      const conditions: StepCondition[] = conditionFields(ruleSet)
+        .filter((f) => !isAnyCell(whenOf(rule, f.name)))
         .map((f) => ({
           field: f.name,
-          text: describeCell(rule.when[f.name], f) ?? '',
-          value: valueText(facts?.[f.name], f),
+          text: describeCell(whenOf(rule, f.name), f) ?? '',
+          value: f.name === COMPOUND ? '' : valueText(facts?.[f.name], f),
           lamp: signalLamp(tr.conditions.find((x) => x.field === f.name)),
         }));
       steps.push({
@@ -455,7 +456,7 @@ export function buildGraph(input: GraphInput, layout: Layout): { nodes: FlowNode
       data: {
         name: f.name,
         label: f.label,
-        value: factOn && facts ? valueText(facts[f.name], f) : null,
+        value: factOn && facts && f.name !== COMPOUND ? valueText(facts[f.name], f) : null,
         missing: factOn && (facts?.[f.name] === undefined || facts?.[f.name] === null),
         orientation,
       },
@@ -492,7 +493,7 @@ export function buildGraph(input: GraphInput, layout: Layout): { nodes: FlowNode
     let prev = routeId;
     let alive = true;
     for (const f of layout.columns) {
-      if (isAnyCell(rule.when[f.name])) continue;
+      if (isAnyCell(whenOf(rule, f.name))) continue;
       const c = tr?.conditions.find((x) => x.field === f.name);
       const id = `sig:${rule.id}:${f.name}`;
       nodes.push({
@@ -501,8 +502,8 @@ export function buildGraph(input: GraphInput, layout: Layout): { nodes: FlowNode
         position: pos(id),
         ...sized(id),
         data: {
-          text: describeCell(rule.when[f.name], f) ?? '',
-          tree: rule.when[f.name]?.kind === 'ast',
+          text: describeCell(whenOf(rule, f.name), f) ?? '',
+          tree: whenOf(rule, f.name)?.kind === 'ast',
           lamp: on ? signalLamp(c) : 'idle',
           // Past a failed signal the Rule has already lost: the engine still reports the cell, the diagram lets it recede.
           after: on && !alive,
