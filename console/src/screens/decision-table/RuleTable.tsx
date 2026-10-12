@@ -87,6 +87,13 @@ export function RuleTable(props: Props) {
     const table = tableRef.current;
     const scroll = scrollRef.current;
     if (!table || !scroll) return;
+    // `has-overflow` compacts outputs and descriptions, which narrows the table. Measured while compact, a table
+    // that only overflows at full width would read as fitting, drop the class, overflow again and loop forever.
+    // So overflow is judged at full width, and the rest is measured in the state that judgement leads to.
+    const shown = scroll.className;
+    scroll.classList.remove('has-overflow');
+    const overflows = scroll.scrollWidth > scroll.clientWidth + 1;
+    scroll.classList.toggle('has-overflow', overflows);
     const ths = Array.from(table.querySelectorAll<HTMLElement>('tr.rules__fields th[data-end]')).sort(
       (a, b) => Number(a.dataset.end) - Number(b.dataset.end),
     );
@@ -97,12 +104,14 @@ export function RuleTable(props: Props) {
       return Math.round(at);
     });
     setEndOffsets((prev) => (prev.length === offs.length && prev.every((v, i) => v === offs[i]) ? prev : offs));
-    setOverflowing(scroll.scrollWidth > scroll.clientWidth + 1);
+    setOverflowing(overflows);
     // Keep the identity plate pinned only while enough room is left to read the conditions between the pinned edges.
     const fields = table.querySelectorAll<HTMLElement>('tr.rules__fields th');
     const leftW = (fields[0]?.getBoundingClientRect().width ?? 0) + (fields[1]?.getBoundingClientRect().width ?? 0);
     setPinIdent(scroll.clientWidth - leftW - acc >= 320);
     measureEdges.current();
+    // React owns the class list; hand it back as rendered, the state above brings the change.
+    scroll.className = shown;
   };
   // Condition columns squeezed out between the pinned edges, so the frame can say what it is hiding.
   const [edges, setEdges] = useState<Edges>(NO_EDGES);
