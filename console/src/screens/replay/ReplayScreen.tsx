@@ -313,7 +313,7 @@ function RecordInput(props: {
   return (
     <section className="record" aria-labelledby={`${id}-label`}>
       <div className="record__head">
-        <label id={`${id}-label`} htmlFor={`${id}-text`} className="section-title">
+        <label id={`${id}-label`} htmlFor={`${id}-text`} className="section-title is-lead">
           Bản ghi
         </label>
         <span className="record__hint">Facts snapshot và Decision Result kèm Trace Summary, đúng như Caller đã lưu</span>
@@ -511,7 +511,7 @@ function ReplayResult({ run, verdictRef }: { run: Extract<Run, { status: 'done' 
         </table>
       </div>
 
-      <section className="replay-trace" aria-labelledby="replay-trace-title">
+      <section className="replay-trace sect-band" aria-labelledby="replay-trace-title">
         <h2 id="replay-trace-title" className="section-title">
           Evaluation Trace <span className="section-title__count">v{record.version} · {ruleSet.hitPolicy}</span>
         </h2>

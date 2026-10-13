@@ -300,7 +300,7 @@ function BatchImport(props: { decisionId: string; ruleSet: RuleSet; onCancel: ()
       onDrop={onDrop}
     >
       <header className="sim-import__head">
-        <h2 id={`${uid}-title`} className="sim-import__title">
+        <h2 id={`${uid}-title`} className="sim-import__title is-lead">
           Nạp Fact Batch
         </h2>
         <p className="sim-import__note">
@@ -462,8 +462,8 @@ function ImpactTable(props: { sim: Simulation; impact: Impact; subject: RuleSet;
   );
 
   return (
-    <section aria-labelledby="impact-title" className="impact-wrap">
-      <h2 id="impact-title" className="visually-hidden">
+    <section aria-labelledby="impact-title" className="impact-wrap sect-band">
+      <h2 id="impact-title" className="section-title">
         Tác động theo Rule
       </h2>
       <div className="impact-frame">

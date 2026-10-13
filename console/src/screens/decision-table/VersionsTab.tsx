@@ -13,7 +13,7 @@ export function VersionsTab({ decision, scope }: { decision: DecisionSummary; sc
   return (
     <div className="ledger-stack">
       <section aria-labelledby="ledger-drafts">
-        <h2 id="ledger-drafts" className="section-title">
+        <h2 id="ledger-drafts" className="section-title is-lead">
           Draft <span className="section-title__count">{decision.drafts.length}</span>
         </h2>
         {decision.drafts.length === 0 ? (
@@ -61,7 +61,7 @@ export function VersionsTab({ decision, scope }: { decision: DecisionSummary; sc
       </section>
 
       <section aria-labelledby="ledger-versions">
-        <h2 id="ledger-versions" className="section-title">
+        <h2 id="ledger-versions" className="section-title is-ref">
           Published <span className="section-title__count">{versions.length}</span>
         </h2>
         <div className="ledger-frame">

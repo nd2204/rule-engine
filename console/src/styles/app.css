@@ -786,6 +786,54 @@ a.mode__btn {
   color: var(--ink-3);
 }
 
+/* Section roles. Lead: the work the screen exists for, one per screen, marked by a datum tick
+   on its head. Evidence: what the work produced, set on the quiet output band (the same tonal
+   step that tells outputs from inputs inside a table). Reference: what the author looks things
+   up in, lettered down a step. */
+.section-title.is-lead,
+.sim-import__title.is-lead {
+  position: relative;
+  padding-top: 12px;
+  font-size: var(--t-xl);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.section-title.is-lead::before,
+.sim-import__title.is-lead::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 28px;
+  height: 2px;
+  background: var(--accent);
+}
+
+.section-title.is-lead .section-title__count {
+  font-size: var(--t-lg);
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.section-title.is-ref {
+  font-size: var(--t-base);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--ink-2);
+}
+
+.sect-band {
+  padding: 14px 16px 16px;
+  border-top: 1px solid var(--rule-strong);
+  background: var(--panel);
+}
+
+.sect-band .section-title__count {
+  font-variant-numeric: tabular-nums;
+}
+
 .ledger-frame {
   overflow-x: auto;
   border: 1px solid var(--line);

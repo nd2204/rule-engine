@@ -39,7 +39,7 @@ export function SchemaTab({ ruleSet }: { ruleSet: RuleSet }) {
   return (
     <div className="ledger-stack">
       <section aria-labelledby="schema-in">
-        <h2 id="schema-in" className="section-title">
+        <h2 id="schema-in" className="section-title is-lead">
           Input · Fact <span className="section-title__count">{ruleSet.inputs.length}</span>
         </h2>
         <div className="ledger-frame">
@@ -60,7 +60,7 @@ export function SchemaTab({ ruleSet }: { ruleSet: RuleSet }) {
         <p className="ledger__hint">Thiếu một trường trong Fact thì điều kiện trên trường đó là false, kèm cảnh báo trong Evaluation Trace.</p>
       </section>
 
-      <section aria-labelledby="schema-out">
+      <section className="sect-band" aria-labelledby="schema-out">
         <h2 id="schema-out" className="section-title">
           Output · Decision Result <span className="section-title__count">{ruleSet.outputs.length}</span>
         </h2>

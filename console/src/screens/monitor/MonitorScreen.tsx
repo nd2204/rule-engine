@@ -280,7 +280,7 @@ function Lanes(props: {
   return (
     <section className="lanes" aria-labelledby="lanes-title">
       <div className="lanes__head">
-        <h2 id="lanes-title" className="section-title">
+        <h2 id="lanes-title" className="section-title is-lead">
           Lưu lượng theo Decision <span className="section-title__count">{minutes} phút gần nhất</span>
         </h2>
         <ul className="lanes__legend" aria-label="Chú giải">
@@ -460,7 +460,7 @@ function Ledger(props: {
   const filtered = filter.decisionId || filter.callerId || filter.problemsOnly;
 
   return (
-    <section className="monitor-ledger" aria-labelledby={`${uid}-title`}>
+    <section className="monitor-ledger sect-band" aria-labelledby={`${uid}-title`}>
       <div className="monitor-ledger__head">
         <h2 id={`${uid}-title`} className="section-title">
           Sổ lượt gọi{' '}
