@@ -2,7 +2,7 @@
 // tokens.css; every other theme overrides it from themes.css via data-theme.
 
 export const THEMES = [
-  { id: 'signal-night', label: 'Signal Night', swatch: ['#0c0f13', '#5b9cff'] },
+  { id: 'signal-night', label: 'Signal Night', swatch: ['#0c0c0c', '#5b9cff'] },
   { id: 'gruvbox', label: 'Gruvbox Material Mix', swatch: ['#181818', '#8aa98a'] },
   { id: 'catppuccin', label: 'Catppuccin Mocha', swatch: ['#1e1e2e', '#cba6f7'] },
   { id: 'tokyonight', label: 'Tokyo Night', swatch: ['#1a1b26', '#7aa2f7'] },

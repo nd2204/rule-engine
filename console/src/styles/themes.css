@@ -218,20 +218,20 @@
    (paper below sheet below panel) give depth; the drawing blue is brightened into a lit accent;
    lamps are saturated LED red, amber and green. All text pairs measured ≥4.5:1. */
 :root[data-theme='signal-night'] {
-  --sheet: #0c0f13;
-  --paper: #07090c;
-  --panel: #13171d;
-  --panel-2: #1a1f27;
-  --rule: #1e242c;
-  --rule-strong: #343c47;
-  --ink: #e9edf2;
-  --ink-2: #b8c1cc;
-  --ink-3: #8a95a3;
-  --rail: #040507;
-  --rail-deep: #0d1015;
-  --rail-line: #1a1f26;
-  --rail-ink: #e9edf2;
-  --rail-ink-2: #8f9aa8;
+  --sheet: #0c0c0c;
+  --paper: #070707;
+  --panel: #141414;
+  --panel-2: #1c1c1c;
+  --rule: #242424;
+  --rule-strong: #3b3b3b;
+  --ink: #ececec;
+  --ink-2: #bdbdbd;
+  --ink-3: #8f8f8f;
+  --rail: #000000;
+  --rail-deep: #0e0e0e;
+  --rail-line: #1c1c1c;
+  --rail-ink: #ececec;
+  --rail-ink-2: #929292;
   --clear: #2fd87e;
   --clear-ink: #3ee08b;
   --clear-tint: #0a2416;
@@ -243,16 +243,16 @@
   --caution-tint: #2a1f05;
   --accent: #5b9cff;
   --accent-hover: #7cb0ff;
-  --accent-tint: #0f1d33;
-  --lit: #0e1b2e;
-  --lit-strong: #14284a;
+  --accent-tint: #171a20;
+  --lit: #171a20;
+  --lit-strong: #1f2430;
   --primary: #2fd87e; /* LED green, the clear lamp */
   --primary-hover: #44e58a; /* derived: one step lighter */
-  --on-primary: #040507;
-  --on-signal: #040507;
-  --on-caution: #040507;
-  --row-hover: #11151b;
-  --toast-bg: #1a1f27;
-  --lever-lock: #2a313b;
+  --on-primary: #000000;
+  --on-signal: #000000;
+  --on-caution: #000000;
+  --row-hover: #141414;
+  --toast-bg: #1c1c1c;
+  --lever-lock: #2e2e2e;
   --shadow-pop: 0 10px 28px -8px rgb(0 0 0 / 0.75), 0 2px 6px -1px rgb(0 0 0 / 0.5);
 }
