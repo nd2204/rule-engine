@@ -2,6 +2,7 @@ import { Check, Copy, ExternalLink, FileJson, PencilLine, RotateCcw, TriangleAle
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { ApiError, api } from '../../api/client';
 import { Lamp, type LampState } from '../../components/Lamp';
+import { PageHead } from '../../components/PageHead';
 import { Workspace } from '../../components/Workspace';
 import { formatScalar } from '../../domain/cell';
 import { checkReplay, missingFields, parseRecord, type CheckKey, type CheckRow, type ParseOutcome, type ReplayCheck, type ReplayRecord } from '../../domain/replay';
@@ -165,12 +166,9 @@ export function ReplayScreen() {
   const head = done ? (
     <ReplayHead run={done} />
   ) : (
-    <header className="titleblock titleblock--plain">
-      <div className="titleblock__ident">
-        <h1 className="titleblock__id">Replay</h1>
-        <p className="titleblock__sub">Dán bản ghi Caller đã lưu, console evaluate lại trên đúng Decision Version đã ghi và đối chiếu với kết quả gốc.</p>
-      </div>
-    </header>
+    <PageHead title="Replay">
+      Dán bản ghi Caller đã lưu, console evaluate lại trên đúng Decision Version đã ghi và đối chiếu với kết quả gốc.
+    </PageHead>
   );
 
   const primary = (
@@ -257,45 +255,38 @@ export function ReplayScreen() {
 function ReplayHead({ run }: { run: Extract<Run, { status: 'done' }> }) {
   const { record, decision } = run;
   const onLatest = decision.latest === record.version;
-  const cells: { label: string; value: ReactNode; note?: string }[] = [
-    { label: 'Decision', value: <code>{decision.id}</code>, note: `${decision.title} · ${decision.domain}` },
-    { label: 'Decision Version', value: `v${record.version}`, note: `Publish ${dateFormat.format(new Date(run.publishedAt))}, bất biến` },
-    {
-      label: 'Latest Pointer',
-      value: `v${decision.latest}`,
-      note: onLatest ? 'Bản ghi trên chính Latest' : `Replay không dùng Latest`,
-    },
-    { label: 'Ghi lúc', value: formatTime(record.recordedAt) ?? 'không ghi', note: record.recordedAt ? 'Theo bản ghi của Caller' : undefined },
+  const facts: { label: string; value: ReactNode; note?: string }[] = [
+    { label: 'Latest Pointer', value: `v${decision.latest}`, note: onLatest ? 'bản ghi trên chính Latest' : 'Replay không dùng Latest' },
+    { label: 'Publish', value: dateFormat.format(new Date(run.publishedAt)), note: 'bất biến' },
+    { label: 'Ghi lúc', value: formatTime(record.recordedAt) ?? 'không ghi' },
     { label: 'Request', value: record.requestId ? <code>{record.requestId}</code> : 'không ghi' },
     { label: 'Hit Policy', value: run.ruleSet.hitPolicy },
   ];
   return (
-    <header className="titleblock">
-      <div className="titleblock__ident">
-        <h1 className="titleblock__id">
-          Replay<span className="titleblock__qualifier">@{decision.id} v{record.version}</span>
+    <header className="slip">
+      <div className="slip__ident">
+        <p className="slip__eyebrow">Replay</p>
+        <h1 className="slip__id">
+          {decision.id}
+          <span className="slip__version">v{record.version}</span>
         </h1>
-        <p className="titleblock__sub">
-          Evaluate lại Facts đã ghi trên v{record.version}
-          {!onLatest && <>, dù Latest Pointer giờ ở v{decision.latest}</>}
+        <p className="slip__sub">
+          {decision.title} <span aria-hidden="true">·</span> evaluate lại Facts đã ghi trên v{record.version}
         </p>
       </div>
-      <div className="titleblock__actions">
+      <div className="slip__actions">
         <a className="btn btn--secondary" href={href.version(decision.id, record.version)}>
           <ExternalLink size={15} aria-hidden="true" /> Mở v{record.version}
         </a>
       </div>
-      <dl className="titleblock__grid">
-        {cells.map((c) => (
-          <div key={c.label} className="titleblock__cell" title={c.note}>
-            <dt>{c.label}</dt>
-            <dd className="titleblock__stop" aria-hidden="true">
-              <span className="titleblock__dot" />
-            </dd>
+      <dl className="slip__facts">
+        {facts.map((f) => (
+          <div key={f.label} className="slip__fact">
+            <dt>{f.label}</dt>
             <dd>
-              <span className="titleblock__value">{c.value}</span>
+              {f.value}
+              {f.note && <span className="slip__note">{f.note}</span>}
             </dd>
-            {c.note && <dd className="titleblock__note">{c.note}</dd>}
           </div>
         ))}
       </dl>

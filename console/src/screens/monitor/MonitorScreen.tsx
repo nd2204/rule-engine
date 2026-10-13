@@ -186,29 +186,28 @@ function MonitorHead(props: {
   const activeCallers = new Set(inWindow.filter((e) => Date.parse(e.at) > m.now - QUIET_MS).map((e) => e.callerId)).size;
   const ready = m.connection !== 'loading' && m.connection !== 'failed';
 
-  const cells: { label: string; value: ReactNode; note?: string; lamp?: LampState }[] = [
+  const figures: { label: string; value: ReactNode; unit?: string; note: string; lamp?: LampState; stop?: boolean }[] = [
     { label: 'Luồng', value: conn.label, note: conn.note, lamp: conn.lamp },
-    { label: 'Caller', value: ready ? `${activeCallers}/${m.callers.length} đang gọi` : '—', note: `Gọi trong ${QUIET_MS / 1000} giây qua` },
-    { label: 'Lượt gọi', value: ready ? `${lastMinute}/phút` : '—', note: 'Trong 60 giây qua, mọi Decision' },
+    { label: 'Caller đang gọi', value: ready ? activeCallers : '—', unit: ready ? `/${m.callers.length}` : undefined, note: `Gọi trong ${QUIET_MS / 1000} giây qua` },
+    { label: 'Lượt gọi', value: ready ? lastMinute : '—', unit: ready ? '/phút' : undefined, note: 'Trong 60 giây qua, mọi Decision' },
     {
       label: 'Lỗi',
-      value: ready ? (errors ? `${errors} lượt` : 'Không có') : '—',
+      value: ready ? errors : '—',
+      unit: ready && errors ? 'lượt' : undefined,
       note: `Trong ${windowMin} phút: Input Schema Validation từ chối, hoặc UNIQUE nhiều Rule khớp`,
-      lamp: ready ? (errors ? 'stop' : 'clear') : undefined,
+      stop: ready && errors > 0,
     },
-    { label: 'Giữ lại', value: `${m.keepMs / 60_000} phút`, note: 'Chỉ trong bộ nhớ; service không có Decision Log' },
-    { label: 'Nguồn', value: 'Caller giả lập', note: 'Mock API: bốn Caller minh hoạ gọi các version Published thật của mock' },
   ];
 
   return (
-    <header className="titleblock">
-      <div className="titleblock__ident">
-        <h1 className="titleblock__id">
-          Theo dõi<span className="titleblock__qualifier">@Caller</span>
-        </h1>
-        <p className="titleblock__sub">Mỗi lượt Caller gọi engine: Decision Version nào trả lời, Facts nào chảy vào, kết quả ra sao</p>
+    <header className="readout">
+      <div className="readout__ident">
+        <h1 className="readout__title">Theo dõi</h1>
+        <p className="readout__sub">
+          Mỗi lượt Caller gọi engine: Decision Version nào trả lời, Facts nào chảy vào, kết quả ra sao
+        </p>
       </div>
-      <div className="titleblock__actions monitor-actions">
+      <div className="readout__actions monitor-actions">
         <div className="mode mode--view" role="group" aria-label="Khoảng thời gian">
           {WINDOWS.map((w) => (
             <button key={w} type="button" className="mode__btn" aria-pressed={windowMin === w} onClick={() => props.onWindow(w)}>
@@ -227,20 +226,21 @@ function MonitorHead(props: {
           {m.paused ? (m.held ? `Tiếp tục · ${m.held} mới` : 'Tiếp tục') : 'Tạm dừng'}
         </button>
       </div>
-      <dl className="titleblock__grid">
-        {cells.map((c) => (
-          <div key={c.label} className="titleblock__cell" title={c.note}>
-            <dt>{c.label}</dt>
-            <dd className="titleblock__stop" aria-hidden="true">
-              {c.lamp ? <Lamp state={c.lamp} size="sm" /> : <span className="titleblock__dot" />}
+      <dl className="readout__figures">
+        {figures.map((f) => (
+          <div key={f.label} className={`readout__fig${f.stop ? ' is-stop' : ''}`} title={f.note}>
+            <dt>{f.label}</dt>
+            <dd className={f.lamp ? 'readout__state' : undefined}>
+              {f.lamp && <Lamp state={f.lamp} size="sm" />}
+              <span className="readout__value">{f.value}</span>
+              {f.unit && <span className="readout__unit">{f.unit}</span>}
             </dd>
-            <dd>
-              <span className="titleblock__value">{c.value}</span>
-            </dd>
-            {c.note && <dd className="titleblock__note">{c.note}</dd>}
           </div>
         ))}
       </dl>
+      <p className="readout__meta">
+        Giữ {m.keepMs / 60_000} phút trong bộ nhớ, service không có Decision Log <span aria-hidden="true">·</span> Nguồn: Caller giả lập (Mock API)
+      </p>
     </header>
   );
 }

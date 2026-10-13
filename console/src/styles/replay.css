@@ -360,8 +360,114 @@
   width: 150px;
 }
 
-.titleblock__actions a.btn {
+/* The head is a slip: the record's subject on top, its provenance in one wrapped line. */
+.slip {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px 24px;
+  padding: 20px var(--gutter) 14px;
+  border-bottom: 1px solid var(--rule-strong);
+}
+
+.slip__eyebrow {
+  font-family: var(--font-tech);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.slip__id {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  font-family: var(--font-tech);
+  font-size: var(--t-2xl);
+  font-weight: 600;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.slip__version {
+  padding: 1px 8px;
+  border-radius: var(--radius);
+  background: var(--accent-tint);
+  color: var(--accent);
+  font-size: var(--t-lg);
+  font-weight: 600;
+}
+
+.slip__sub {
+  margin-top: 4px;
+  color: var(--ink-2);
+}
+
+.slip__actions a.btn {
   text-decoration: none;
+}
+
+.slip__facts {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 0;
+  margin: 0;
+  font-size: var(--t-md);
+}
+
+.slip__fact {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding-right: 14px;
+  margin-right: 14px;
+  border-right: 1px solid var(--rule);
+}
+
+.slip__fact:last-child {
+  padding-right: 0;
+  margin-right: 0;
+  border-right: 0;
+}
+
+.slip__fact dt {
+  color: var(--ink-3);
+}
+
+.slip__fact dd {
+  margin: 0;
+  font-weight: 500;
+}
+
+.slip__note {
+  margin-left: 6px;
+  font-weight: 400;
+  color: var(--ink-3);
+}
+
+@media (max-width: 720px) {
+  .slip {
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: 16px;
+  }
+
+  .slip__id {
+    font-size: var(--t-xl);
+  }
+
+  .slip__actions {
+    justify-self: start;
+  }
+
+  .slip__fact {
+    padding-right: 0;
+    margin-right: 0;
+    border-right: 0;
+    width: 100%;
+  }
 }
 
 .replay-check tr.is-off > * {

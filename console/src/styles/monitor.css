@@ -15,6 +15,111 @@
   }
 }
 
+/* The head is a readout: large live figures, no ruled route band. */
+.readout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 16px 24px;
+  padding: 24px var(--gutter) 16px;
+  border-bottom: 1px solid var(--rule-strong);
+}
+
+.readout__title {
+  font-family: var(--font-tech);
+  font-size: var(--t-2xl);
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.readout__sub {
+  margin-top: 4px;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.readout__actions {
+  justify-self: end;
+}
+
+.readout__figures {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 44px;
+  margin: 0;
+}
+
+.readout__fig {
+  min-width: 0;
+}
+
+.readout__fig dt {
+  font-family: var(--font-tech);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  line-height: 16px;
+  color: var(--ink-3);
+}
+
+.readout__fig dd {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin: 0;
+  font-family: var(--font-tech);
+  font-size: var(--t-2xl);
+  font-weight: 600;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The state reads on the numerals' line, centred, not hung from the label. */
+.readout__fig dd.readout__state {
+  align-items: center;
+  gap: 8px;
+  min-height: calc(var(--t-2xl) * 1.15);
+  font-size: var(--t-lg);
+}
+
+.readout__unit {
+  font-size: var(--t-base);
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.readout__fig.is-stop .readout__value {
+  color: var(--stop-ink);
+}
+
+.readout__meta {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: var(--t-sm);
+  color: var(--ink-3);
+}
+
+@media (max-width: 720px) {
+  .readout {
+    grid-template-columns: minmax(0, 1fr);
+    padding-top: 18px;
+  }
+
+  .readout__title {
+    font-size: var(--t-xl);
+  }
+
+  .readout__actions {
+    justify-self: start;
+  }
+
+  .readout__figures {
+    gap: 12px 28px;
+  }
+}
+
 .monitor-actions {
   display: flex;
   flex-wrap: wrap;

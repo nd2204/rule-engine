@@ -1,4 +1,5 @@
 import { Info, TriangleAlert } from 'lucide-react';
+import { PageHead } from '../../components/PageHead';
 import { Workspace } from '../../components/Workspace';
 import type { DecisionSummary } from '../../domain/types';
 import { href } from '../../router';
@@ -13,15 +14,9 @@ export function DecisionsScreen() {
   const { decisions, error, refresh } = useDecisions();
 
   const head = (
-    <header className="titleblock titleblock--plain">
-      <div className="titleblock__ident">
-        <h1 className="titleblock__id">Decisions</h1>
-        <p className="titleblock__sub">
-          {decisions ? `${decisions.length} Decision` : 'Đang tải'} <span aria-hidden="true">·</span> mở một Draft để sửa Rule, hoặc
-          một version để xem và Rollback
-        </p>
-      </div>
-    </header>
+    <PageHead title="Decisions">
+      {decisions ? `${decisions.length} Decision` : 'Đang tải'} <span aria-hidden="true">·</span> mở một Draft để sửa Rule, hoặc một version để xem và Rollback
+    </PageHead>
   );
 
   const primary = error ? (

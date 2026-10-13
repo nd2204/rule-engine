@@ -585,9 +585,34 @@ a.mode__btn {
   outline-color: var(--sheet);
 }
 
-.titleblock--plain {
-  padding-bottom: 20px;
+/* A plain head: a place with nothing to frame, so no route band. */
+.pagehead {
+  padding: 24px var(--gutter) 20px;
   border-bottom: 1px solid var(--rule-strong);
+}
+
+.pagehead__title {
+  font-family: var(--font-tech);
+  font-size: var(--t-2xl);
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.pagehead__sub {
+  margin-top: 4px;
+  max-width: 72ch;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+@media (max-width: 720px) {
+  .pagehead {
+    padding-top: 18px;
+  }
+
+  .pagehead__title {
+    font-size: var(--t-xl);
+  }
 }
 
 /* ================= scope picker (the @qualifier) ================= */
