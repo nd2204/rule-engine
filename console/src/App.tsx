@@ -4,6 +4,7 @@ import { ShellNav } from './components/ShellNav';
 import { useRoute } from './router';
 import { DecisionTableScreen } from './screens/decision-table/DecisionTableScreen';
 import { DecisionsScreen } from './screens/decisions/DecisionsScreen';
+import { MonitorScreen } from './screens/monitor/MonitorScreen';
 import { ReplayScreen } from './screens/replay/ReplayScreen';
 import { DecisionsProvider, ToastProvider, useToasts } from './state';
 
@@ -57,6 +58,8 @@ function Shell() {
       <main id="main" className="main">
         {route.name === 'home' ? (
           <DecisionsScreen />
+        ) : route.name === 'monitor' ? (
+          <MonitorScreen />
         ) : route.name === 'replay' ? (
           <ReplayScreen />
         ) : (

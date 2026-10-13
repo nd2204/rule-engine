@@ -1,4 +1,4 @@
-import { History, Info, LayoutList, Palette } from 'lucide-react';
+import { Activity, History, Info, LayoutList, Palette } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { href, type Route } from '../router';
 import { ThemeSelect } from './ThemeSelect';
@@ -50,6 +50,20 @@ export function ShellNav({ route }: { route: Route }) {
             <LayoutList size={20} aria-hidden="true" />
             <span className="shell__label" aria-hidden="true">
               Decisions
+            </span>
+          </a>
+        </li>
+        <li>
+          <a
+            className="shell__item"
+            href={href.monitor()}
+            aria-current={route.name === 'monitor' ? 'page' : undefined}
+            aria-label="Theo dõi"
+            title="Theo dõi Caller gọi engine"
+          >
+            <Activity size={20} aria-hidden="true" />
+            <span className="shell__label" aria-hidden="true">
+              Theo dõi
             </span>
           </a>
         </li>

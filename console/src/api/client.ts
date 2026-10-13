@@ -1,3 +1,4 @@
+import type { MonitorSnapshot } from '../domain/monitor';
 import type {
   DecisionSummary,
   DecisionVersion,
@@ -86,6 +87,10 @@ export const api = {
   evaluateVersion: (id: string, version: number, facts: Record<string, unknown>) =>
     request<EvalResult & { trace: EvaluationTrace }>('POST', `/decisions/${enc(id)}/versions/${version}/evaluate`, { facts }),
   replaySamples: () => request<{ id: string; label: string; note: string; record: Record<string, unknown> }[]>('GET', '/replay-samples'),
+  monitorSnapshot: () => request<MonitorSnapshot>('GET', '/monitor/snapshot'),
   moveLatest: (id: string, version: number) =>
     request<DecisionSummary>('PUT', `/decisions/${enc(id)}/latest`, { version }),
 };
+
+/** Theo dõi: new calls and Latest Pointer moves, pushed as Server-Sent Events. */
+export const MONITOR_STREAM = '/api/monitor/stream';

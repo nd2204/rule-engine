@@ -22,6 +22,11 @@ type Run =
 // The record pasted last, kept while the console is open (like the mock API, it is gone on reload).
 let lastText = '';
 
+/** Hands a Caller's record to Replay (from Theo dõi): it opens with the record in place, ready to run. */
+export function stageReplay(record: unknown) {
+  lastText = JSON.stringify(record, null, 2);
+}
+
 const timeFormat = new Intl.DateTimeFormat('vi-VN', { dateStyle: 'short', timeStyle: 'medium' });
 const dateFormat = new Intl.DateTimeFormat('vi-VN', { dateStyle: 'short' });
 const ms = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 3 });

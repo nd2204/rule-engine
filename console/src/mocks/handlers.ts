@@ -1,13 +1,15 @@
 // Provisional management API, served in the browser by MSW until the Go
 // service exists. Paths and payloads are placeholders for the OpenAPI contract.
 
-import { delay, http, HttpResponse } from 'msw';
+import { delay, http, HttpResponse, sse } from 'msw';
 import type { DecisionSummary, Draft, Expected, RuleSet, SimFact, SimulationReport, SimulationRun, TestCase } from '../domain/types';
 import { sampleBatch, seed, type DecisionRecord } from './data';
 import { breakingChanges, evaluate, simulate, simulateRun, traced } from './engine';
+import { createMonitor } from './monitor';
 import { replaySamples } from './replay';
 
 const db = seed();
+const monitor = createMonitor(db);
 let draftCounter = 10;
 
 function summary(d: DecisionRecord): DecisionSummary {
@@ -237,6 +239,24 @@ export const handlers = [
     return HttpResponse.json(replaySamples(db));
   }),
 
+  // Theo dõi: the illustrative Callers' calls kept in memory, then each new one as it happens.
+  http.get('/api/monitor/snapshot', async () => {
+    await delay(LATENCY);
+    return HttpResponse.json(monitor.snapshot());
+  }),
+
+  sse<{ evaluation: string; pointer: string }>('/api/monitor/stream', ({ client, request }) => {
+    const off = monitor.subscribe((m) => {
+      try {
+        if (m.type === 'evaluation') client.send({ event: 'evaluation', id: m.event.id, data: JSON.stringify(m.event) });
+        else client.send({ event: 'pointer', id: m.move.id, data: JSON.stringify(m.move) });
+      } catch {
+        off();
+      }
+    });
+    request.signal.addEventListener('abort', () => off());
+  }),
+
   http.post('/api/decisions/:id/drafts/:draftId/publish', async ({ params, request }) => {
     await delay(LATENCY * 3);
     const d = findDecision(params.id as string);
@@ -262,6 +282,7 @@ export const handlers = [
       publishedAt: new Date().toISOString(),
       note: draft.title,
     });
+    monitor.pointerMoved(d.id, d.latest, version, 'publish');
     d.latest = version;
     d.drafts = d.drafts.filter((x) => x.id !== draft.id);
     return HttpResponse.json({ version, decision: summary(d) });
@@ -273,6 +294,7 @@ export const handlers = [
     if (!d) return problem(404, 'NOT_FOUND', 'Không tìm thấy Decision');
     const { version } = (await request.json()) as { version: number };
     if (!d.versions[version - 1]) return problem(404, 'NOT_FOUND', 'Không tìm thấy Decision Version');
+    monitor.pointerMoved(d.id, d.latest, version);
     d.latest = version;
     return HttpResponse.json(summary(d));
   }),

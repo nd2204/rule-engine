@@ -12,6 +12,7 @@ import './styles/app.css';
 import './styles/flow.css';
 import './styles/rule-graph.css';
 import './styles/replay.css';
+import './styles/monitor.css';
 import './styles/themes.css';
 
 import { StrictMode } from 'react';
