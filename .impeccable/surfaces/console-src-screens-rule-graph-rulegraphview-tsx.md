@@ -22,6 +22,6 @@ THESIS: n8n-style node graph, data left to right into the Rule. Logic is named n
 
 OWN-WORLD: Inherits the Interlocking Control Table (DESIGN.md): ruled sheet, lamps with glyph and word, three hands of lettering, signal colours reserved for state; nodes are flat sheets with a 1px rule.
 
-STORY: The author opens BEV2, picks TC-04 under Chạy thử, sees Mỗi phần tử false (0/1 khớp) and the KHÔNG node false, adds a Điều kiện from the strip, sets customerTier = SILVER in the inspector, drags its wire into HOẶC, and the status turns to "Đã ghi vào Draft".
+STORY: The author opens BEV2 and picks TC-05 (one can of cola, POS, 400.000 ₫) under Chạy thử. HOẶC and KHÔNG are true; Mỗi phần tử is false (0/2 khớp: the cola has qty 1), so BEV2 does not match and TC-05 passes (it expects no discount). The author selects the qty ≥ 2 node, sets it to qty ≥ 1 in the inspector and applies: Mỗi phần tử turns 1/2 khớp, the wire into the Rule goes green, the Rule reads "match, vào output", TC-05 turns fail, and the Test Case pass lock in the commit bar lists TC-05. The change is caught before Publish; Undo from the toast restores it. (Revised 2026-10-13: the earlier TC-04 / customerTier = SILVER story could not flip the Rule, since HOẶC was already true and KHÔNG and items blocked it.)
 
 SIGNATURE: Under a Test Case, true wires run green with moving dashes into the Rule; false ones go muted red.

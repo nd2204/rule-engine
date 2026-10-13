@@ -10,15 +10,16 @@ import {
   type EdgeChange,
   type FinalConnectionState,
   type NodeChange,
+  type ReactFlowProps,
 } from '@xyflow/react';
 import '@xyflow/react/dist/base.css';
-import { ChevronDown, LayoutGrid, ListChecks, Maximize, Minus, PanelRightClose, PanelRightOpen, Plus, SlidersHorizontal } from 'lucide-react';
+import { ChevronDown, Info, LayoutGrid, ListChecks, Maximize, Minus, PanelRightClose, PanelRightOpen, Plus, SlidersHorizontal, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type DragEvent, type KeyboardEvent } from 'react';
 import { Lamp, type LampState } from '../../components/Lamp';
 import { describeAst } from '../../domain/cell';
 import { conjuncts } from '../../domain/compound';
 import type { InputField, Rule, RuleSet, TestCase, TestCaseResult, TraceRule } from '../../domain/types';
-import { INPUTS, RULE, SIZE, makesCycle, scopeOf, type GData, type GKind } from './graph';
+import { INPUTS, RULE, SIZE, makesCycle, type GData, type GKind } from './graph';
 import { nodeTypes, typeOf, type GFlowNode } from './nodes';
 import type { RuleGraph } from './useRuleGraph';
 
@@ -35,6 +36,8 @@ interface Props {
   ruleHref: (ruleId: string) => string;
   /** Present when the Rule Set is editable: adds a blank Rule and opens it. */
   onAddRule?: () => void;
+  /** Present when the Rule Set is editable: removes the open Rule and moves to its neighbour. */
+  onRemoveRule?: () => void;
   /** The Rule's inspector, a drawer beside the canvas: a node opens it, this toggle opens the Rule's overview. */
   inspectorOpen: boolean;
   onToggleInspector: () => void;
@@ -122,11 +125,23 @@ export function RuleGraphView(props: Props) {
               <ChevronDown size={14} aria-hidden="true" className="sim-source__chevron" />
             </span>
           </label>
+          {/* Beside the Test Case it answers, so the head stays one row on a laptop and the graph keeps the height. With no Test Case there is nothing to read yet, so the hint folds to an icon. */}
+          {props.selectedTc ? (
+            <p className={`rgraph__readout is-${verdict.lamp}`} aria-live="polite">
+              <Lamp state={verdict.lamp} size="sm" />
+              <span>{verdict.text}</span>
+            </p>
+          ) : (
+            <p className="rgraph__readout is-idle rgraph__readout--icon" aria-live="polite">
+              <button type="button" className="rgraph__hint" aria-label="Cách xem node đúng, sai" aria-describedby="rgraph-hint">
+                <Info size={15} aria-hidden="true" />
+              </button>
+              <span id="rgraph-hint" role="tooltip" className="rgraph__hint-tip">
+                {verdict.text}
+              </span>
+            </p>
+          )}
         </header>
-        <p className={`rgraph__readout is-${verdict.lamp}`} aria-live="polite">
-          <Lamp state={verdict.lamp} size="sm" />
-          <span>{verdict.text}</span>
-        </p>
       </div>
 
       <ReactFlowProvider>
@@ -187,15 +202,53 @@ function RuleRail(props: Props) {
           <Plus size={15} aria-hidden="true" /> Thêm Rule
         </button>
       )}
+      {props.onRemoveRule && (
+        <button type="button" className="rgraph__rail-remove" onClick={props.onRemoveRule}>
+          <Trash2 size={15} aria-hidden="true" /> Xoá {rule.id}
+        </button>
+      )}
     </nav>
   );
 }
 
-// Below 0.72 the node lettering stops being comfortable: a bigger graph is panned instead.
-// The padding clears what floats on the canvas: the Rule list on the left, the verdict above, the palette below.
-const FIT = { padding: { top: '120px', right: '40px', bottom: '80px', left: '272px' }, minZoom: 0.72, maxZoom: 1 } as const;
-const FIT_NARROW = { ...FIT, padding: { ...FIT.padding, top: '170px', left: '136px' } } as const;
-const fitOptions = () => (window.matchMedia('(max-width: 639px)').matches ? FIT_NARROW : FIT);
+// Below 0.8 the node lettering (12px glosses and labels) drops under 10px on screen: a bigger graph is panned instead.
+const MIN_ZOOM = 0.8;
+// The first paint only: once the canvas is measured, frame() fits to the room the floating panels leave.
+const FIT = { padding: { top: '120px', right: '40px', bottom: '80px', left: '272px' }, minZoom: MIN_ZOOM, maxZoom: 1 } as const;
+
+interface Room {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+}
+
+/** The part of the canvas nothing floats over, in px from the frame's corner: right of the Rule list, under the head, above the palette and the status. */
+function roomOf(frame: HTMLElement): Room {
+  const box = frame.getBoundingClientRect();
+  const root = frame.closest('.rgraph') ?? frame;
+  const at = (sel: string) => root.querySelector(sel)?.getBoundingClientRect();
+  const rail = at('.rgraph__rail');
+  const above = [at('.rgraph__hud'), at('.rgraph__view')].map((r) => (r ? r.bottom - box.top : 0));
+  const below = [at('.rgraph__palette'), at('.rgraph__status')].map((r) => (r && r.height ? box.bottom - r.top : 0));
+  return {
+    left: (rail ? rail.right - box.left : 0) + 24,
+    top: Math.max(0, ...above) + 16,
+    right: box.width - 24,
+    bottom: box.height - Math.max(0, ...below) - 16,
+  };
+}
+
+/** How far a span [a, b] must move to sit inside [min, max]; when it cannot fit, its start wins. */
+const nudge = (a: number, b: number, min: number, max: number) => (a < min ? min - a : b > max ? Math.max(min - a, max - b) : 0);
+
+const ARIA: ReactFlowProps['ariaLabelConfig'] = {
+  'node.a11yDescription.default': 'Enter để chọn node và mở form của nó ở ngăn bên phải. Delete để xoá, Escape để bỏ chọn.',
+  'node.a11yDescription.keyboardDisabled': 'Enter để chọn node và mở form của nó ở ngăn bên phải. Escape để bỏ chọn.',
+  'node.a11yDescription.ariaLiveMessage': ({ x, y }) => `Đã dời node tới x ${Math.round(x)}, y ${Math.round(y)}.`,
+  'edge.a11yDescription.default': 'Dây giữa hai node. Nối hoặc tháo dây ở mục Đầu ra nối vào trong form của node.',
+  'handle.ariaLabel': 'Cổng nối dây',
+};
 
 interface Picker {
   x: number;
@@ -235,6 +288,7 @@ function Canvas(props: Props & { lists: InputField[] }) {
         selected: g.selected === n.id,
         deletable: editable && n.id !== RULE,
         connectable: editable,
+        ariaLabel: nodeLabel(g, n.id, n.id === RULE && tr ? DISPOSITION_WORD[tr.disposition] : null),
         ...(measured[n.id] ? { measured: measured[n.id] } : {}),
         data: {
           g: n.data,
@@ -278,6 +332,7 @@ function Canvas(props: Props & { lists: InputField[] }) {
           source: e.source,
           target: e.target,
           className: `gedge ${tone}${g.reading.loose.has(e.source) ? ' is-loose' : ''}`,
+          ariaLabel: `Dây từ ${g.nameOf(e.source)} vào ${g.nameOf(e.target)}${t ? (t.ok ? ', mang giá trị đúng' : ', mang giá trị sai') : ''}`,
           animated: !!t?.ok,
           selected: selectedEdges.has(e.id),
           deletable: editable,
@@ -286,18 +341,113 @@ function Canvas(props: Props & { lists: InputField[] }) {
     [g, selectedEdges, editable],
   );
 
-  // Frame the graph when a Rule opens; later edits keep the author's view.
+  // Frame the graph in the room the floating panels leave. A graph too big to read whole is anchored on the Rule,
+  // where the answer is, and read back from it to the left.
   const frame = useCallback(
     async (duration: number) => {
-      await rf.fitView({ ...fitOptions(), duration });
+      const el = frameRef.current;
+      if (!el) return;
+      const room = roomOf(el);
+      const px = (n: number) => `${Math.round(n)}px` as const;
+      const padding = { top: px(room.top), left: px(room.left), right: px(el.clientWidth - room.right), bottom: px(el.clientHeight - room.bottom) };
+      await rf.fitView({ padding, minZoom: MIN_ZOOM, maxZoom: 1, duration });
+      const vp = rf.getViewport();
+      if (vp.zoom > MIN_ZOOM + 0.001) return;
+      const all = rf.getNodesBounds(rf.getNodes());
+      const ruleNode = rf.getInternalNode(RULE);
+      const z = vp.zoom;
+      const fitsW = all.width * z <= room.right - room.left;
+      const fitsH = all.height * z <= room.bottom - room.top;
+      const rx = ruleNode ? ruleNode.internals.positionAbsolute.x + (ruleNode.measured.width ?? SIZE.rule.w) : all.x + all.width;
+      const ry = ruleNode ? ruleNode.internals.positionAbsolute.y + (ruleNode.measured.height ?? SIZE.rule.h) / 2 : all.y + all.height / 2;
+      const x = fitsW ? room.left + (room.right - room.left - all.width * z) / 2 - all.x * z : room.right - rx * z;
+      const y = fitsH ? room.top + (room.bottom - room.top - all.height * z) / 2 - all.y * z : (room.top + room.bottom) / 2 - ry * z;
+      await rf.setViewport({ x, y, zoom: z }, { duration });
     },
     [rf],
   );
+
+  /** Pans as little as it takes to bring these nodes clear of the floating panels; when they cannot all show, the first one wins. */
+  const reveal = useCallback(
+    (ids: string[], duration: number) => {
+      const el = frameRef.current;
+      if (!el) return;
+      const room = roomOf(el);
+      const { x: vx, y: vy, zoom } = rf.getViewport();
+      const boxes = ids.flatMap((id) => {
+        const n = rf.getInternalNode(id);
+        if (!n) return [];
+        const l = n.internals.positionAbsolute.x * zoom + vx;
+        const t = n.internals.positionAbsolute.y * zoom + vy;
+        return [{ l, t, r: l + (n.measured.width ?? 200) * zoom, b: t + (n.measured.height ?? 80) * zoom }];
+      });
+      if (!boxes.length) return;
+      let u = boxes.reduce((a, b) => ({ l: Math.min(a.l, b.l), t: Math.min(a.t, b.t), r: Math.max(a.r, b.r), b: Math.max(a.b, b.b) }));
+      if (u.r - u.l > room.right - room.left || u.b - u.t > room.bottom - room.top) u = boxes[0];
+      const dx = nudge(u.l, u.r, room.left, room.right);
+      const dy = nudge(u.t, u.b, room.top, room.bottom);
+      if (dx || dy) void rf.setViewport({ x: vx + dx, y: vy + dy, zoom }, { duration });
+    },
+    [rf],
+  );
+
   useEffect(() => {
     setMeasured({});
     const t = window.setTimeout(() => void frame(0), 40);
     return () => window.clearTimeout(t);
   }, [rule.id, frame]);
+
+  // The node being edited and the Rule stay in sight: when a node is picked, and when the canvas changes size
+  // (the inspector drawer opening beside it, a window resize). With nothing picked, a new size re-frames the graph.
+  const selectedRef = useRef(g.selected);
+  selectedRef.current = g.selected;
+  useEffect(() => {
+    if (!g.selected) return;
+    const t = window.setTimeout(() => reveal([g.selected!, RULE], 220), 60);
+    return () => window.clearTimeout(t);
+  }, [g.selected, reveal]);
+  useEffect(() => {
+    const el = frameRef.current;
+    if (!el) return;
+    let size = `${el.clientWidth}x${el.clientHeight}`;
+    let t = 0;
+    const ro = new ResizeObserver(() => {
+      const next = `${el.clientWidth}x${el.clientHeight}`;
+      if (next === size) return;
+      size = next;
+      window.clearTimeout(t);
+      t = window.setTimeout(() => (selectedRef.current ? reveal([selectedRef.current, RULE], 220) : void frame(220)), 120);
+    });
+    ro.observe(el);
+    return () => {
+      ro.disconnect();
+      window.clearTimeout(t);
+    };
+  }, [frame, reveal]);
+
+  // Under a Test Case the part the readout names is brought into sight with the Rule: the first false input
+  // of the node that feeds the Rule, or that node itself. A graph that fits whole is already in view and stays put.
+  const feed = g.graph.edges.find((e) => e.target === RULE)?.source;
+  const failing =
+    feed && g.traced[feed] && !g.traced[feed].ok
+      ? (g.graph.edges.find((e) => e.target === feed && g.traced[e.source] && !g.traced[e.source].ok)?.source ?? feed)
+      : null;
+  useEffect(() => {
+    if (!failing || selectedRef.current) return;
+    const t = window.setTimeout(() => reveal([failing, RULE], 260), 80);
+    return () => window.clearTimeout(t);
+  }, [failing, props.selectedTc, reveal]);
+
+  // A deleted node leaves a hole where the author was looking: the rest of the graph is framed again.
+  const count = g.graph.nodes.length;
+  const prevCount = useRef(count);
+  useEffect(() => {
+    const shrank = count < prevCount.current;
+    prevCount.current = count;
+    if (!shrank) return;
+    const t = window.setTimeout(() => void frame(240), 60);
+    return () => window.clearTimeout(t);
+  }, [count, frame]);
 
   const onNodesChange = useCallback(
     (changes: NodeChange<GFlowNode>[]) => {
@@ -386,9 +536,8 @@ function Canvas(props: Props & { lists: InputField[] }) {
     const free = nodes.filter((n) => n.position.y > bottom - 2 * SIZE.cond.h && g.reading.loose.has(n.id));
     const x = free.length ? Math.max(...free.map((n) => n.position.x + SIZE[n.data.kind].w)) + 24 : left;
     const y = free.length ? Math.min(...free.map((n) => n.position.y)) : bottom + 48;
-    g.ops.add(data, { x, y });
-    const zoom = rf.getViewport().zoom;
-    window.setTimeout(() => void rf.setCenter(x + SIZE[kind].w / 2, y + SIZE[kind].h / 2, { zoom, duration: 260 }), 30);
+    const id = g.ops.add(data, { x, y });
+    window.setTimeout(() => reveal([id], 260), 60);
   }
 
   function onDrop(e: DragEvent) {
@@ -418,7 +567,6 @@ function Canvas(props: Props & { lists: InputField[] }) {
         return picker.end === 'source' ? INPUTS[p.kind] !== 0 : true;
       })
     : [];
-  const scopeHint = g.selected ? scopeOf(g.graph, g.selected, ruleSet.inputs).list : null;
 
   return (
     <div ref={frameRef} className="rgraph__frame" onKeyDown={onKey}>
@@ -469,6 +617,10 @@ function Canvas(props: Props & { lists: InputField[] }) {
         }}
         onDrop={onDrop}
         nodesConnectable={editable}
+        // Edges sit before nodes in the document: focusable, they would put ten stops ahead of the first node.
+        // Wires are made and unmade from a node's form instead ("Đầu ra nối vào").
+        edgesFocusable={false}
+        ariaLabelConfig={ARIA}
         deleteKeyCode={editable ? ['Delete', 'Backspace'] : null}
         connectionRadius={36}
         minZoom={0.35}
@@ -476,7 +628,7 @@ function Canvas(props: Props & { lists: InputField[] }) {
         defaultEdgeOptions={{ type: 'default' }}
         proOptions={{ hideAttribution: true }}
         fitView
-        fitViewOptions={fitOptions()}
+        fitViewOptions={FIT}
       >
         <Background variant={BackgroundVariant.Dots} gap={22} size={1.4} className="rgraph__grid" />
 
@@ -507,7 +659,6 @@ function Canvas(props: Props & { lists: InputField[] }) {
         </Panel>
 
         <Panel position="bottom-right" className="rgraph__status">
-          {scopeHint && <span className="rgraph__scope">Trong {scopeHint}: so sánh trường của phần tử</span>}
           <SaveState graph={g} />
           <button
             type="button"
@@ -613,4 +764,12 @@ function readout(p: Props, tr: TraceRule | null, schemaError: string | null): { 
   const kids = tree?.op === 'and' ? (tr.whole?.children ?? []) : tr.whole ? [tr.whole] : [];
   const failed = parts.filter((_, i) => kids[i]?.ok === false).map((n) => describeAst(n));
   return { lamp: 'stop', text: `${p.selectedTc}: sai ở ${failed.join('; ') || 'một điều kiện'}, nên ${p.rule.id} không match.` };
+}
+
+/** A node's accessible name: what it is, and what the Test Case made of it. */
+function nodeLabel(g: RuleGraph, id: string, ruleWord: string | null): string {
+  const t = g.traced[id];
+  const verdict = id === RULE ? ruleWord : t ? (t.missing ? 'Fact thiếu trường' : t.ok ? 'đúng' : 'sai') : null;
+  const parts = [g.nameOf(id), verdict, g.reading.loose.has(id) ? 'chưa nối tới Rule' : null, g.reading.problems.find((p) => p.nodeId === id)?.message];
+  return parts.filter(Boolean).join(', ');
 }

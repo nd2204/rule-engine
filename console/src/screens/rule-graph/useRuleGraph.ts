@@ -113,6 +113,24 @@ export function useRuleGraph(
     [graph],
   );
 
+  /**
+   * A node as a list or a screen reader names it: what it compares or combines, never its id.
+   * Two VÀ nodes read apart by what feeds them.
+   */
+  const nameOf = useCallback(
+    (id: string): string => {
+      const n = graph.nodes.find((x) => x.id === id);
+      if (!n) return '';
+      if (n.id === RULE) return `Rule ${rule?.id ?? ''}`;
+      if (n.data.kind === 'cond') return n.data.leaf ? describeAst(n.data.leaf) : 'Điều kiện chưa đặt';
+      if (n.data.kind === 'each') return `Mỗi phần tử ${n.data.path}`;
+      const feeds = graph.edges.filter((e) => e.target === id).map((e) => describe(e.source));
+      if (!feeds.length) return `${KIND_WORD[n.data.kind]}, chưa có đầu vào`;
+      return `${KIND_WORD[n.data.kind]} của ${feeds.slice(0, 2).join(', ')}${feeds.length > 2 ? ` và ${feeds.length - 2} đầu vào khác` : ''}`;
+    },
+    [graph, rule?.id, describe],
+  );
+
   const ops = {
     /** Adds a node; returns its id. A wire can come with it, from or into an existing node. */
     add(data: GData, position: { x: number; y: number }, wire?: { from?: string; to?: string }) {
@@ -191,6 +209,7 @@ export function useRuleGraph(
     setNotice,
     editable,
     describe,
+    nameOf,
     ops,
   };
 }

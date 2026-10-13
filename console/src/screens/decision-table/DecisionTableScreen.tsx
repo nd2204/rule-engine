@@ -649,6 +649,17 @@ function DraftView({ decisionId, draftId, tab, ruleId }: { decisionId: string; d
                   navigate(href.draftRule(decisionId, draftId, rule.id));
                 }
           }
+          onRemoveRule={
+            narrow
+              ? undefined
+              : () => {
+                  const at = ruleSet.rules.indexOf(openRule);
+                  const rules = ruleSet.rules.filter((r) => r !== openRule);
+                  onChange({ ...ruleSet, rules }, `Xoá ${openRule.id}`);
+                  const next = rules[Math.min(at, rules.length - 1)];
+                  navigate(next ? href.draftRule(decisionId, draftId, next.id) : href.draft(decisionId, draftId));
+                }
+          }
           inspectorOpen={drawerOpen}
           onToggleInspector={() => setDrawerOpen((o) => !o)}
         />

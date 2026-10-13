@@ -6,7 +6,7 @@ import { COMPOUND, contactCount, homes } from '../../domain/compound';
 import type { Rule, RuleSet, Scalar } from '../../domain/types';
 import { parseValue } from '../decision-table/RuleTable';
 import { ContactForm, QuantPicker, factText } from './forms';
-import { RULE, scopeOf, type Quant } from './graph';
+import { INPUTS, RULE, makesCycle, scopeOf, type Quant } from './graph';
 import { SaveState } from './RuleGraphView';
 import type { GraphUpdate, RuleGraph } from './useRuleGraph';
 
@@ -186,18 +186,57 @@ function EachForm({ graph: g, rule, ruleSet, id, op: op0, path }: Props & { id: 
   );
 }
 
+/**
+ * Where this node's output goes: the keyboard's way to wire, and a plain list of what the node can feed.
+ * Only targets that take an input and would not close a loop are offered; the rules of wiring still apply (connectIn).
+ */
+function OutputPicker({ graph: g, id }: { graph: RuleGraph; id: string }) {
+  const out = g.graph.edges.filter((e) => e.source === id);
+  const current = out[0]?.target ?? '';
+  const targets = g.graph.nodes.filter((n) => n.id !== id && INPUTS[n.data.kind] !== 0 && (n.id === current || !makesCycle(g.graph, id, n.id)));
+  const taken = (t: string) => INPUTS[g.graph.nodes.find((n) => n.id === t)!.data.kind] === 1 && g.graph.edges.some((e) => e.target === t && e.source !== id);
+  return (
+    <div className="cform__wire">
+      <label className="detail__label" htmlFor={`wire-${id}`}>
+        Đầu ra nối vào
+      </label>
+      <select
+        id={`wire-${id}`}
+        className="cform__select"
+        value={current}
+        onChange={(e) => {
+          const t = e.target.value;
+          if (t) g.ops.connect(id, t);
+          else if (out.length) g.ops.disconnect(out.map((x) => x.id));
+        }}
+      >
+        <option value="">Chưa nối: node không được lưu</option>
+        {targets.map((n) => (
+          <option key={n.id} value={n.id}>
+            {g.nameOf(n.id)}
+            {taken(n.id) ? ' · thay dây đang có' : ''}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
 function NodeActions({ graph: g, id }: { graph: RuleGraph; id: string }) {
   if (!g.editable || id === RULE) return null;
   const node = g.graph.nodes.find((n) => n.id === id)!;
   return (
-    <div className="cform__actions" role="group" aria-label="Thao tác trên node">
-      <button type="button" className="btn btn--secondary" onClick={() => g.ops.add(node.data, { x: node.position.x + 28, y: node.position.y + 120 })}>
-        <Copy size={15} aria-hidden="true" /> Nhân bản
-      </button>
-      <button type="button" className="btn btn--ghost btn--ghost-danger" onClick={() => g.ops.remove([id])} aria-keyshortcuts="Delete">
-        <Trash2 size={15} aria-hidden="true" /> Xoá <kbd>Del</kbd>
-      </button>
-    </div>
+    <>
+      <OutputPicker graph={g} id={id} />
+      <div className="cform__actions" role="group" aria-label="Thao tác trên node">
+        <button type="button" className="btn btn--secondary" onClick={() => g.ops.add(node.data, { x: node.position.x + 28, y: node.position.y + 120 })}>
+          <Copy size={15} aria-hidden="true" /> Nhân bản
+        </button>
+        <button type="button" className="btn btn--ghost btn--ghost-danger" onClick={() => g.ops.remove([id])} aria-keyshortcuts="Delete">
+          <Trash2 size={15} aria-hidden="true" /> Xoá <kbd>Del</kbd>
+        </button>
+      </div>
+    </>
   );
 }
 
@@ -377,7 +416,7 @@ function Overview({ graph: g, rule, ruleSet }: Props) {
       {g.editable && (
         <ul className="rgraph-inspect__how">
           <li>Kéo một node từ thanh Thêm node ở đáy canvas, hoặc bấm để thêm.</li>
-          <li>Kéo dây từ chấm bên phải của một node sang chấm bên trái của node khác.</li>
+          <li>Kéo dây từ chấm bên phải của một node sang chấm bên trái của node khác, hoặc chọn node rồi đặt Đầu ra nối vào.</li>
           <li>Thả dây ra chỗ trống để chọn node mới nối ngay vào đó.</li>
           <li>Chọn node rồi nhấn Delete để xoá; Enter để sửa.</li>
           <li>Bấm node Rule để sửa mô tả và output.</li>
