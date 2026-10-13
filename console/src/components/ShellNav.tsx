@@ -1,4 +1,4 @@
-import { Info, LayoutList, Palette } from 'lucide-react';
+import { History, Info, LayoutList, Palette } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { href, type Route } from '../router';
 import { ThemeSelect } from './ThemeSelect';
@@ -50,6 +50,20 @@ export function ShellNav({ route }: { route: Route }) {
             <LayoutList size={20} aria-hidden="true" />
             <span className="shell__label" aria-hidden="true">
               Decisions
+            </span>
+          </a>
+        </li>
+        <li>
+          <a
+            className="shell__item"
+            href={href.replay()}
+            aria-current={route.name === 'replay' ? 'page' : undefined}
+            aria-label="Replay"
+            title="Replay một quyết định đã ghi"
+          >
+            <History size={20} aria-hidden="true" />
+            <span className="shell__label" aria-hidden="true">
+              Replay
             </span>
           </a>
         </li>

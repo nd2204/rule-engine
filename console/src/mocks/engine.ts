@@ -296,7 +296,7 @@ export function traceOf(ruleSet: RuleSet, facts: Record<string, unknown>, result
   };
 }
 
-function traced(ruleSet: RuleSet, facts: Record<string, unknown>, label: string) {
+export function traced(ruleSet: RuleSet, facts: Record<string, unknown>, label: string) {
   const t0 = performance.now();
   const result = evaluate(ruleSet, facts);
   const durationMs = performance.now() - t0;

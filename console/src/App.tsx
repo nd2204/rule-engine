@@ -4,6 +4,7 @@ import { ShellNav } from './components/ShellNav';
 import { useRoute } from './router';
 import { DecisionTableScreen } from './screens/decision-table/DecisionTableScreen';
 import { DecisionsScreen } from './screens/decisions/DecisionsScreen';
+import { ReplayScreen } from './screens/replay/ReplayScreen';
 import { DecisionsProvider, ToastProvider, useToasts } from './state';
 
 function Toasts() {
@@ -54,7 +55,13 @@ function Shell() {
       </a>
       <ShellNav route={route} />
       <main id="main" className="main">
-        {route.name === 'home' ? <DecisionsScreen /> : <DecisionTableScreen route={route} />}
+        {route.name === 'home' ? (
+          <DecisionsScreen />
+        ) : route.name === 'replay' ? (
+          <ReplayScreen />
+        ) : (
+          <DecisionTableScreen route={route} />
+        )}
       </main>
       <Toasts />
     </div>

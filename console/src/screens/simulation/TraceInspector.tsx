@@ -309,7 +309,7 @@ function dispositionText(tr: TraceRule, ruleSet: RuleSet, failed: string[]): str
   }
 }
 
-function TraceRuleView({ tr, index, ruleSet, note }: { tr: TraceRule; index: number; ruleSet: RuleSet; note: string | null }) {
+export function TraceRuleView({ tr, index, ruleSet, note }: { tr: TraceRule; index: number; ruleSet: RuleSet; note: string | null }) {
   const rule = ruleSet.rules.find((r) => r.id === tr.ruleId);
   const failed = tr.conditions.filter((c) => c.ok === false);
   const held = tr.conditions.filter((c) => c.ok === true);

@@ -4,7 +4,8 @@
 import { delay, http, HttpResponse } from 'msw';
 import type { DecisionSummary, Draft, Expected, RuleSet, SimFact, SimulationReport, SimulationRun, TestCase } from '../domain/types';
 import { sampleBatch, seed, type DecisionRecord } from './data';
-import { breakingChanges, evaluate, simulate, simulateRun } from './engine';
+import { breakingChanges, evaluate, simulate, simulateRun, traced } from './engine';
+import { replaySamples } from './replay';
 
 const db = seed();
 let draftCounter = 10;
@@ -217,6 +218,23 @@ export const handlers = [
     if (!draft) return problem(404, 'NOT_FOUND', 'Không tìm thấy Draft');
     const body = (await request.json()) as { ruleSet?: RuleSet; facts: Record<string, unknown> };
     return HttpResponse.json(evaluate(body.ruleSet ?? draft.ruleSet, body.facts));
+  }),
+
+  // Replay: one set of Facts against one Published version, with its full Evaluation Trace. Latest plays no part.
+  http.post('/api/decisions/:id/versions/:version/evaluate', async ({ params, request }) => {
+    await delay(LATENCY);
+    const d = findDecision(params.id as string);
+    if (!d) return problem(404, 'DECISION_NOT_FOUND', `Không có Decision ${params.id as string}`);
+    const v = d.versions[Number(params.version) - 1];
+    if (!v) return problem(404, 'VERSION_NOT_FOUND', `${d.id} không có v${params.version as string}: các version hiện có là v1 đến v${d.versions.length}`);
+    const body = (await request.json()) as { facts: Record<string, unknown> };
+    return HttpResponse.json(traced(v.ruleSet, body.facts, `v${v.version}`));
+  }),
+
+  // Illustrative records, shaped as a Caller would keep them, for trying Replay without a real log.
+  http.get('/api/replay-samples', async () => {
+    await delay(LATENCY);
+    return HttpResponse.json(replaySamples(db));
   }),
 
   http.post('/api/decisions/:id/drafts/:draftId/publish', async ({ params, request }) => {

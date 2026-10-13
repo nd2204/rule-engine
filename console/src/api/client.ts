@@ -3,6 +3,7 @@ import type {
   DecisionVersion,
   Draft,
   EvalResult,
+  EvaluationTrace,
   Expected,
   RuleSet,
   SimFact,
@@ -81,6 +82,10 @@ export const api = {
       `/decisions/${enc(id)}/drafts/${enc(draftId)}/publish`,
       { acknowledgedLatest, confirmBreaking },
     ),
+  /** Replay: Facts against one Published version (not Latest), with the full Evaluation Trace. */
+  evaluateVersion: (id: string, version: number, facts: Record<string, unknown>) =>
+    request<EvalResult & { trace: EvaluationTrace }>('POST', `/decisions/${enc(id)}/versions/${version}/evaluate`, { facts }),
+  replaySamples: () => request<{ id: string; label: string; note: string; record: Record<string, unknown> }[]>('GET', '/replay-samples'),
   moveLatest: (id: string, version: number) =>
     request<DecisionSummary>('PUT', `/decisions/${enc(id)}/latest`, { version }),
 };

@@ -68,7 +68,7 @@ export function Workspace(props: Props) {
     <div className={`screen${props.tabs ? ' has-tabs' : ''}${props.commit ? ' has-commit' : ''}${props.className ? ` ${props.className}` : ''}`}>
       <div className="screen__head">
         {props.head}
-        {props.tabs && (
+        {props.tabs ? (
           <nav className="screen__tabs" aria-label="Màn hình của Decision">
             <ul className="tabs">
               {TABS.map((t) => (
@@ -92,6 +92,22 @@ export function Workspace(props: Props) {
               </button>
             )}
           </nav>
+        ) : (
+          // No tabs: the drawer's toggle still needs a row of its own while the inspector is a drawer.
+          props.inspector && (
+            <div className="screen__tabs is-bare">
+              <button
+                ref={toggleRef}
+                type="button"
+                className="tabs__inspector"
+                aria-expanded={drawerOpen}
+                aria-controls="inspector"
+                onClick={() => onDrawerOpenChange?.(!drawerOpen)}
+              >
+                {props.inspectorSummary ?? props.inspectorLabel}
+              </button>
+            </div>
+          )
         )}
       </div>
 
