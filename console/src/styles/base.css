@@ -71,7 +71,11 @@ textarea::placeholder {
 }
 
 .visually-hidden {
+  /* Pinned to its containing block's corner: left at its static place deep in a long list, it would sit
+     outside the region's scroller (the workspace body is the containing block) and stretch the page. */
   position: absolute;
+  top: 0;
+  left: 0;
   width: 1px;
   height: 1px;
   overflow: hidden;
