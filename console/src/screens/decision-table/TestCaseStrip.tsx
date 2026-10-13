@@ -3,6 +3,7 @@ import { useEffect, useId, useRef, useState, type FormEvent } from 'react';
 import { formatScalar, parseNumber } from '../../domain/cell';
 import type { EvalResult, Expected, InputField, OutputField, OutputRow, RuleSet, TestCase, TestCaseResult } from '../../domain/types';
 import { Lamp, type LampState } from '../../components/Lamp';
+import { useFresh } from '../../components/useFresh';
 import { useNarrow } from '../../state';
 
 interface Props {
@@ -97,6 +98,8 @@ export function TestCaseStrip(props: Props) {
     }
   };
   const byId = new Map(results?.map((r) => [r.testCaseId, r]));
+  const verdictKey = (tc: TestCase) => `${tc.id}:${byId.get(tc.id)?.status ?? ''}:${byId.get(tc.id)?.differsFromLatest ? 'd' : ''}`;
+  const fresh = useFresh((props.testCases ?? []).map(verdictKey));
   const passed = results?.filter((r) => r.status === 'pass').length ?? 0;
   const total = testCases?.length ?? 0;
   const lampOf = (r: TestCaseResult | undefined): LampState =>
@@ -219,7 +222,7 @@ export function TestCaseStrip(props: Props) {
             const active = selectedId === tc.id;
             return (
               <li key={tc.id} className={`tc${active ? ' is-active' : ''}`} data-tc={tc.id}>
-                <button type="button" className="tc__btn" aria-pressed={active} onClick={() => onSelect(active ? null : tc.id)}>
+                <button type="button" className={`tc__btn${fresh.has(verdictKey(tc)) ? ' is-fresh' : ''}`} aria-pressed={active} onClick={() => onSelect(active ? null : tc.id)}>
                   <Lamp state={lampOf(r)} size="sm" />
                   <span className="tc__id">{tc.id}</span>
                   <span className="tc__name">{tc.name}</span>

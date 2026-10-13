@@ -30,6 +30,7 @@ import {
 } from '../../domain/cell';
 import type { AstNode, Cell, InputField, OutputField, Rule, RuleSet, Scalar, TestCaseResult } from '../../domain/types';
 import type { RowDiff } from './diff';
+import { Glide } from './Glide';
 
 interface Props {
   ruleSet: RuleSet;
@@ -67,6 +68,7 @@ const POLICY_ORDER_NOTE: Record<RuleSet['hitPolicy'], string> = {
 };
 
 export function RuleTable(props: Props) {
+  const skipGlide = useRef(false);
   const { ruleSet, editable, onChange, results, selected, diff, newFields, expandedId, onExpand, onRestore, latestNo, circuitHref } = props;
   const reorderable = editable && !diff && (ruleSet.hitPolicy === 'FIRST' || ruleSet.hitPolicy === 'COLLECT');
   const showWeight = ruleSet.hitPolicy === 'PRIORITY';
@@ -195,6 +197,11 @@ export function RuleTable(props: Props) {
 
   function onDragEnd(e: DragEndEvent) {
     if (!e.over || e.active.id === e.over.id) return;
+    // The dragged rows already sit where they land: this commit must not glide.
+    skipGlide.current = true;
+    setTimeout(() => {
+      skipGlide.current = false;
+    }, 50);
     const from = ruleSet.rules.findIndex((r) => r.id === e.active.id);
     const to = ruleSet.rules.findIndex((r) => r.id === e.over!.id);
     onChange({ ...ruleSet, rules: arrayMove(ruleSet.rules, from, to) }, `Chuyển ${String(e.active.id)} tới vị trí ${to + 1}`);
@@ -341,93 +348,95 @@ export function RuleTable(props: Props) {
   );
 
   return (
-    <div className="rules-wrap">
-      <p id="rules-order-note" className="rules-note">
-        <span className="rules-note__policy">{ruleSet.hitPolicy}</span>
-        {POLICY_ORDER_NOTE[ruleSet.hitPolicy]}
-        {reorderable && <span className="rules-note__hint">Kéo tay nắm, hoặc focus tay nắm rồi dùng Space và phím mũi tên.</span>}
-      </p>
-      <div className="rules-frame">
-        {(['left', 'right'] as const).map((side) => {
-          const fields = edges[side];
-          if (!fields.length) return null;
-          const reasons = hiddenReasons.filter((r) => fields.includes(r.field));
-          const target = reasons[0]?.field ?? (side === 'right' ? fields[0] : fields[fields.length - 1]);
-          const label = reasons.length
-            ? `${reasons.map((r) => r.ruleId).join(', ')} trượt ở ${[...new Set(reasons.map((r) => r.field))].join(', ')}`
-            : `${fields.length} cột ẩn: ${fields.join(', ')}`;
-          return (
-            <button
-              key={side}
-              type="button"
-              className={`rules-edge rules-edge--${side}${reasons.length ? ' is-reason' : ''}`}
-              style={side === 'left' ? { left: edges.leftX } : { right: edges.rightX }}
-              onClick={() => reveal(target)}
-              title={`Cuộn tới ${target}`}
-            >
-              {side === 'left' && <ChevronLeft size={14} aria-hidden="true" />}
-              {reasons.length > 0 && <X size={12} strokeWidth={3} aria-hidden="true" className="rules-edge__miss" />}
-              <span>{label}</span>
-              {side === 'right' && <ChevronRight size={14} aria-hidden="true" />}
-            </button>
-          );
-        })}
-        <div
-          ref={scrollRef}
-          className={`rules-scroll${overflowing ? ' has-overflow' : ''}${pinIdent ? ' pins-ident' : ''}`}
-          onScroll={() => measureEdges.current()}
-          onFocus={keepFocusClear}
-        >
-          {reorderable ? (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragEnd={onDragEnd}
-              accessibility={{
-                screenReaderInstructions: {
-                  draggable: 'Nhấn Space để nhấc Rule, dùng phím mũi tên để di chuyển, Space để thả, Escape để huỷ.',
-                },
-                announcements: {
-                  onDragStart: ({ active }) => `Đã nhấc ${String(active.id)}.`,
-                  onDragOver: ({ active, over }) =>
-                    over ? `${String(active.id)} đang ở vị trí của ${String(over.id)}.` : `${String(active.id)} ở ngoài bảng.`,
-                  onDragEnd: ({ active, over }) =>
-                    over ? `Đã thả ${String(active.id)} vào vị trí của ${String(over.id)}.` : `Đã thả ${String(active.id)}.`,
-                  onDragCancel: ({ active }) => `Huỷ di chuyển ${String(active.id)}.`,
-                },
-              }}
-            >
-              <SortableContext items={ruleSet.rules.map((r) => r.id)} strategy={verticalListSortingStrategy}>
-                {table}
-              </SortableContext>
-            </DndContext>
-          ) : (
-            table
-          )}
+    <Glide skip={skipGlide}>
+      <div className="rules-wrap">
+        <p id="rules-order-note" className="rules-note">
+          <span className="rules-note__policy">{ruleSet.hitPolicy}</span>
+          {POLICY_ORDER_NOTE[ruleSet.hitPolicy]}
+          {reorderable && <span className="rules-note__hint">Kéo tay nắm, hoặc focus tay nắm rồi dùng Space và phím mũi tên.</span>}
+        </p>
+        <div className="rules-frame">
+          {(['left', 'right'] as const).map((side) => {
+            const fields = edges[side];
+            if (!fields.length) return null;
+            const reasons = hiddenReasons.filter((r) => fields.includes(r.field));
+            const target = reasons[0]?.field ?? (side === 'right' ? fields[0] : fields[fields.length - 1]);
+            const label = reasons.length
+              ? `${reasons.map((r) => r.ruleId).join(', ')} trượt ở ${[...new Set(reasons.map((r) => r.field))].join(', ')}`
+              : `${fields.length} cột ẩn: ${fields.join(', ')}`;
+            return (
+              <button
+                key={side}
+                type="button"
+                className={`rules-edge rules-edge--${side}${reasons.length ? ' is-reason' : ''}`}
+                style={side === 'left' ? { left: edges.leftX } : { right: edges.rightX }}
+                onClick={() => reveal(target)}
+                title={`Cuộn tới ${target}`}
+              >
+                {side === 'left' && <ChevronLeft size={14} aria-hidden="true" />}
+                {reasons.length > 0 && <X size={12} strokeWidth={3} aria-hidden="true" className="rules-edge__miss" />}
+                <span>{label}</span>
+                {side === 'right' && <ChevronRight size={14} aria-hidden="true" />}
+              </button>
+            );
+          })}
+          <div
+            ref={scrollRef}
+            className={`rules-scroll${overflowing ? ' has-overflow' : ''}${pinIdent ? ' pins-ident' : ''}`}
+            onScroll={() => measureEdges.current()}
+            onFocus={keepFocusClear}
+          >
+            {reorderable ? (
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={onDragEnd}
+                accessibility={{
+                  screenReaderInstructions: {
+                    draggable: 'Nhấn Space để nhấc Rule, dùng phím mũi tên để di chuyển, Space để thả, Escape để huỷ.',
+                  },
+                  announcements: {
+                    onDragStart: ({ active }) => `Đã nhấc ${String(active.id)}.`,
+                    onDragOver: ({ active, over }) =>
+                      over ? `${String(active.id)} đang ở vị trí của ${String(over.id)}.` : `${String(active.id)} ở ngoài bảng.`,
+                    onDragEnd: ({ active, over }) =>
+                      over ? `Đã thả ${String(active.id)} vào vị trí của ${String(over.id)}.` : `Đã thả ${String(active.id)}.`,
+                    onDragCancel: ({ active }) => `Huỷ di chuyển ${String(active.id)}.`,
+                  },
+                }}
+              >
+                <SortableContext items={ruleSet.rules.map((r) => r.id)} strategy={verticalListSortingStrategy}>
+                  {table}
+                </SortableContext>
+              </DndContext>
+            ) : (
+              table
+            )}
+          </div>
         </div>
+        {expandedRule && (
+          <RulePanel
+            rule={expandedRule}
+            index={expandedIndex}
+            count={ruleSet.rules.length}
+            ruleSet={ruleSet}
+            editable={editable && !diff}
+            onUpdate={(patch, summary) => updateRule(expandedRule.id, patch, summary)}
+            onStep={(d) => onExpand(ruleSet.rules[expandedIndex + d]?.id ?? expandedRule.id)}
+            circuitHref={circuitHref?.(expandedRule.id)}
+            onClose={() => {
+              document.querySelector<HTMLElement>(`[aria-controls="${PANEL_ID}"]`)?.focus();
+              onExpand(null);
+            }}
+          />
+        )}
+        {editable && !diff && rows.length > 0 && (
+          <button type="button" className="btn btn--ghost rules-add" onClick={addRule}>
+            <Plus size={16} aria-hidden="true" /> Thêm Rule
+          </button>
+        )}
       </div>
-      {expandedRule && (
-        <RulePanel
-          rule={expandedRule}
-          index={expandedIndex}
-          count={ruleSet.rules.length}
-          ruleSet={ruleSet}
-          editable={editable && !diff}
-          onUpdate={(patch, summary) => updateRule(expandedRule.id, patch, summary)}
-          onStep={(d) => onExpand(ruleSet.rules[expandedIndex + d]?.id ?? expandedRule.id)}
-          circuitHref={circuitHref?.(expandedRule.id)}
-          onClose={() => {
-            document.querySelector<HTMLElement>(`[aria-controls="${PANEL_ID}"]`)?.focus();
-            onExpand(null);
-          }}
-        />
-      )}
-      {editable && !diff && rows.length > 0 && (
-        <button type="button" className="btn btn--ghost rules-add" onClick={addRule}>
-          <Plus size={16} aria-hidden="true" /> Thêm Rule
-        </button>
-      )}
-    </div>
+    </Glide>
   );
 }
 

@@ -1,6 +1,7 @@
 import { Lock, LockOpen, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Lamp, type LampState } from '../../components/Lamp';
+import { useFresh } from '../../components/useFresh';
 
 export interface Interlock {
   id: string;
@@ -51,6 +52,8 @@ export function InterlockRow({ locks, summary, nextVersion, publishing, blockedB
   const summaryKey = JSON.stringify(summary);
   const armed = free && armedFor === summaryKey;
   const leverRef = useRef<HTMLButtonElement>(null);
+  // What blocks Publish is read on demand (hover, focus or a press on the locked lever), not printed under it.
+  const [reasonOpen, setReasonOpen] = useState(false);
   useEffect(() => {
     if (!armed) return;
     const onKey = (e: KeyboardEvent) => {
@@ -63,6 +66,7 @@ export function InterlockRow({ locks, summary, nextVersion, publishing, blockedB
   }, [armed]);
   const was = useRef(free);
   const [releasing, setReleasing] = useState(false);
+  const [relocking, setRelocking] = useState(false);
 
   useEffect(() => {
     if (free && !was.current) {
@@ -71,10 +75,18 @@ export function InterlockRow({ locks, summary, nextVersion, publishing, blockedB
       was.current = free;
       return () => window.clearTimeout(t);
     }
+    if (!free && was.current) {
+      setRelocking(true);
+      const t = window.setTimeout(() => setRelocking(false), 500);
+      was.current = free;
+      return () => window.clearTimeout(t);
+    }
     was.current = free;
   }, [free]);
 
   const blocking = locks.filter((l) => l.state !== 'clear');
+  const cleared = locks.length - blocking.length;
+  const fresh = useFresh([`cleared:${cleared}`, ...locks.map((l) => `${l.id}:${l.state}`)]);
   const reason = blockedByViewport
     ? 'Publish trên màn hình rộng hơn'
     : summary.unchanged
@@ -93,7 +105,7 @@ export function InterlockRow({ locks, summary, nextVersion, publishing, blockedB
 
   return (
     <section
-      className={`interlock${releasing ? ' is-releasing' : ''}${free ? ' is-free' : ''}${armed ? ' is-armed' : ''}`}
+      className={`interlock${releasing ? ' is-releasing' : ''}${free ? ' is-free' : ''}${armed ? ' is-armed' : ''}${relocking ? ' is-relocking' : ''}`}
       aria-labelledby="interlock-title"
     >
       {armed && (
@@ -145,7 +157,7 @@ export function InterlockRow({ locks, summary, nextVersion, publishing, blockedB
         </div>
       )}
       <h2 id="interlock-title" className="interlock__readout">
-        <span className="interlock__figure">
+        <span className={`interlock__figure${fresh.has(`cleared:${cleared}`) ? ' is-fresh' : ''}`}>
           {locks.length - blocking.length}
           <span>/{locks.length}</span>
         </span>{' '}
@@ -153,27 +165,30 @@ export function InterlockRow({ locks, summary, nextVersion, publishing, blockedB
       </h2>
       <ol className="interlock__locks">
         {locks.map((lock, i) => (
-          <li key={lock.id} className={`lock lock--${lock.state}`}>
+          <li
+            key={lock.id}
+            className={`lock lock--${lock.state}${!releasing && fresh.has(`${lock.id}:${lock.state}`) ? ' is-fresh' : ''}`}
+            tabIndex={0} aria-label={`${lock.label}: ${lock.detail}`}>
             <Lamp state={lock.state} delay={releasing ? i * 90 : undefined} />
             <div className="lock__text">
               <span className="lock__label">{lock.label}</span>
-              <span className="lock__detail" title={lock.detail}>
-                {lock.detail}
-              </span>
             </div>
-            {lock.actions && lock.actions.length > 0 && (
-              <span className="lock__actions">
-                {lock.actions.map((a) => (
-                  <button key={a.label} type="button" className="lock__action" onClick={a.run}>
-                    {a.label}
-                  </button>
-                ))}
-              </span>
-            )}
+            <div className="lock__pop">
+              <span className="lock__detail">{lock.detail}</span>
+              {lock.actions && lock.actions.length > 0 && (
+                <span className="lock__actions">
+                  {lock.actions.map((a) => (
+                    <button key={a.label} type="button" className="btn btn--secondary lock__btn" onClick={a.run}>
+                      {a.label}
+                    </button>
+                  ))}
+                </span>
+              )}
+            </div>
           </li>
         ))}
       </ol>
-      <div className="lever">
+      <div className={`lever${reasonOpen ? ' is-reason-open' : ''}`}>
         <button
           ref={leverRef}
           type="button"
@@ -181,7 +196,10 @@ export function InterlockRow({ locks, summary, nextVersion, publishing, blockedB
           aria-disabled={!free || publishing}
           aria-describedby={armed ? 'release-bay lever-reason' : 'lever-reason'}
           onClick={() => {
-            if (!free || publishing) return;
+            if (!free || publishing) {
+              setReasonOpen((o) => !o);
+              return;
+            }
             if (armed) onPublish();
             else setArmedFor(summaryKey);
           }}
@@ -192,8 +210,13 @@ export function InterlockRow({ locks, summary, nextVersion, publishing, blockedB
           <span className="lever__text">
             {publishing ? 'Đang Publish…' : armed ? `Xác nhận Publish v${nextVersion}` : `Publish thành v${nextVersion}`}
           </span>
+          {!free && !publishing && blocking.length > 0 && (
+            <span className="lever__count" aria-hidden="true">
+              {blocking.length}
+            </span>
+          )}
         </button>
-        <span id="lever-reason" className="lever__reason" aria-live="polite">
+        <span id="lever-reason" className="lever__reason" role="status">
           {reason}
         </span>
       </div>
