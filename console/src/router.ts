@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 /** Tabs of the Decision Workspace, in their fixed order (DESIGN.md, Layout). */
-export const TABS = ['rules', 'flow', 'simulation', 'versions', 'schema'] as const;
+export const TABS = ['rules', 'testcases', 'flow', 'simulation', 'versions', 'schema'] as const;
 export type Tab = (typeof TABS)[number];
 
 /** `ruleId`: one Rule's condition as a node graph, opened from the Rules tab (`…/rule/:ruleId`). */

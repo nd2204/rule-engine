@@ -112,6 +112,7 @@ textarea::placeholder {
   font-size: var(--t-base);
   font-weight: 500;
   white-space: nowrap;
+  text-decoration: none;
   cursor: pointer;
   transition:
     background-color 150ms var(--ease-out),
@@ -158,6 +159,15 @@ textarea::placeholder {
 .btn--ghost-danger:hover {
   background: var(--stop-tint);
   color: var(--stop-ink);
+}
+
+.btn--secondary-danger {
+  color: var(--stop-ink);
+}
+
+.btn--secondary-danger:hover {
+  background: var(--stop-tint);
+  border-color: var(--stop-ink);
 }
 
 .btn:disabled,

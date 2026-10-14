@@ -2299,6 +2299,7 @@ a.mode__btn {
 
 .strip__empty {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   padding: 16px 0;
   font-size: var(--t-sm);
@@ -2308,6 +2309,14 @@ a.mode__btn {
 .strip__empty svg {
   flex: none;
   color: var(--ink-3);
+}
+
+.strip__empty p {
+  flex: 1 1 0;
+}
+
+.strip__empty .btn {
+  margin-left: 30px;
 }
 
 .strip__add {
@@ -2477,8 +2486,34 @@ a.mode__btn {
 }
 
 .tc__detail {
-  padding: 2px 6px 14px 30px;
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  padding: 12px 12px 12px 30px;
+  border-top: 1px solid var(--rule);
   background: var(--accent-tint);
+}
+
+.tc__section {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+}
+
+/* Each section label runs a hairline out to the edge, so the read-out reads as ruled blocks. */
+.tc__detail .tc__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.tc__detail .tc__label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
 }
 
 .tc__label {
@@ -2494,8 +2529,9 @@ a.mode__btn {
 .tc__facts {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  gap: 2px 12px;
+  gap: 3px 16px;
   font-size: var(--t-sm);
+  font-variant-numeric: tabular-nums;
 }
 
 .tc__facts div {
@@ -2508,12 +2544,14 @@ a.mode__btn {
 }
 
 .tc__facts dd {
+  font-weight: 500;
   overflow-wrap: anywhere;
 }
 
 .tc__outputs {
   display: grid;
-  gap: 4px;
+  gap: 6px;
+  font-variant-numeric: tabular-nums;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -2537,6 +2575,116 @@ a.mode__btn {
   color: var(--ink-3);
 }
 
+.tc__count {
+  order: 2;
+  margin-left: auto;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--ink-2);
+}
+
+/* The count sits past the label's hairline. */
+.tc__detail .tc__label::after {
+  order: 1;
+}
+
+.tc__diff {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* One row per Decision Result row, tinted by its read-back: matched, missing from the Draft, extra in the Draft. */
+.tc__diff-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: 'lamp cells flag';
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--clear-tint);
+  font-size: var(--t-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.tc__diff-row + .tc__diff-row {
+  margin-top: 2px;
+}
+
+.tc__diff-row[data-diff='missing'] {
+  background: var(--stop-tint);
+}
+
+.tc__diff-row[data-diff='extra'] {
+  background: var(--caution-tint);
+}
+
+.tc__diff-row .lamp {
+  grid-area: lamp;
+}
+
+.tc__cells {
+  grid-area: cells;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 18px;
+  min-width: 0;
+}
+
+.tc__cell {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 6px;
+  min-width: 0;
+}
+
+.tc__cell-key {
+  font-family: var(--font-code);
+  font-size: var(--t-xs);
+  color: var(--ink-2);
+}
+
+.tc__cell-val {
+  font-weight: 600;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.tc__flag {
+  grid-area: flag;
+  font-family: var(--font-tech);
+  font-size: var(--t-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--clear-ink);
+}
+
+.tc__diff-row[data-diff='missing'] .tc__flag {
+  color: var(--stop-ink);
+}
+
+.tc__diff-row[data-diff='extra'] .tc__flag {
+  color: var(--caution-ink);
+}
+
+/* In the narrow Test Case strip the flag drops under the cells, so a row never outgrows the panel. */
+@container (max-width: 22rem) {
+  .tc__diff-row {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'lamp cells'
+      '. flag';
+    align-items: start;
+    row-gap: 2px;
+  }
+
+  .tc__diff-row .lamp {
+    margin-top: 1px;
+  }
+}
+
 .tc__none {
   font-size: var(--t-sm);
   color: var(--ink-3);
@@ -2549,7 +2697,6 @@ a.mode__btn {
 }
 
 .tc__trace {
-  margin-top: 8px;
   font-size: var(--t-sm);
   color: var(--ink-2);
 }
@@ -2561,6 +2708,10 @@ a.mode__btn {
   margin-top: 6px;
   font-size: var(--t-sm);
   color: var(--caution-ink);
+}
+
+.tc__detail .tc__warning {
+  margin-top: 0;
 }
 
 .tc-skeleton {
@@ -2738,11 +2889,1045 @@ a.mode__btn {
 }
 
 .tc__actions {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+}
+
+
+/* ================= Test Case tab ================= */
+
+/* The Test Case tab reads like the Rules Table: one Test Case per row, Facts as input columns,
+   the expectation in the output band, the Draft's verdict pinned at the right edge. */
+.tct-wrap {
+  --line: color-mix(in srgb, var(--rule-strong) 40%, var(--rule));
+  --zone: color-mix(in srgb, var(--panel) 50%, var(--sheet));
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  align-content: start;
+}
+
+.tct-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+}
+
+.tct-head__title {
+  font-family: var(--font-tech);
+  font-size: var(--t-lg);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tct-head__count {
+  font-family: var(--font-tech);
+  font-size: var(--t-base);
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.tct-head__count strong {
+  font-size: var(--t-xl);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.tct-head__count.is-clear strong {
+  color: var(--clear-ink);
+}
+
+.tct-head__count.is-stop strong {
+  color: var(--stop-ink);
+}
+
+.tct-head__note {
+  flex-basis: 100%;
+  font-size: var(--t-sm);
+  color: var(--ink-3);
+}
+
+.tct-scroll {
+  max-height: max(360px, calc(100dvh - 220px));
+  overflow: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule-strong) transparent;
+  border: 1px solid var(--line);
+  background: var(--sheet);
+}
+
+.tct {
+  --verdict-w: 184px;
+  width: max-content;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--t-md);
+  font-variant-numeric: tabular-nums;
+}
+
+.tct thead {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+.tct thead th {
+  background: var(--sheet);
+  text-align: left;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.tct thead th.is-out {
+  background: var(--zone);
+}
+
+.tct__groups th {
+  padding: 4px 10px 3px;
+  font-family: var(--font-tech);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.tct__fields th {
+  padding: 6px 10px 8px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: bottom;
+}
+
+.tct th.is-num,
+.tct td.is-num {
+  text-align: right;
+}
+
+.tct__field-name {
+  display: block;
+  font-family: var(--font-code);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.tct__pin-l .tct__field-name,
+.tct__pin-r .tct__field-name {
+  font-family: var(--font-tech);
+  font-size: var(--t-xs);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.tct__field-meta {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
+.tct__req {
+  margin-left: 2px;
+  color: var(--stop-ink);
+  text-decoration: none;
+}
+
+/* Identity and verdict stay pinned while the Facts scroll between them. */
+.tct .tct__pin-l {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  min-width: 180px;
+  max-width: 240px;
+  border-right: 1px solid var(--line);
+}
+
+.tct .tct__pin-r {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  width: var(--verdict-w);
+  min-width: var(--verdict-w);
+  max-width: var(--verdict-w);
+  border-left: 1px dashed var(--line);
+}
+
+/* The Hit Policy column rides with the verdict, so how the policy answered never scrolls out of view. */
+.tct .tct__path {
+  position: sticky;
+  right: var(--verdict-w);
+  z-index: 2;
+  border-left: 1px solid var(--line);
+}
+
+/* On a phone only the identity stays pinned; the verdict scrolls with the row. */
+@media (max-width: 720px) {
+  .tct .tct__pin-l {
+    min-width: 140px;
+    max-width: 170px;
+  }
+
+  .tct .tct__pin-r,
+  .tct .tct__path {
+    position: static;
+  }
+}
+
+.tct thead .tct__pin-l,
+.tct thead .tct__pin-r,
+.tct thead .tct__path {
+  z-index: 4;
+}
+
+.tct .is-first-out {
+  border-left: 1px solid var(--line);
+}
+
+.tct tbody td,
+.tct tbody th {
+  padding: 0;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+  background-color: var(--sheet);
+  text-align: inherit;
+  font-weight: 400;
+  transition: background-color 200ms var(--ease-out);
+}
+
+.tct tbody td.is-out,
+.tct tbody td.tct__pin-r {
+  background-color: var(--zone);
+}
+
+/* A failing Test Case tints its whole row (every line of a COLLECT set), so it stands out without being picked. */
+.tct__tc.is-failing > tr > * {
+  background-color: color-mix(in srgb, var(--stop-tint) 55%, var(--sheet)) !important;
+}
+
+.tct__tc.is-failing > tr > .tct__pin-r {
+  background-color: var(--stop-tint) !important;
+}
+
+.tct__tc.is-active > tr > * {
+  background-color: var(--accent-tint) !important;
+}
+
+.tct__tc.is-active.is-failing > tr > .tct__pin-r {
+  background-color: var(--stop-tint) !important;
+}
+
+.tct__ident {
+  padding: 6px 4px 6px 8px !important;
+}
+
+.tct__pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 6px;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+
+.tct__pick:hover {
+  background: var(--lit);
+}
+
+.tct__pick[aria-pressed='true'] {
+  background: var(--lit-strong);
+}
+
+.tct__pick:focus-visible,
+.tct__value--edit:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.tct__id {
+  font-family: var(--font-code);
+  font-size: var(--t-sm);
+  font-weight: 600;
+}
+
+.tct__ident .tct__value {
+  min-height: 0;
+  padding: 2px 6px 3px;
+  color: var(--ink-2);
+  white-space: normal;
+  text-wrap: pretty;
+}
+
+.tct__ident .tct__edit {
+  padding: 2px 0;
+}
+
+/* A value cell: plain text that turns into an input on click. */
+.tct__value {
+  display: block;
+  width: 100%;
+  min-height: 34px;
+  padding: 8px 10px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: inherit;
+  white-space: nowrap;
+}
+
+.tct__value.is-empty {
+  color: var(--ink-3);
+}
+
+.tct__value.is-note {
+  color: var(--ink-2);
+  font-style: italic;
+}
+
+.tct__value--edit {
+  cursor: text;
+}
+
+.tct__value--edit:hover {
+  background: var(--lit);
+  box-shadow: inset 0 0 0 1px var(--rule-strong);
+}
+
+.tct__lines {
+  display: grid;
+  gap: 2px;
+}
+
+.tct__edit {
+  display: block;
+  padding: 3px;
+}
+
+.tct__input {
+  width: 100%;
+  min-width: 0;
+  height: 28px;
+  padding: 0 7px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+}
+
+.tct__input.is-num {
+  text-align: right;
+}
+
+.tct__input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.tct__input[aria-invalid='true'] {
+  border-color: var(--stop-ink);
+}
+
+.tct__error {
+  display: block;
+  max-width: 28ch;
+  padding: 3px 4px 2px;
+  font-size: var(--t-xs);
+  color: var(--stop-ink);
+  white-space: normal;
+  text-align: left;
+}
+
+.tct__cell.is-missing .tct__value {
+  color: var(--stop-ink);
+}
+
+.tct__flag-missing {
+  display: block;
+  padding: 0 10px 6px;
+  font-family: var(--font-tech);
+  font-size: var(--t-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--stop-ink);
+}
+
+.tct__verdict {
+  padding: 6px 6px 8px 10px !important;
+}
+
+.tct__verdict-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 28px;
+}
+
+.tct__status {
+  font-family: var(--font-tech);
+  font-size: var(--t-sm);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.tct__verdict.is-pass .tct__status {
+  color: var(--clear-ink);
+}
+
+.tct__verdict.is-fail .tct__status,
+.tct__verdict.is-error .tct__status {
+  color: var(--stop-ink);
+}
+
+.tct__match {
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.tct__actions {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: auto;
+}
+
+.tct__why {
+  display: grid;
+  gap: 4px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--t-sm);
+  white-space: normal;
+}
+
+.tct__why li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tct__why li[data-diff='missing'] {
+  color: var(--stop-ink);
+}
+
+.tct__why li[data-diff='extra'] {
+  color: var(--caution-ink);
+}
+
+.tct__why.is-stop {
+  color: var(--stop-ink);
+}
+
+.tct__why-row {
+  font-family: var(--font-code);
+  font-size: var(--t-xs);
+  color: var(--ink-2);
+}
+
+.tct__verdict .tag {
+  margin-top: 6px;
+}
+
+.tct-add {
+  justify-self: start;
+}
+
+.tct-empty {
+  display: flex;
+  gap: 14px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  background: var(--sheet);
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.tct-empty > svg {
+  flex: none;
+  color: var(--ink-3);
+}
+
+.tct-empty > div {
+  display: grid;
+  gap: 8px;
+  max-width: 62ch;
+  justify-items: start;
+}
+
+.tct-empty__title {
+  font-family: var(--font-tech);
+  font-size: var(--t-lg);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* ---- Hit Policy band: the column that says how the policy reached its answer ---- */
+
+.tct-policy {
+  display: flex;
+  flex-basis: 100%;
+  align-items: baseline;
+  gap: 10px;
+  max-width: 90ch;
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+
+.tct-policy .rules-note__policy {
+  flex: none;
+}
+
+.tct__path-head .rules-note__policy {
+  margin-left: 6px;
+  font-size: var(--t-xs);
+}
+
+.tct th.tct__path,
+.tct td.tct__path {
+  min-width: 200px;
+  max-width: 260px;
+}
+
+.tct__cell--whole .tct__value {
+  min-width: 16ch;
+  white-space: normal;
+}
+
+.tct td.tct__path {
+  padding: 7px 10px 8px;
+}
+
+.tct-rid {
+  display: inline-block;
+  padding: 1px 6px 2px;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  font-family: var(--font-code);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+/* The Rule that decided: solid ink, like a lever pulled. */
+.tct-rid.is-won {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--sheet);
+}
+
+/* Matched but set aside by the policy: shadowed, outweighed, or a line nobody asked for. */
+.tct-rid.is-lost {
+  border-style: dashed;
+  color: var(--ink-3);
+}
+
+.tct-rid.is-stop {
+  border-color: var(--stop-ink);
+  background: var(--stop-tint);
+  color: var(--stop-ink);
+}
+
+.tct-path {
+  display: grid;
+  gap: 4px;
+}
+
+.tct-path__ids {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 4px 6px;
-  margin: 6px 0 0 -10px;
+  gap: 4px 8px;
+}
+
+.tct-path__pos {
+  font-family: var(--font-tech);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.tct-path__shadow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
+.tct-path__note,
+.tct-path__none {
+  font-size: var(--t-sm);
+  color: var(--ink-3);
+  white-space: normal;
+}
+
+.tct-path__note.is-stop,
+.tct-path__none.is-stop {
+  color: var(--stop-ink);
+}
+
+/* PRIORITY: the matched Rules ranked by weight, the bar scaled to the heaviest Rule in the Rule Set. */
+.tct-ladder {
+  display: grid;
+  grid-template-columns: auto minmax(48px, 1fr) auto;
+  align-items: center;
+  gap: 4px 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tct-ladder > li {
+  display: contents;
+}
+
+.tct-ladder__bar {
+  display: block;
+  height: 6px;
+  background: color-mix(in srgb, var(--rule) 70%, transparent);
+}
+
+.tct-ladder__bar > span {
+  display: block;
+  height: 100%;
+  background: var(--rule-strong);
+}
+
+.tct-ladder > li.is-won .tct-ladder__bar > span {
+  background: var(--ink);
+}
+
+.tct-ladder__w {
+  min-width: 3ch;
+  font-family: var(--font-tech);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  text-align: right;
+  color: var(--ink-3);
+}
+
+.tct-ladder > li.is-won .tct-ladder__w {
+  color: var(--ink);
+}
+
+.tct-ladder__more {
+  display: block !important;
+  grid-column: 1 / -1;
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
+/* Single-line policies: the subject's own value sits under any expected cell it disagrees with. */
+.tct td.is-off .tct__value {
+  padding-bottom: 2px;
+}
+
+.tct__got {
+  display: block;
+  padding: 0 10px 7px;
+  font-size: var(--t-xs);
+  color: var(--stop-ink);
+  white-space: nowrap;
+}
+
+.tct__got b {
+  font-family: var(--font-tech);
+  font-size: var(--t-sm);
+  font-weight: 700;
+}
+
+.tct__match.is-stop {
+  color: var(--stop-ink);
+}
+
+/* COLLECT: one Test Case is a set of output lines; lines inside a set are ruled lighter than the set's edge. */
+.tct__setsize {
+  display: block;
+  padding: 0 6px 4px;
+  font-family: var(--font-tech);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.tct__tc--set > tr:not(:last-child) > td:not([rowspan]) {
+  border-bottom: 1px dashed color-mix(in srgb, var(--rule) 80%, transparent);
+}
+
+.tct__tc--set > tr > .tct__cell.is-out .tct__value {
+  min-height: 30px;
+  padding-block: 6px;
+}
+
+.tct__line[data-diff='missing'] > td.is-out:not(.tct__pin-r) .tct__value {
+  color: var(--stop-ink);
+}
+
+.tct__line[data-diff='extra'] > td.is-out:not(.tct__pin-r) .tct__value {
+  color: var(--caution-ink);
+  font-style: italic;
+}
+
+.tct-mark {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 7px;
+  min-height: 18px;
+}
+
+.tct-mark__label {
+  min-width: 4.2ch;
+  font-family: var(--font-tech);
+  font-size: var(--t-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.tct__line[data-diff='same'] .tct-mark__label {
+  color: var(--clear-ink);
+}
+
+.tct__line[data-diff='missing'] .tct-mark__label,
+.tct__line[data-diff='missing'] .tct-mark__why {
+  color: var(--stop-ink);
+}
+
+.tct__line[data-diff='extra'] .tct-mark__label {
+  color: var(--caution-ink);
+}
+
+.tct-mark__why {
+  order: 2;
+  flex-basis: 100%;
+  padding-left: 26px;
+  font-family: var(--font-code);
+  font-size: var(--t-xs);
+  white-space: normal;
+}
+
+.tct__line[data-diff='extra'] .tct-mark__why {
+  color: var(--caution-ink);
+}
+
+.tct-mark__dot {
+  width: 8px;
+  height: 8px;
+  margin: 0 3px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 50%;
+}
+
+.tct-mark__act {
+  width: 24px;
+  height: 24px;
+  margin-left: auto;
+}
+
+/* Editor: takes the table's place. A narrow list of Test Cases to move between, and the form at full width. */
+.tce {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  border: 1px solid var(--line);
+  background: var(--sheet);
+}
+
+.tce__list {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 6px 0 10px;
+  border-right: 1px solid var(--line);
+  background: color-mix(in srgb, var(--panel) 40%, var(--sheet));
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule-strong) transparent;
+}
+
+.tce__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 6px 6px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: var(--radius);
+  background: none;
+  font-family: var(--font-tech);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+
+.tce__back:hover {
+  background: var(--lit);
+  color: var(--ink);
+}
+
+.tce__items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--rule);
+}
+
+.tce__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1px 8px;
+  width: 100%;
+  padding: 7px 12px;
+  border: 0;
+  border-bottom: 1px solid var(--rule);
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tce__item:hover {
+  background: var(--lit);
+}
+
+.tce__item[aria-current='true'] {
+  background: var(--lit-strong);
+  cursor: default;
+}
+
+.tce__item:focus-visible,
+.tce__back:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.tce__id {
+  font-family: var(--font-code);
+  font-size: var(--t-sm);
+  font-weight: 600;
+}
+
+.tce__name {
+  grid-column: 2;
+  overflow: hidden;
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tce__item.is-new {
+  color: var(--accent);
+}
+
+.tce__item.is-new .tce__name {
+  grid-column: auto;
+  color: var(--accent);
+}
+
+.tce__add {
+  align-self: flex-start;
+  margin: 8px 6px 0;
+}
+
+.tce__editor {
+  container-type: inline-size;
+  min-width: 0;
+  min-height: 0;
+  padding: 16px 24px 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule-strong) transparent;
+}
+
+.tce__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule-strong);
+}
+
+.tce__title {
+  font-family: var(--font-tech);
+  font-size: var(--t-lg);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tce__title code {
+  font-family: var(--font-code);
+  font-size: var(--t-base);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.tce__verdict {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+}
+
+.tce__verdict.is-pass {
+  color: var(--clear-ink);
+}
+
+.tce__verdict.is-fail,
+.tce__verdict.is-error {
+  color: var(--stop-ink);
+}
+
+.tce__delete {
+  margin-left: auto;
+}
+
+/* The form at editor width: name across the top, Facts | Kỳ vọng side by side, the save row pinned to the bottom. */
+.tc-form--wide {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  column-gap: 40px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.tc-form--wide > h3 {
+  display: none;
+}
+
+.tc-form--wide > .tc-form__label,
+.tc-form--wide > .detail__input {
+  grid-column: 1 / -1;
+  max-width: 40rem;
+}
+
+.tc-form--wide > .tc-form__label {
+  margin-top: 14px;
+}
+
+.tc-form--wide > .tc-form__facts {
+  grid-column: 1;
+  margin-top: 18px;
+}
+
+.tc-form--wide > .tc-form__expect {
+  grid-column: 2;
+  margin-top: 18px;
+}
+
+/* Each Fact on one line: its name and label in a column of their own, the value beside it. */
+.tc-form--wide .tc-form__field {
+  grid-template-columns: minmax(8rem, 12rem) minmax(0, 1fr);
+  align-items: center;
+  column-gap: 12px;
+}
+
+.tc-form--wide .tc-form__field-label {
+  gap: 0 4px;
+}
+
+/* Name and required mark on the first line, the label under them. */
+.tc-form--wide .tc-form__field-label > span {
+  flex-basis: 100%;
+  order: 2;
+}
+
+.tc-form--wide .tc-form__field > :not(.tc-form__field-label) {
+  grid-column: 2;
+}
+
+.tc-form--wide .tc-form__field:has(textarea) {
+  align-items: start;
+}
+
+.tc-form--wide > .detail__error {
+  grid-column: 1 / -1;
+}
+
+.tc-form--wide > .tc-form__submit {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  grid-column: 1 / -1;
+  margin-top: 20px;
+  padding: 12px 0 16px;
+  border-top: 1px solid var(--rule);
+  background: var(--sheet);
+}
+
+@container (max-width: 44rem) {
+  .tc-form--wide {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .tc-form--wide > .tc-form__expect {
+    grid-column: 1;
+  }
+}
+
+/* Fixed shell: the table frame takes the primary's height and scrolls inside itself, like the Rules Table,
+   so the head and "Thêm Test Case" stay on screen however many Test Cases there are. */
+@media (min-width: 1200px) and (min-height: 720px) {
+  .tct-wrap {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .tct-wrap > * {
+    flex-shrink: 0;
+  }
+
+  .tct-wrap > .tct-scroll {
+    flex: 0 1 auto;
+    min-height: 0;
+    max-height: none;
+  }
+
+  .tct-wrap > .tct-add {
+    align-self: flex-start;
+  }
+
+  .tct-wrap > .tce {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
 }
 
 

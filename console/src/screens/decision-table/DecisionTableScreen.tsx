@@ -13,6 +13,7 @@ import { RuleTable, blankRule } from './RuleTable';
 import { RulesViewSwitch } from './RulesViewSwitch';
 import { SchemaInspector, SchemaTab } from './SchemaTab';
 import { TestCaseStrip } from './TestCaseStrip';
+import { TestCaseTab } from './TestCaseTab';
 import { TitleBlock, type TitleCell } from './TitleBlock';
 import { diffCounts, diffRuleSets } from './diff';
 import { VersionDiffInspector, VersionsTab } from './VersionsTab';
@@ -80,6 +81,7 @@ const timeFormat = new Intl.DateTimeFormat('vi-VN', { dateStyle: 'short', timeSt
 
 const INSPECTOR_LABEL: Record<Tab, string> = {
   rules: 'Test Case',
+  testcases: 'Evaluation Trace',
   flow: 'Luồng evaluation',
   simulation: 'Evaluation Trace',
   versions: 'So với Latest',
@@ -203,7 +205,7 @@ function DraftView({ decisionId, draftId, tab, ruleId }: { decisionId: string; d
     ruleSet: ruleSet ?? undefined,
     testCases,
     defaultBaseline: decision?.latest ?? null,
-    active: tab === 'simulation' || tab === 'flow',
+    active: tab === 'simulation' || tab === 'flow' || tab === 'testcases',
   });
   const flow = useFlow(sim, ruleSet, testCases);
   // Below 1200px the trace is a drawer: picking a Fact opens it.
@@ -213,6 +215,12 @@ function DraftView({ decisionId, draftId, tab, ruleId }: { decisionId: string; d
     // Only a pick in the Simulation tab opens the trace; the Sơ đồ tab shows it on the canvas.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sim.selectedKey, stacked]);
+
+  // In the Test Case tab, picking a row opens its trace when the inspector is a drawer.
+  useEffect(() => {
+    if (selectedId && stacked && tab === 'testcases') setDrawerOpen(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId]);
 
   const dirty = useRef(false);
   const simSeq = useRef(0);
@@ -390,7 +398,7 @@ function DraftView({ decisionId, draftId, tab, ruleId }: { decisionId: string; d
               run: () => {
                 setSelectedId(failing[0].testCaseId);
                 setDrawerOpen(true);
-                if (tab !== 'rules') navigate(href.draft(decisionId, draftId));
+                if (tab !== 'testcases') navigate(href.draft(decisionId, draftId, 'testcases'));
               },
             },
           ]
@@ -464,6 +472,18 @@ function DraftView({ decisionId, draftId, tab, ruleId }: { decisionId: string; d
         },
       },
     });
+  }
+
+  async function addTestCase(tc: { name: string; facts: Record<string, unknown>; expected: Expected }) {
+    const created = await api.addTestCase(decisionId, tc);
+    setTestCases((all) => [...(all ?? []), created]);
+    setSelectedId(created.id);
+    return created.id;
+  }
+
+  async function updateTestCase(id: string, tc: { name: string; facts: Record<string, unknown>; expected: Expected }) {
+    const updated = await api.updateTestCase(decisionId, id, tc);
+    setTestCases((all) => (all ?? []).map((t) => (t.id === id ? updated : t)));
   }
 
   async function deleteTestCase(id: string) {
@@ -624,6 +644,25 @@ function DraftView({ decisionId, draftId, tab, ruleId }: { decisionId: string; d
       <SchemaTab ruleSet={ruleSet} />
     ) : tab === 'flow' ? (
       <FlowTab flow={flow} sim={sim} testCases={testCases} />
+    ) : tab === 'testcases' ? (
+      <TestCaseTab
+        testCases={testCases}
+        results={results}
+        running={running}
+        simError={simError}
+        ruleSet={ruleSet}
+        selectedId={selectedId}
+        onSelect={(id) => {
+          setLitFact(null);
+          setSelectedId(id);
+        }}
+        canEdit={!narrow}
+        onAdd={addTestCase}
+        onUpdate={updateTestCase}
+        onDelete={deleteTestCase}
+        evaluate={(facts) => api.evaluate(decisionId, draftId, ruleSet, facts)}
+        readOnlyNote={narrow ? 'Màn hình hẹp chỉ để xem. Mở trên màn hình rộng hơn để thêm và sửa Test Case.' : undefined}
+      />
     ) : ruleId ? (
       openRule ? (
         <RuleGraphView
@@ -740,6 +779,23 @@ function DraftView({ decisionId, draftId, tab, ruleId }: { decisionId: string; d
       <SchemaInspector testCases={testCases} />
     ) : tab === 'flow' ? (
       <FlowInspector flow={flow} subjectLabel={draft.id} baseLabel={sim.run?.baselineVersion ? `v${sim.run.baselineVersion}` : null} />
+    ) : tab === 'testcases' ? (
+      <TraceInspector
+        result={sim.run?.results.find((r) => r.source === 'test-case' && r.key === selectedId) ?? null}
+        decisionId={decisionId}
+        subject={ruleSet}
+        subjectLabel={draft.id}
+        subjectVersion={{ version: decision.versions.length + 1, planned: true }}
+        baselineRules={sim.run?.baselineVersion === null ? null : sim.baselineRuleSet}
+        baseLabel={sim.run?.baselineVersion ? `v${sim.run.baselineVersion}` : null}
+        testCaseName={testCases?.find((t) => t.id === selectedId)?.name}
+        evaluate={(facts) => api.evaluate(decisionId, draftId, ruleSet, facts)}
+        onLight={() => {
+          setLitFact(null);
+          setDrawerOpen(false);
+          navigate(href.draft(decisionId, draftId));
+        }}
+      />
     ) : openRule ? (
       <RuleGraphInspector graph={graph} rule={openRule} ruleSet={ruleSet} onUpdateRule={narrow ? undefined : graphUpdate} />
     ) : tab === 'simulation' ? (
@@ -783,26 +839,15 @@ function DraftView({ decisionId, draftId, tab, ruleId }: { decisionId: string; d
           setSelectedId(id);
         }}
         ruleSet={ruleSet}
-        canEdit={!narrow}
-        onAdd={async (tc: { name: string; facts: Record<string, unknown>; expected: Expected }) => {
-          const created = await api.addTestCase(decisionId, tc);
-          setTestCases((all) => [...(all ?? []), created]);
-          setSelectedId(created.id);
-          return created.id;
-        }}
-        onUpdate={async (id, tc) => {
-          const updated = await api.updateTestCase(decisionId, id, tc);
-          setTestCases((all) => (all ?? []).map((t) => (t.id === id ? updated : t)));
-        }}
-        onDelete={deleteTestCase}
-        evaluate={(facts) => api.evaluate(decisionId, draftId, ruleSet, facts)}
+        canEdit={false}
+        manage={{ href: href.draft(decisionId, draftId, 'testcases'), label: narrow ? 'Xem ở tab Test Case' : 'Sửa ở tab Test Case' }}
       />
     );
 
   const summary =
     tab === 'simulation' ? (
       simSummary(sim)
-    ) : tab === 'rules' && results && total > 0 ? (
+    ) : (tab === 'rules' || tab === 'testcases') && results && total > 0 ? (
       <>
         <Lamp state={running ? 'pending' : passed === total ? 'clear' : 'stop'} size="sm" />
         <span>
@@ -888,7 +933,7 @@ function VersionView({ decisionId, version, tab, ruleId }: { decisionId: string;
     scope: { kind: 'version', version },
     testCases,
     defaultBaseline: !decision ? null : decision.latest !== version ? decision.latest : version > 1 ? version - 1 : null,
-    active: tab === 'simulation' || tab === 'flow' || !!ruleId,
+    active: tab === 'simulation' || tab === 'flow' || tab === 'testcases' || !!ruleId,
   });
   const flow = useFlow(sim, dv?.ruleSet ?? null, testCases);
   // A Published version's node graph is read-only; its Test Cases run through the version's Simulation.
@@ -916,6 +961,10 @@ function VersionView({ decisionId, version, tab, ruleId }: { decisionId: string;
     // Only a pick in the Simulation tab opens the trace; the Sơ đồ tab shows it on the canvas.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sim.selectedKey, stacked]);
+  useEffect(() => {
+    if (selectedId && stacked && tab === 'testcases') setDrawerOpen(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedId]);
 
   const load = useCallback(async () => {
     setLoadError(null);
@@ -1026,6 +1075,19 @@ function VersionView({ decisionId, version, tab, ruleId }: { decisionId: string;
       <SchemaTab ruleSet={dv.ruleSet} />
     ) : tab === 'flow' ? (
       <FlowTab flow={flow} sim={sim} testCases={testCases} />
+    ) : tab === 'testcases' ? (
+      <TestCaseTab
+        testCases={testCases}
+        results={graphResults}
+        running={sim.running}
+        simError={sim.error}
+        ruleSet={dv.ruleSet}
+        selectedId={selectedId}
+        onSelect={setSelectedId}
+        canEdit={false}
+        subjectLabel={`v${version}`}
+        readOnlyNote={`Test Case chạy trên v${version}. Test Case dùng chung cho cả Decision; thêm và sửa chúng trong một Draft.`}
+      />
     ) : ruleId ? (
       openRule ? (
         <RuleGraphView
@@ -1087,6 +1149,17 @@ function VersionView({ decisionId, version, tab, ruleId }: { decisionId: string;
       <SchemaInspector testCases={testCases} />
     ) : tab === 'flow' ? (
       <FlowInspector flow={flow} subjectLabel={`v${version}`} baseLabel={sim.run?.baselineVersion ? `v${sim.run.baselineVersion}` : null} />
+    ) : tab === 'testcases' ? (
+      <TraceInspector
+        result={sim.run?.results.find((r) => r.source === 'test-case' && r.key === selectedId) ?? null}
+        decisionId={decisionId}
+        subject={dv.ruleSet}
+        subjectLabel={`v${version}`}
+        subjectVersion={{ version, planned: false }}
+        baselineRules={sim.run?.baselineVersion === null ? null : sim.baselineRuleSet}
+        baseLabel={sim.run?.baselineVersion ? `v${sim.run.baselineVersion}` : null}
+        testCaseName={testCases?.find((t) => t.id === selectedId)?.name}
+      />
     ) : openRule ? (
       <RuleGraphInspector graph={graph} rule={openRule} ruleSet={dv.ruleSet} />
     ) : tab === 'simulation' ? (
@@ -1110,7 +1183,8 @@ function VersionView({ decisionId, version, tab, ruleId }: { decisionId: string;
         onSelect={setSelectedId}
         ruleSet={dv.ruleSet}
         canEdit={false}
-        readOnlyNote="Test Case chạy trên version này ở tab Simulation. Muốn sửa Rule, tạo Draft từ version này."
+        readOnlyNote="Kết quả từng Test Case trên version này ở tab Test Case. Muốn sửa Rule, tạo Draft từ version này."
+        manage={{ href: href.version(decisionId, version, 'testcases'), label: 'Xem ở tab Test Case' }}
       />
     );
 

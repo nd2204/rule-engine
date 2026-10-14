@@ -24,6 +24,8 @@ interface Props {
   evaluate?: (facts: Record<string, unknown>) => Promise<EvalResult>;
   /** Published view: Test Cases are listed without a run. */
   readOnlyNote?: string;
+  /** Where Test Cases are edited (the Test Case tab), when this list only reads them. */
+  manage?: { href: string; label: string };
 }
 
 const STATUS: Record<TestCaseResult['status'], { lamp: LampState; label: string }> = {
@@ -52,12 +54,79 @@ function OutputList({ rows, outputs }: { rows: OutputRow[]; outputs: OutputField
   );
 }
 
+export type Diff = 'same' | 'missing' | 'extra';
+
+function rowKey(row: OutputRow, outputs: OutputField[]): string {
+  return JSON.stringify(outputs.map((f) => row[f.name] ?? null));
+}
+
+export function diffRows(expected: OutputRow[], actual: OutputRow[], outputs: OutputField[]): { row: OutputRow; diff: Diff }[] {
+  const pool: (string | null)[] = actual.map((row) => rowKey(row, outputs));
+  const rows: { row: OutputRow; diff: Diff }[] = expected.map((row) => {
+    const i = pool.indexOf(rowKey(row, outputs));
+    if (i === -1) return { row, diff: 'missing' };
+    pool[i] = null;
+    return { row, diff: 'same' };
+  });
+  actual.forEach((row, i) => {
+    if (pool[i] !== null) rows.push({ row, diff: 'extra' });
+  });
+  return rows;
+}
+
+export const DIFF: Record<Diff, { lamp: LampState; label: string }> = {
+  same: { lamp: 'clear', label: 'Khớp' },
+  missing: { lamp: 'stop', label: 'Draft thiếu' },
+  extra: { lamp: 'caution', label: 'Draft thừa' },
+};
+
+/** Expected and actual Decision Results as one list: matching rows once, the rest marked as missing from or extra in the Draft. */
+function ResultDiff({ expected, actual, outputs }: { expected: OutputRow[]; actual: OutputRow[]; outputs: OutputField[] }) {
+  const rows = diffRows(expected, actual, outputs);
+  const same = rows.filter((x) => x.diff === 'same').length;
+  return (
+    <section className="tc__section">
+      <h3 className="tc__label">
+        {same === rows.length ? 'Kỳ vọng = Draft trả về' : 'Kỳ vọng ↔ Draft trả về'}
+        <span className="tc__count">
+          {same}/{rows.length} khớp
+        </span>
+      </h3>
+      {rows.length === 0 ? (
+        <span className="tc__none">không có output</span>
+      ) : (
+        <ul className="tc__diff">
+          {rows.map(({ row, diff }, i) => (
+            <li key={i} className="tc__diff-row" data-diff={diff}>
+              <Lamp state={DIFF[diff].lamp} size="sm" />
+              <span className="tc__cells">
+                {outputs
+                  .filter((f) => row[f.name] !== null && row[f.name] !== undefined)
+                  .map((f) => (
+                    <span key={f.name} className="tc__cell">
+                      <span className="tc__cell-key">{f.name}</span>
+                      <span className="tc__cell-val">
+                        {formatScalar(row[f.name])}
+                        {f.unit ? ` ${f.unit}` : ''}
+                      </span>
+                    </span>
+                  ))}
+              </span>
+              <span className="tc__flag">{DIFF[diff].label}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
 function ExpectedView({ expected, outputs }: { expected: Expected; outputs: OutputField[] }) {
   if ('error' in expected) return <span className="tc__none">lỗi {expected.error}</span>;
   return <OutputList rows={expected.outputs} outputs={outputs} />;
 }
 
-function factValue(v: unknown): string {
+export function factValue(v: unknown): string {
   if (Array.isArray(v)) return `${v.length} phần tử`;
   if (typeof v === 'number' || typeof v === 'string' || typeof v === 'boolean') return formatScalar(v);
   return JSON.stringify(v);
@@ -211,6 +280,11 @@ export function TestCaseStrip(props: Props) {
             Decision này chưa có Test Case. Mỗi Test Case là một bộ Facts mẫu và Decision Result bạn mong đợi; Publish cần ít
             nhất một Test Case và tất cả phải pass.
           </p>
+          {props.manage && (
+            <a className="btn btn--secondary" href={props.manage.href}>
+              <Plus size={16} aria-hidden="true" /> Thêm ở tab Test Case
+            </a>
+          )}
         </div>
       )}
 
@@ -249,47 +323,42 @@ export function TestCaseStrip(props: Props) {
                   />
                 ) : active && (
                   <div className="tc__detail">
-                    {props.canEdit && (
-                      <div className="tc__actions">
-                        <button type="button" className="btn btn--ghost" onClick={() => setEditingId(tc.id)}>
-                          <Pencil size={14} aria-hidden="true" /> Sửa
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn--ghost btn--ghost-danger"
-                          onClick={async () => {
-                            const i = testCases.findIndex((t) => t.id === tc.id);
-                            const next = testCases[i + 1]?.id ?? testCases[i - 1]?.id ?? null;
-                            await props.onDelete?.(tc.id);
-                            focusTc(next);
-                          }}
-                        >
-                          <Trash2 size={14} aria-hidden="true" /> Xoá {tc.id}
-                        </button>
-                      </div>
-                    )}
-                    <h3 className="tc__label">Facts</h3>
-                    <dl className="tc__facts">
-                      {Object.entries(tc.facts).map(([k, v]) => (
-                        <div key={k}>
-                          <dt>{k}</dt>
-                          <dd>{factValue(v)}</dd>
-                        </div>
-                      ))}
-                    </dl>
-                    <h3 className="tc__label">Kỳ vọng</h3>
-                    <ExpectedView expected={tc.expected} outputs={ruleSet.outputs} />
-                    {r && (
+                    <section className="tc__section">
+                      <h3 className="tc__label">Facts</h3>
+                      <dl className="tc__facts">
+                        {Object.entries(tc.facts).map(([k, v]) => (
+                          <div key={k}>
+                            <dt>{k}</dt>
+                            <dd>{factValue(v)}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </section>
+                    {!r || r.actual.error || 'error' in tc.expected ? (
                       <>
-                        <h3 className="tc__label">Draft trả về</h3>
-                        {r.actual.error ? (
-                          <p className="tc__error">
-                            {r.actual.error.message}
-                            {r.actual.error.ruleIds && <>: {r.actual.error.ruleIds.join(', ')}</>}
-                          </p>
-                        ) : (
-                          <OutputList rows={r.actual.outputs} outputs={ruleSet.outputs} />
+                        <section className="tc__section">
+                          <h3 className="tc__label">Kỳ vọng</h3>
+                          <ExpectedView expected={tc.expected} outputs={ruleSet.outputs} />
+                        </section>
+                        {r && (
+                          <section className="tc__section">
+                            <h3 className="tc__label">Draft trả về</h3>
+                            {r.actual.error ? (
+                              <p className="tc__error">
+                                {r.actual.error.message}
+                                {r.actual.error.ruleIds && <>: {r.actual.error.ruleIds.join(', ')}</>}
+                              </p>
+                            ) : (
+                              <OutputList rows={r.actual.outputs} outputs={ruleSet.outputs} />
+                            )}
+                          </section>
                         )}
+                      </>
+                    ) : (
+                      <ResultDiff expected={tc.expected.outputs} actual={r.actual.outputs} outputs={ruleSet.outputs} />
+                    )}
+                    {r && (
+                      <section className="tc__section">
                         <p className="tc__trace">
                           Match: {r.actual.matchedRuleIds.length ? r.actual.matchedRuleIds.join(', ') : 'không Rule nào'}
                           {r.actual.winnerRuleIds.length > 0 && ruleSet.hitPolicy !== 'COLLECT' && (
@@ -301,7 +370,34 @@ export function TestCaseStrip(props: Props) {
                             <Lamp state="caution" size="sm" /> {w}
                           </p>
                         ))}
-                      </>
+                      </section>
+                    )}
+                    {props.canEdit && (
+                      <div className="tc__actions">
+                        <button type="button" className="btn btn--primary" aria-label={`Sửa ${tc.id}`} onClick={() => setEditingId(tc.id)}>
+                          <Pencil size={14} aria-hidden="true" /> Sửa
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn--secondary btn--secondary-danger"
+                          aria-label={`Xoá ${tc.id}`}
+                          onClick={async () => {
+                            const i = testCases.findIndex((t) => t.id === tc.id);
+                            const next = testCases[i + 1]?.id ?? testCases[i - 1]?.id ?? null;
+                            await props.onDelete?.(tc.id);
+                            focusTc(next);
+                          }}
+                        >
+                          <Trash2 size={14} aria-hidden="true" /> Xoá
+                        </button>
+                      </div>
+                    )}
+                    {!props.canEdit && props.manage && (
+                      <div className="tc__actions">
+                        <a className="btn btn--secondary" href={props.manage.href}>
+                          <Pencil size={14} aria-hidden="true" /> {props.manage.label}
+                        </a>
+                      </div>
                     )}
                   </div>
                 )}
@@ -414,6 +510,8 @@ export function TestCaseForm(props: {
   evaluate?: (facts: Record<string, unknown>) => Promise<EvalResult>;
   onCancel: () => void;
   onSubmit: (tc: TestCaseBody) => Promise<void>;
+  /** "wide": the Test Case tab's editor, Facts and Kỳ vọng side by side. */
+  layout?: 'stack' | 'wide';
 }) {
   const { ruleSet, testCase } = props;
   const outputs = ruleSet.outputs;
@@ -496,14 +594,16 @@ export function TestCaseForm(props: {
 
   const formRef = useRef<HTMLFormElement>(null);
   useEffect(() => {
-    // The form opens where the author can see it, with the cursor in its first field.
-    formRef.current?.scrollIntoView({ block: 'nearest', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    // The form opens where the author can see it, with the cursor in its first field. The wide editor opens at its own top.
+    if (props.layout !== 'wide') {
+      formRef.current?.scrollIntoView({ block: 'nearest', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    }
     formRef.current?.querySelector<HTMLInputElement>('input')?.focus({ preventScroll: true });
   }, []);
 
   const previewError = preview?.error;
   return (
-    <form ref={formRef} className="tc-form" onSubmit={submit} noValidate>
+    <form ref={formRef} className={`tc-form${props.layout === 'wide' ? ' tc-form--wide' : ''}`} onSubmit={submit} noValidate>
       <h3 className="tc__label">{testCase ? `Sửa ${testCase.id}` : 'Test Case mới'}</h3>
       <label className="tc-form__label" htmlFor={`${uid}-name`}>
         Tên
@@ -516,7 +616,7 @@ export function TestCaseForm(props: {
         placeholder="Tình huống cần giữ đúng, ví dụ Khách GOLD giỏ lớn"
       />
 
-      <fieldset className="tc-form__group">
+      <fieldset className="tc-form__group tc-form__facts">
         <legend className="tc-form__legend">Facts</legend>
         <p className="tc-form__note">Bỏ trống trường không bắt buộc nghĩa là Fact thiếu trường đó.</p>
         {ruleSet.inputs.map((f) => {
@@ -585,7 +685,7 @@ export function TestCaseForm(props: {
         })}
       </fieldset>
 
-      <fieldset className="tc-form__group">
+      <fieldset className="tc-form__group tc-form__expect">
         <legend className="tc-form__legend">Kỳ vọng</legend>
         {props.evaluate && (
           <div className="tc-form__preview" aria-live="polite">
@@ -682,7 +782,7 @@ export function TestCaseForm(props: {
           {error}
         </p>
       )}
-      <div className="detail__row">
+      <div className="detail__row tc-form__submit">
         <button type="submit" className="btn btn--primary" disabled={busy}>
           {busy ? 'Đang lưu…' : testCase ? `Lưu ${testCase.id}` : 'Lưu Test Case'}
         </button>

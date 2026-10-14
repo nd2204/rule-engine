@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-10T12:00:00+00:00",
+  "generatedAt": "2026-10-13T11:42:50+00:00",
   "title": "Design System: bre console",
   "extensions": {
     "colorMeta": {
@@ -1163,17 +1163,12 @@
         "name": "shadow-pop",
         "value": "0 6px 18px -6px rgb(22 24 29 / 0.28), 0 2px 4px -1px rgb(22 24 29 / 0.12)",
         "darkValue": "0 8px 22px -6px rgb(0 0 0 / 0.6), 0 2px 4px -1px rgb(0 0 0 / 0.4)",
-        "purpose": "Toasts, the scope menu, the shell popover, and the inspector drawer or sheet below 1200px."
+        "purpose": "Toasts, the scope menu, the shell popover, the inspector drawer or sheet below 1200px, and the two things that open over the commit bar on demand: a lock's popover and the lever's reason."
       },
       {
         "name": "pinned-edge",
         "value": "10px 0 10px -10px rgb(0 0 0 / 0.22)",
         "purpose": "Sticky identity and output columns while the table overflows (mirrored for the right edge)."
-      },
-      {
-        "name": "interlock-lift",
-        "value": "0 -10px 16px -12px rgb(0 0 0 / 0.35)",
-        "purpose": "Top edge of the commit bar: the interlock row on a Draft, the Latest Pointer bar on a version."
       },
       {
         "name": "rule-panel-edge",
@@ -1230,12 +1225,57 @@
       {
         "name": "reduced-motion",
         "value": "1ms durations, 0ms delays, 1 iteration",
-        "purpose": "prefers-reduced-motion: reduce."
+        "purpose": "prefers-reduced-motion: reduce. Spatial movement goes; swaps become fades, the track only changes colour, no arrival cascade, no click, no glide."
       },
       {
         "name": "panel-in",
         "value": "220ms, 12px slide with fade",
         "purpose": "Rule panel and the inspector drawer as they open."
+      },
+      {
+        "name": "title-arrive",
+        "value": "220ms, stagger 40ms (cap 200ms), once on mount, first 600ms",
+        "purpose": "Title block cells report in left to right; replaced the looping pulse."
+      },
+      {
+        "name": "value-swap",
+        "value": "180ms",
+        "purpose": "A cell value or a Test Case verdict that changed swaps in (translateY 5px, fade)."
+      },
+      {
+        "name": "track-relay",
+        "value": "900ms",
+        "purpose": "A changed title block cell lights its stretch of the track and cools."
+      },
+      {
+        "name": "row-glide",
+        "value": "200ms, stagger 22ms",
+        "purpose": "Rules table rows glide to a new place when a Rule is added, removed or duplicated; a new Rule slides in from the left. Skipped after a drag's drop."
+      },
+      {
+        "name": "popover-intent",
+        "value": "70ms in, 90ms out, 140ms fade",
+        "purpose": "A lock's popover and the lever's reason: arriving and leaving wait a beat so crossing between locks does not flicker; focus opens at once."
+      },
+      {
+        "name": "count-tick",
+        "value": "200ms",
+        "purpose": "The cleared-locks count ticks over when it changes."
+      },
+      {
+        "name": "lamp-flip",
+        "value": "220ms",
+        "purpose": "A lock whose state changed flips its lamp in (skipped while the release plays)."
+      },
+      {
+        "name": "lever-click-shut",
+        "value": "300ms",
+        "purpose": "The padlock clicks shut when a lock re-engages after the lever was free."
+      },
+      {
+        "name": "tc-underline-draw",
+        "value": "220ms",
+        "purpose": "The chosen Test Case draws a 2px accent underline in from the left."
       }
     ],
     "breakpoints": [
@@ -1277,7 +1317,7 @@
         {
           "name": "context-head",
           "className": "screen__head",
-          "holds": "Title block with the scope picker, then the tab row"
+          "holds": "The title block with the scope picker on the Decision Table (a plain page head, the Theo dõi readout or the Replay slip elsewhere), then the tab row"
         },
         {
           "name": "primary",
@@ -1362,9 +1402,9 @@
       "name": "Title Block",
       "kind": "card",
       "refersTo": "titleblock-cell",
-      "description": "Identifier headline over a ruled grid of drawing facts.",
-      "html": "<header class=\"ds-tb\"><h1 class=\"ds-tb-id\">calculate-pos-discounts<span>@draft-3</span></h1><dl class=\"ds-tb-grid\"><div><dt>Draft</dt><dd>Hạ ngưỡng giỏ lớn</dd></div><div><dt>Dựa trên</dt><dd>v6</dd></div><div><dt>Hit Policy</dt><dd>COLLECT</dd></div><div><dt>Input schema</dt><dd>5 trường</dd></div></dl></header>",
-      "css": ".ds-tb{font-family:'Be Vietnam Pro', system-ui, sans-serif;color:var(--ink,#ebdbb2);} .ds-tb-id{margin:0 0 14px;font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:1.75rem;font-weight:600;line-height:1.1;letter-spacing:-0.005em;} .ds-tb-id span{margin-left:2px;color:var(--accent,#83a598);font-weight:500;} .ds-tb-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:0;border:1px solid var(--ink,#ebdbb2);background:var(--sheet,#1d2021);} .ds-tb-grid div{padding:7px 12px 9px;border-left:1px solid var(--rule-strong,#665c54);} .ds-tb-grid div:first-child{border-left:0;} .ds-tb-grid dt{font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.6875rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--ink-3,#a89984);} .ds-tb-grid dd{margin:2px 0 0;font-size:0.875rem;font-weight:500;font-feature-settings:'tnum' 1;}"
+      "description": "One line of the Decision Table's route: each cell has its stop and its label on the track, its value beneath; no rule above, one below. Only the Decision Table has it.",
+      "html": "<header class=\"ds-tb\"><h1 class=\"ds-tb-id\">calculate-pos-discounts<span>@draft-3</span></h1><dl class=\"ds-tb-grid\"><div class=\"ds-tb-cell ds-tb-first\"><dd class=\"ds-tb-stop\"><i class=\"ds-tb-dot\"></i></dd><dt>Draft</dt><dd class=\"ds-tb-val\">Hạ ngưỡng giỏ lớn</dd></div><div class=\"ds-tb-cell\"><dd class=\"ds-tb-stop\"><i class=\"ds-tb-dot\"></i></dd><dt>Dựa trên</dt><dd class=\"ds-tb-val\">v6</dd></div><div class=\"ds-tb-cell\"><dd class=\"ds-tb-stop\"><i class=\"ds-tb-dot\"></i></dd><dt>Hit Policy</dt><dd class=\"ds-tb-val\">COLLECT</dd></div><div class=\"ds-tb-cell\"><dd class=\"ds-tb-stop\"><i class=\"ds-tb-dot\"></i></dd><dt>Input schema</dt><dd class=\"ds-tb-val\">5 trường</dd></div></dl></header>",
+      "css": ".ds-tb{font-family:'Be Vietnam Pro', system-ui, sans-serif;color:var(--ink,#ebdbb2);} .ds-tb-id{margin:0 0 16px;font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:1.75rem;font-weight:600;line-height:1.1;letter-spacing:-0.005em;} .ds-tb-id span{margin-left:2px;color:var(--accent,#8aa98a);font-weight:500;} .ds-tb-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:0;border-bottom:1px solid var(--rule-strong,#665c54);background:var(--sheet,#181818);} .ds-tb-cell{position:relative;display:grid;grid-template-columns:auto auto minmax(0,1fr);grid-template-areas:'stop label .' 'value value value';align-items:center;column-gap:6px;row-gap:3px;padding:7px 12px 8px;} .ds-tb-cell::before{content:'';position:absolute;inset-inline:0;top:16px;height:1px;background:var(--rule-strong,#665c54);} .ds-tb-cell+.ds-tb-cell::after{content:'';position:absolute;left:-1px;top:8px;bottom:6px;width:1px;background:var(--rule,#32302f);} .ds-tb-cell dt{position:relative;z-index:1;grid-area:label;padding:0 8px 0 2px;background:var(--sheet,#181818);font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.6875rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;line-height:18px;color:var(--ink-3,#a89984);} .ds-tb-stop{position:relative;z-index:1;grid-area:stop;height:18px;margin:0;display:flex;align-items:center;} .ds-tb-dot{width:10px;height:10px;border:1.5px solid var(--ink-3,#a89984);border-radius:50%;background:var(--sheet,#181818);} .ds-tb-first .ds-tb-dot{border-color:var(--accent,#8aa98a);background:var(--accent,#8aa98a);} .ds-tb-val{grid-area:value;margin:0;min-width:0;font-size:0.875rem;font-weight:500;font-feature-settings:'tnum' 1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}"
     },
     {
       "name": "Rules Table",
@@ -1378,9 +1418,9 @@
       "name": "Interlock Row and Publish Lever",
       "kind": "custom",
       "refersTo": "lever-free",
-      "description": "Signature: lock lamps and the Publish lever, locked until every lock is clear. Second instance shows the free state.",
-      "html": "<section class=\"ds-interlock\"><ul class=\"ds-locks\"><li class=\"ds-lock\"><span class=\"ds-lamp ds-lamp-clear\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg></span><span><b>Có Test Case</b><small>6 Test Case của Decision</small></span></li><li class=\"ds-lock ds-lock-stop\"><span class=\"ds-lamp ds-lamp-stop\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/></svg></span><span><b>Test Case pass</b><small>2 chưa pass</small></span></li><li class=\"ds-lock ds-lock-caution\"><span class=\"ds-lamp ds-lamp-caution\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\"/><path d=\"M12 9v4\"/><path d=\"M12 17h.01\"/></svg></span><span><b>Stale Draft</b><small>Latest là v7</small></span></li></ul><div class=\"ds-lever\"><button class=\"ds-lever-btn\" aria-disabled=\"true\"><span class=\"ds-lever-icon\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\"/><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"/></svg></span>Publish thành v8</button><span class=\"ds-lever-reason\">Còn 2 khoá chưa giải</span></div></section><section class=\"ds-interlock is-free\"><ul class=\"ds-locks\"><li class=\"ds-lock\"><span class=\"ds-lamp ds-lamp-clear\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg></span><span><b>Tất cả pass</b><small>6/6</small></span></li></ul><div class=\"ds-lever\"><button class=\"ds-lever-btn\"><span class=\"ds-lever-icon\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\"/><path d=\"M7 11V7a5 5 0 0 1 9.9-1\"/></svg></span>Publish thành v8</button><span class=\"ds-lever-reason\">Mọi khoá đã giải</span></div></section>",
-      "css": ".ds-interlock{display:grid;grid-template-columns:minmax(0,1fr) auto;margin-bottom:12px;border-top:2px solid var(--ink,#ebdbb2);background:var(--sheet,#1d2021);color:var(--ink,#ebdbb2);font-family:'Be Vietnam Pro', system-ui, sans-serif;font-size:0.75rem;} .ds-locks{display:flex;margin:0;padding:0;list-style:none;} .ds-lock{display:flex;gap:10px;align-items:center;padding:10px 14px;border-right:1px solid var(--rule,#3c3836);} .ds-lock b{display:block;font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;} .ds-lock small{color:var(--ink-2,#d5c4a1);font-size:0.75rem;} .ds-lock-stop{background:var(--stop-tint,#3a1e1a);} .ds-lock-caution{background:var(--caution-tint,#372e19);} .ds-lamp{display:inline-grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;color:var(--on-signal,#1d2021);box-shadow:inset 0 -2px 0 rgb(0 0 0 / 0.18);transition:background-color 200ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-lamp svg{width:13px;height:13px;} .ds-lamp-clear{background:var(--clear,#b8bb26);} .ds-lamp-stop{background:var(--stop,#fb4934);} .ds-lamp-caution{background:var(--caution,#fabd2f);color:var(--on-caution,#1d2021);} .ds-lamp-idle{background:var(--panel-2,#32302f);color:var(--ink-3,#a89984);box-shadow:none;} .ds-lever{display:flex;flex-direction:column;justify-content:center;gap:4px;min-width:230px;padding:10px 20px;background:var(--panel,#282828);} .ds-lever-btn{display:flex;align-items:center;gap:12px;height:44px;padding:0 18px 0 0;border:1px solid var(--rule-strong,#665c54);border-radius:var(--radius,3px);background-color:var(--panel-2,#32302f);background-image:linear-gradient(90deg,var(--primary,#076678) 0 50%,transparent 50% 100%);background-size:200% 100%;background-position:100% 0;color:var(--ink-3,#a89984);font-family:'Be Vietnam Pro', system-ui, sans-serif;font-size:0.875rem;font-weight:600;cursor:not-allowed;transition:background-position 420ms cubic-bezier(0.16, 1, 0.3, 1),color 300ms cubic-bezier(0.16, 1, 0.3, 1),border-color 300ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-lever-icon{display:inline-grid;place-items:center;align-self:stretch;width:44px;margin:-1px 0 -1px -1px;border-radius:var(--radius,3px) 0 0 var(--radius,3px);background:var(--lever-lock,#504945);color:var(--on-lever-lock,#ffffff);transition:background-color 300ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-lever-reason{color:var(--ink-2,#d5c4a1);} .is-free .ds-lever-btn{border-color:var(--primary,#076678);background-position:0 0;color:var(--on-primary,#ebdbb2);cursor:pointer;} .is-free .ds-lever-btn:hover{background-color:var(--primary-hover,#0b7a8f);background-image:none;} .is-free .ds-lever-btn:active{transform:translateY(1px);} .is-free .ds-lever-icon{background:var(--clear,#b8bb26);color:var(--on-signal,#1d2021);} .is-free .ds-lever-reason{color:var(--clear-ink,#b8bb26);font-weight:500;} .ds-lever-btn:focus-visible{outline:2px solid var(--accent,#83a598);outline-offset:2px;}"
+      "description": "Signature: one line per lock (lamp and label), its detail and buttons in a popover on hover or focus; the Publish lever fills its cell and gives its reason on demand. Hover a lock or the lever to see them.",
+      "html": "<section class=\"ds-interlock\"><h2 class=\"ds-readout\"><b>1<small>/4</small></b><span>Khoá đã giải</span></h2><ul class=\"ds-locks\"><li class=\"ds-lock ds-lock-clear\" tabindex=\"0\"><span class=\"ds-lamp ds-lamp-clear\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg></span><span class=\"ds-lock-label\">Có Test Case</span><div class=\"ds-pop\"><span>6 Test Case của Decision</span></div></li><li class=\"ds-lock ds-lock-stop\" tabindex=\"0\"><span class=\"ds-lamp ds-lamp-stop\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/></svg></span><span class=\"ds-lock-label\">Test Case pass</span><div class=\"ds-pop\"><span>2 chưa pass: TC-01, TC-06</span><div class=\"ds-pop-actions\"><button class=\"ds-btn\">Xem TC-01</button></div></div></li><li class=\"ds-lock ds-lock-caution\" tabindex=\"0\"><span class=\"ds-lamp ds-lamp-caution\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3\"/><path d=\"M12 9v4\"/><path d=\"M12 17h.01\"/></svg></span><span class=\"ds-lock-label\">Stale Draft</span><div class=\"ds-pop\"><span>Publish sẽ bỏ WKND của v7</span><div class=\"ds-pop-actions\"><button class=\"ds-btn\">Lấy WKND từ v7</button><button class=\"ds-btn\">Chấp nhận bỏ</button></div></div></li></ul><div class=\"ds-lever\"><button class=\"ds-lever-btn\" aria-disabled=\"true\"><span class=\"ds-lever-icon\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\"/><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"/></svg></span><span>Publish thành v8</span><span class=\"ds-lever-count\">3</span></button><span class=\"ds-lever-reason\">Còn 3 khoá chưa giải</span></div></section>",
+      "css": ".ds-interlock{display:grid;grid-template-columns:auto minmax(0,1fr) auto;border-top:1px solid var(--rule-strong,#665c54);background:var(--sheet,#181818);color:var(--ink,#ebdbb2);font-family:'Be Vietnam Pro', system-ui, sans-serif;font-size:0.75rem;} .ds-readout{display:flex;align-items:baseline;gap:8px;margin:0;padding:6px 24px 6px 24px;border-right:1px solid var(--rule-strong,#665c54);} .ds-readout b{font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:1.25rem;font-weight:700;line-height:0.9;font-feature-settings:'tnum' 1;color:var(--ink,#ebdbb2);} .ds-readout small{font-size:inherit;font-weight:500;color:var(--ink-3,#a89984);} .ds-readout span{font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.6875rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink-2,#d5c4a1);} .ds-locks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:0;padding:0;list-style:none;} .ds-lock{position:relative;display:flex;align-items:center;gap:10px;padding:6px 14px;border-right:1px solid var(--rule,#32302f);cursor:default;transition:background-color 200ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-lock:hover,.ds-lock:focus-within{background:var(--row-hover,#20201e);} .ds-lock-label{font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.75rem;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;} .ds-lock-clear .ds-lock-label{color:var(--ink-3,#a89984);} .ds-lock-stop .ds-lock-label{color:var(--stop-ink,#fc6a58);} .ds-lock-caution .ds-lock-label{color:var(--caution-ink,#fabd2f);} .ds-pop{position:absolute;bottom:100%;left:0;z-index:3;display:grid;gap:8px;width:max-content;min-width:100%;max-width:42ch;padding:10px 14px;border:1px solid var(--rule-strong,#665c54);border-bottom-color:var(--rule,#32302f);border-radius:3px 3px 0 0;background:var(--panel,#282828);box-shadow:0 8px 22px -6px rgb(0 0 0 / 0.6),0 2px 4px -1px rgb(0 0 0 / 0.4);color:var(--ink,#ebdbb2);font-size:0.8125rem;line-height:1.45;opacity:0;visibility:hidden;pointer-events:none;transform:translateY(4px);transition:opacity 140ms cubic-bezier(0.16, 1, 0.3, 1) 90ms,transform 140ms cubic-bezier(0.16, 1, 0.3, 1) 90ms,visibility 0s linear 230ms;} .ds-lock:hover .ds-pop,.ds-lock:focus-within .ds-pop{opacity:1;visibility:visible;pointer-events:auto;transform:none;transition-delay:70ms,70ms,0s;} .ds-pop-actions{display:flex;flex-wrap:wrap;gap:6px 8px;padding-top:10px;border-top:1px solid var(--rule,#32302f);} .ds-btn{height:30px;padding:0 12px;border:1px solid var(--rule-strong,#665c54);border-radius:3px;background:var(--sheet,#181818);color:var(--ink,#ebdbb2);font-size:0.75rem;font-weight:500;cursor:pointer;} .ds-lamp{display:inline-grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;color:var(--on-signal,#181818);box-shadow:inset 0 -2px 0 rgb(0 0 0 / 0.18);} .ds-lamp svg{width:13px;height:13px;} .ds-lamp-clear{background:var(--clear,#b8bb26);} .ds-lamp-stop{background:var(--stop,#fb4934);} .ds-lamp-caution{background:var(--caution,#fabd2f);color:var(--on-caution,#181818);} .ds-lever{position:relative;display:flex;flex-direction:column;min-width:260px;background:var(--panel,#282828);} .ds-lever-btn{display:flex;flex:1;align-items:center;gap:12px;width:100%;min-height:40px;padding:0 20px 0 0;border:0;border-left:1px solid var(--rule-strong,#665c54);border-radius:0;background-color:var(--panel-2,#32302f);background-image:linear-gradient(90deg,var(--primary,#b8bb26) 0 50%,transparent 50% 100%);background-size:200% 100%;background-position:100% 0;color:var(--ink-3,#a89984);font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:1rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;cursor:not-allowed;overflow:hidden;transition:background-position 420ms cubic-bezier(0.16, 1, 0.3, 1),color 300ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-lever-icon{display:inline-grid;place-items:center;align-self:stretch;width:44px;background:color-mix(in srgb,var(--panel-2,#32302f) 45%,var(--sheet,#181818));color:var(--ink-2,#d5c4a1);} .ds-lever-count{display:inline-grid;place-items:center;min-width:20px;height:20px;margin-left:auto;padding:0 5px;border:1px solid currentColor;border-radius:2px;font-size:0.75rem;font-feature-settings:'tnum' 1;} .ds-lever-reason{position:absolute;right:24px;bottom:calc(100% + 6px);width:max-content;max-width:34ch;padding:7px 12px;border:1px solid var(--rule-strong,#665c54);border-radius:3px;background:var(--panel,#282828);color:var(--ink-2,#d5c4a1);opacity:0;visibility:hidden;transition:opacity 140ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-lever:hover .ds-lever-reason{opacity:1;visibility:visible;}"
     },
     {
       "name": "Shell Nav",
@@ -1394,8 +1434,8 @@
       "name": "Workspace Tabs",
       "kind": "nav",
       "refersTo": "tabs",
-      "description": "The Decision-scoped tab row under the title block, with the inspector toggle that appears below 1200px.",
-      "html": "<nav class=\"ds-tabs\" aria-label=\"Màn hình của Decision\"><a class=\"ds-tab is-current\" href=\"#\" aria-current=\"page\">Rules</a><a class=\"ds-tab\" href=\"#\">Simulation</a><a class=\"ds-tab\" href=\"#\">Version</a><a class=\"ds-tab\" href=\"#\">Schema</a><button class=\"ds-tabs-toggle\" type=\"button\" aria-expanded=\"false\"><span class=\"ds-tabs-lamp\" aria-hidden=\"true\"></span>4/6 pass</button></nav>",
+      "description": "The Decision-scoped tab row under the title block (Rules, Test Case, Sơ đồ, Simulation, Version, Schema), with the inspector toggle that appears below 1200px.",
+      "html": "<nav class=\"ds-tabs\" aria-label=\"Màn hình của Decision\"><a class=\"ds-tab is-current\" href=\"#\" aria-current=\"page\">Rules</a><a class=\"ds-tab\" href=\"#\">Test Case</a><a class=\"ds-tab\" href=\"#\">Sơ đồ</a><a class=\"ds-tab\" href=\"#\">Simulation</a><a class=\"ds-tab\" href=\"#\">Version</a><a class=\"ds-tab\" href=\"#\">Schema</a><button class=\"ds-tabs-toggle\" type=\"button\" aria-expanded=\"false\"><span class=\"ds-tabs-lamp\" aria-hidden=\"true\"></span>4/6 pass</button></nav>",
       "css": ".ds-tabs{display:flex;align-items:stretch;gap:4px;padding:0 24px 0 12px;border-top:1px solid var(--rule-strong,#665c54);border-bottom:1px solid var(--rule-strong,#665c54);background:var(--sheet,#1d2021);} .ds-tab{display:flex;align-items:center;height:40px;margin-bottom:-1px;padding:0 12px;border-bottom:2px solid transparent;font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.875rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--ink-3,#a89984);text-decoration:none;transition:color 150ms cubic-bezier(0.16, 1, 0.3, 1),border-color 150ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-tab:hover{color:var(--ink,#ebdbb2);} .ds-tab.is-current{border-bottom-color:var(--accent,#83a598);color:var(--ink,#ebdbb2);} .ds-tab:focus-visible{outline:2px solid var(--accent,#83a598);outline-offset:-4px;} .ds-tabs-toggle{display:inline-flex;align-items:center;gap:6px;align-self:center;margin-left:auto;height:30px;padding:0 10px;border:1px solid var(--rule-strong,#665c54);border-radius:3px;background:var(--sheet,#1d2021);color:var(--ink,#ebdbb2);font-family:'Be Vietnam Pro', system-ui, sans-serif;font-size:0.75rem;font-weight:500;cursor:pointer;transition:background-color 150ms cubic-bezier(0.16, 1, 0.3, 1);} .ds-tabs-toggle:hover{background:var(--panel,#282828);} .ds-tabs-toggle:focus-visible{outline:2px solid var(--accent,#83a598);outline-offset:2px;} .ds-tabs-lamp{width:16px;height:16px;border-radius:50%;background:var(--stop,#fb4934);}"
     },
     {
@@ -1421,8 +1461,10 @@
     "keyCharacteristics": [
       "Ruled drafting-sheet surfaces. Flat panels separated by hairlines of one weight, not by cards or shadows.",
       "Signal lamps (clear / stop / caution / pending / idle) are the only carriers of state colour, and every lamp has a glyph and a label.",
-      "Identifier as headline (`decisionId@draft`) over a ruled title block of six cells.",
-      "The interlock row and Publish lever are the signature, with one authored release moment.",
+      "Identifier as headline (`decisionId@draft`) over a one-line ruled title block: the route track runs through six cells, each with its stop and its label on it and its value beneath. Only the Decision Table has one; every other screen has a head of its own kind.",
+      "The interlock row and Publish lever are the signature, with one authored release moment. The lever is the whole of its cell, and what blocks it is read on demand, not printed.",
+      "Sections have a role (lead, evidence, reference) and say so with scale, a tick and a tonal band, never with a card.",
+      "Motion is acknowledgement: a changed value swaps in, a row glides to its place, a lock that re-engages clicks shut. Nothing loops.",
       "Every screen fills the same five slots of the Decision Workspace: shell nav, context head with tabs, primary, inspector, commit bar.",
       "Seven themes are mapped onto one semantic token set. Each theme's red, yellow and green come from its own editor scheme.",
       "Vietnamese prose, with English domain terms (Rule, Draft, Test Case, Hit Policy, Publish) kept as written in CONTEXT.md."
@@ -1430,7 +1472,7 @@
     "rules": [
       {
         "name": "The Signal Reservation Rule",
-        "body": "Red, amber and green are reserved for state, in every theme. Shell, accent, primary, brand marks, theme swatches and markers such as the Latest Pointer never reuse them. Each theme uses its own scheme's red, yellow and green for the lamps.",
+        "body": "Red, amber and green are reserved for state, in every theme. Shell, accent, brand marks, theme swatches and markers such as the Latest Pointer never reuse them. The one exception is `primary`, which is the theme's own green by the owner's choice. It always carries a text label and is a rectangle, never a disc, so it does not read as a lamp. Each theme uses its own scheme's red, yellow and green for the lamps.",
         "section": "colors"
       },
       {
@@ -1465,7 +1507,12 @@
       },
       {
         "name": "The Pinned Result Rule",
-        "body": "A Rule's route number and its outputs never scroll out of view, the same way in every Decision. The identity plate pins only when conditions keep at least 200px.",
+        "body": "A Rule's route number and its outputs never scroll out of view, the same way in every Decision. The identity plate pins only when conditions keep at least 320px; a hidden condition column always announces itself at the pinned edge, and its conditions are read out on each Rule.",
+        "section": "layout"
+      },
+      {
+        "name": "The Section Role Rule",
+        "body": "A section on a screen is one of three, and says which by scale and tone, never by a card. *Lead* is the work the screen exists for, one per screen: its head at `t-xl` in 700, a 28×2px `accent` tick above it, its count a tabular figure. *Evidence* is what the work produced (a result table, a trace, the ledger of calls): it sits on the quiet output band (`--panel`, a `rule-strong` rule above), so its tables stay `sheet` on it, the same tonal step that tells outputs from inputs inside a table. *Reference* is what the author looks things up in (the published versions list): its head steps down to `t-base`, 500, sentence case, `ink-2`. Classes: `.section-title.is-lead`, `.section-title.is-ref`, `.sect-band`.",
         "section": "layout"
       },
       {
@@ -1485,22 +1532,26 @@
       }
     ],
     "dos": [
-      "**Do** route every colour through the semantic tokens so all six themes stay correct, and add a new theme only by overriding the full token map under `:root[data-theme='…']`.",
-      "**Do** keep red, amber and green for state in every theme, and pair each lamp with its glyph and a text label.",
-      "**Do** use `stop-fill` / `on-stop` whenever a red fill carries text, and lead a toned toast with its lamp rather than tinting the toast.",
-      "**Do** lift a scheme colour that misses 4.5:1 for text, and mark it `derived` in themes.css.",
-      "**Do** letter identifiers, column and group heads, counts and lamp labels in Barlow Semi Condensed, set prose in Be Vietnam Pro, and keep JetBrains Mono for expressions and ids.",
-      "**Do** keep state transitions at 150 to 250ms on `--ease-out`, and let the release sequence be the only choreographed motion.",
-      "**Do** keep the reduced-motion override that collapses every duration and delay to 1ms.",
-      "**Do** keep Publish locked, with a written reason, until every interlock lamp is clear."
+      "Do route every colour through the semantic tokens so all six themes stay correct, and add a new theme only by overriding the full token map under `:root[data-theme='…']`.",
+      "Do keep red, amber and green for state in every theme, and pair each lamp with its glyph and a text label.",
+      "Do use `stop-fill` / `on-stop` whenever a red fill carries text, and lead a toned toast with its lamp rather than tinting the toast.",
+      "Do lift a scheme colour that misses 4.5:1 for text, and mark it `derived` in themes.css.",
+      "Do letter identifiers, column and group heads, counts and lamp labels in Barlow Semi Condensed, set prose in Be Vietnam Pro, and keep JetBrains Mono for expressions and ids.",
+      "Do keep state transitions at 150 to 250ms on `--ease-out`, and let the release sequence be the only choreographed motion. Everything else is acknowledgement of a change that really happened (a value that changed, a row that moved), and plays once.",
+      "Do give each section a role (lead, evidence, reference) with scale, a tick and a tonal band.",
+      "Do read secondary information on demand (a lock's detail and actions, the lever's reason) through hover and focus, and keep it in the accessibility tree.",
+      "Do keep the reduced-motion override that collapses every duration and delay to 1ms.",
+      "Do keep Publish locked, with a written reason, until every interlock lamp is clear."
     ],
     "donts": [
-      "**Don't** use a signal red, amber or green for the shell, brand mark, accent, primary, theme swatch or a marker like LATEST in any theme.",
-      "**Don't** signal state with colour alone, whether as a tinted row without a route-number change or a lamp without a label.",
-      "**Don't** ship the category default: a neutral SaaS grid with a lone, always-clickable Publish button that explains nothing.",
-      "**Don't** add cards, rounded containers above 3px, or decorative shadows. Divide with ruled lines.",
-      "**Don't** use JetBrains Mono for labels, buttons or sentences.",
-      "**Don't** add a second authored animation that competes with the lever release."
+      "Don't use a signal red, amber or green for the shell, brand mark, accent, theme swatch or a marker like LATEST in any theme, and don't give `primary` a green from outside the theme's own scheme.",
+      "Don't signal state with colour alone, whether as a tinted row without a route-number change or a lamp without a label.",
+      "Don't ship the category default: a neutral SaaS grid with a lone, always-clickable Publish button that explains nothing.",
+      "Don't add cards, rounded containers above 3px, or decorative shadows. Divide with ruled lines.",
+      "Don't use JetBrains Mono for labels, buttons or sentences.",
+      "Don't add a second authored animation that competes with the lever release, and don't loop anything: an animation that repeats while nothing changes is decoration.",
+      "Don't open every screen with the title block's route band. It is the Decision Table's, where the cells really are stations.",
+      "Don't offer an action as an underlined link where it is a button (a lock's \"Chấp nhận bỏ\" is a secondary button)."
     ]
   }
 }
