@@ -1,4 +1,5 @@
 import { Info, TriangleAlert } from 'lucide-react';
+import { PolicyPlate } from '../../components/HitPolicy';
 import { PageHead } from '../../components/PageHead';
 import { Workspace } from '../../components/Workspace';
 import type { DecisionSummary } from '../../domain/types';
@@ -64,7 +65,7 @@ export function DecisionsScreen() {
                   </span>
                 </th>
                 <td>
-                  <span className="tag">{d.hitPolicy}</span>
+                  <PolicyPlate policy={d.hitPolicy} />
                 </td>
                 <td>
                   <a className="ledger__link" href={href.version(d.id, d.latest)}>

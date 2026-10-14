@@ -1,3 +1,4 @@
+import { PolicyPlate } from '../../components/HitPolicy';
 import {
   DndContext,
   KeyboardSensor,
@@ -351,7 +352,7 @@ export function RuleTable(props: Props) {
     <Glide skip={skipGlide}>
       <div className="rules-wrap">
         <p id="rules-order-note" className="rules-note">
-          <span className="rules-note__policy">{ruleSet.hitPolicy}</span>
+          <PolicyPlate policy={ruleSet.hitPolicy} />
           {POLICY_ORDER_NOTE[ruleSet.hitPolicy]}
           {reorderable && <span className="rules-note__hint">Kéo tay nắm, hoặc focus tay nắm rồi dùng Space và phím mũi tên.</span>}
         </p>

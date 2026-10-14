@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-13T11:42:50+00:00",
+  "generatedAt": "2026-10-14T03:40:10+00:00",
   "title": "Design System: bre console",
   "extensions": {
     "colorMeta": {
@@ -1386,8 +1386,8 @@
       "name": "Tags",
       "kind": "chip",
       "refersTo": "tag",
-      "description": "Technical-lettered flags; signal variants use tint fill and -ink text.",
-      "html": "<span class=\"ds-tag\">COLLECT</span> <span class=\"ds-tag ds-tag-clear\">VÀO OUTPUT</span> <span class=\"ds-tag ds-tag-caution\">KHÁC LATEST</span> <span class=\"ds-tag ds-tag-stop\">FAIL</span>",
+      "description": "Technical-lettered flags (LATEST, VÀO OUTPUT, KHÁC LATEST); signal variants use tint fill and -ink text. A Hit Policy name is a Policy Plate, not a tag.",
+      "html": "<span class=\"ds-tag\">LATEST V7</span> <span class=\"ds-tag ds-tag-clear\">VÀO OUTPUT</span> <span class=\"ds-tag ds-tag-caution\">KHÁC LATEST</span> <span class=\"ds-tag ds-tag-stop\">FAIL</span>",
       "css": ".ds-tag{display:inline-flex;align-items:center;height:18px;padding:0 6px;border:1px solid var(--rule-strong,#665c54);border-radius:2px;background:var(--sheet,#1d2021);color:var(--ink-2,#d5c4a1);font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.6875rem;font-weight:600;letter-spacing:0.03em;text-transform:uppercase;} .ds-tag-clear{border-color:color-mix(in srgb,var(--clear,#b8bb26) 45%,transparent);background:var(--clear-tint,#2a2c1c);color:var(--clear-ink,#b8bb26);} .ds-tag-stop{border-color:color-mix(in srgb,var(--stop,#fb4934) 45%,transparent);background:var(--stop-tint,#3a1e1a);color:var(--stop-ink,#fc6a58);} .ds-tag-caution{border-color:color-mix(in srgb,var(--caution,#fabd2f) 55%,transparent);background:var(--caution-tint,#372e19);color:var(--caution-ink,#fabd2f);}"
     },
     {
@@ -1402,9 +1402,9 @@
       "name": "Title Block",
       "kind": "card",
       "refersTo": "titleblock-cell",
-      "description": "One line of the Decision Table's route: each cell has its stop and its label on the track, its value beneath; no rule above, one below. Only the Decision Table has it.",
-      "html": "<header class=\"ds-tb\"><h1 class=\"ds-tb-id\">calculate-pos-discounts<span>@draft-3</span></h1><dl class=\"ds-tb-grid\"><div class=\"ds-tb-cell ds-tb-first\"><dd class=\"ds-tb-stop\"><i class=\"ds-tb-dot\"></i></dd><dt>Draft</dt><dd class=\"ds-tb-val\">Hạ ngưỡng giỏ lớn</dd></div><div class=\"ds-tb-cell\"><dd class=\"ds-tb-stop\"><i class=\"ds-tb-dot\"></i></dd><dt>Dựa trên</dt><dd class=\"ds-tb-val\">v6</dd></div><div class=\"ds-tb-cell\"><dd class=\"ds-tb-stop\"><i class=\"ds-tb-dot\"></i></dd><dt>Hit Policy</dt><dd class=\"ds-tb-val\">COLLECT</dd></div><div class=\"ds-tb-cell\"><dd class=\"ds-tb-stop\"><i class=\"ds-tb-dot\"></i></dd><dt>Input schema</dt><dd class=\"ds-tb-val\">5 trường</dd></div></dl></header>",
-      "css": ".ds-tb{font-family:'Be Vietnam Pro', system-ui, sans-serif;color:var(--ink,#ebdbb2);} .ds-tb-id{margin:0 0 16px;font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:1.75rem;font-weight:600;line-height:1.1;letter-spacing:-0.005em;} .ds-tb-id span{margin-left:2px;color:var(--accent,#8aa98a);font-weight:500;} .ds-tb-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin:0;border-bottom:1px solid var(--rule-strong,#665c54);background:var(--sheet,#181818);} .ds-tb-cell{position:relative;display:grid;grid-template-columns:auto auto minmax(0,1fr);grid-template-areas:'stop label .' 'value value value';align-items:center;column-gap:6px;row-gap:3px;padding:7px 12px 8px;} .ds-tb-cell::before{content:'';position:absolute;inset-inline:0;top:16px;height:1px;background:var(--rule-strong,#665c54);} .ds-tb-cell+.ds-tb-cell::after{content:'';position:absolute;left:-1px;top:8px;bottom:6px;width:1px;background:var(--rule,#32302f);} .ds-tb-cell dt{position:relative;z-index:1;grid-area:label;padding:0 8px 0 2px;background:var(--sheet,#181818);font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.6875rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;line-height:18px;color:var(--ink-3,#a89984);} .ds-tb-stop{position:relative;z-index:1;grid-area:stop;height:18px;margin:0;display:flex;align-items:center;} .ds-tb-dot{width:10px;height:10px;border:1.5px solid var(--ink-3,#a89984);border-radius:50%;background:var(--sheet,#181818);} .ds-tb-first .ds-tb-dot{border-color:var(--accent,#8aa98a);background:var(--accent,#8aa98a);} .ds-tb-val{grid-area:value;margin:0;min-width:0;font-size:0.875rem;font-weight:500;font-feature-settings:'tnum' 1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}"
+      "description": "One line of the Decision Table's route: each cell has its stop and its label on the track, its value beneath, set as what it is: a framed v-number, the Hit Policy's ink plate, a count as a figure, a status as text, with the one note worth seeing as an aside (LATEST V7, + channel, the save time).",
+      "html": "<header class=\"ds-tb\"><dl class=\"ds-tb-grid\"><div class=\"ds-tb-cell\"><dt>Draft</dt><dd class=\"ds-tb-val\">Hạ ngưỡng giỏ lớn</dd></div><div class=\"ds-tb-cell\"><dt>Dựa trên</dt><dd class=\"ds-tb-val\"><span class=\"ds-tb-ver\"><i>v</i>6</span><span class=\"ds-tb-latest\">Latest v7</span></dd></div><div class=\"ds-tb-cell\"><dt>Hit Policy</dt><dd class=\"ds-tb-val\"><span class=\"ds-tb-policy\">COLLECT</span></dd></div><div class=\"ds-tb-cell\"><dt>Input schema</dt><dd class=\"ds-tb-val\"><b class=\"ds-tb-fig\">5</b><span class=\"ds-tb-unit\">trường</span><span class=\"ds-tb-new\">+ channel</span></dd></div><div class=\"ds-tb-cell\"><dt>Lưu</dt><dd class=\"ds-tb-val\">Đã lưu<span class=\"ds-tb-time\">15:12 6/10/26</span></dd></div></dl></header>",
+      "css": ".ds-tb{font-family:'Be Vietnam Pro', system-ui, sans-serif;color:var(--ink,#ebdbb2);} .ds-tb-grid{display:grid;grid-template-columns:1.6fr repeat(4,minmax(0,1fr));margin:0;border-bottom:1px solid var(--rule-strong,#665c54);} .ds-tb-cell{display:grid;gap:3px;padding:7px 12px 8px;border-left:1px solid var(--rule,#32302f);background:linear-gradient(var(--rule-strong,#665c54),var(--rule-strong,#665c54)) 0 16px/100% 1px no-repeat;} .ds-tb-cell:first-child{border-left:0;} .ds-tb-cell dt{justify-self:start;padding:0 8px 0 2px;background:var(--sheet,#181818);font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.6875rem;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;line-height:18px;color:var(--ink-3,#a89984);} .ds-tb-val{display:flex;align-items:center;gap:6px;margin:0;font-weight:500;white-space:nowrap;} .ds-tb-ver{padding:0 6px;border:1px solid var(--rule-strong,#665c54);border-radius:2px;font-family:'JetBrains Mono', ui-monospace, monospace;font-size:0.75rem;font-weight:600;line-height:20px;} .ds-tb-ver i{font-style:normal;color:var(--ink-3,#a89984);} .ds-tb-latest{padding:0 5px;border:1px dashed color-mix(in srgb,var(--caution-ink,#fabd2f) 60%,transparent);border-radius:2px;font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.6875rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;line-height:18px;color:var(--caution-ink,#fabd2f);} .ds-tb-policy{padding:0 6px;border:1px solid var(--rule-strong,#665c54);border-radius:2px;font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.75rem;font-weight:600;letter-spacing:0.03em;line-height:18px;color:var(--ink-2,#d5c4a1);} .ds-tb-fig{font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:1.125rem;font-weight:700;line-height:1;} .ds-tb-unit{margin-left:-3px;font-size:0.75rem;color:var(--ink-2,#d5c4a1);} .ds-tb-new{padding:0 5px;border-radius:2px;background:var(--accent-tint,#272b27);font-family:'JetBrains Mono', ui-monospace, monospace;font-size:0.6875rem;line-height:18px;color:var(--accent,#8aa98a);} .ds-tb-time{font-family:'JetBrains Mono', ui-monospace, monospace;font-size:0.6875rem;color:var(--ink-3,#a89984);}"
     },
     {
       "name": "Rules Table",
@@ -1453,6 +1453,30 @@
       "description": "One toast surface in every theme; tone is carried by a leading lamp, never by the toast colour. The only element using the pop shadow.",
       "html": "<div class=\"ds-toast\"><span class=\"ds-lamp ds-lamp-sm ds-lamp-clear\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 6 9 17l-5-5\"/></svg></span><span>Đã lưu Draft.</span><button class=\"ds-toast-action\">Hoàn tác</button></div>",
       "css": ".ds-toast{display:inline-flex;align-items:center;gap:12px;max-width:460px;padding:10px 8px 10px 14px;border-radius:var(--radius,3px);background:var(--toast-bg,#3c3836);color:var(--toast-ink,#ffffff);font-family:'Be Vietnam Pro', system-ui, sans-serif;font-size:0.875rem;box-shadow:var(--shadow-pop,0 8px 22px -6px rgb(0 0 0 / 0.6),0 2px 4px -1px rgb(0 0 0 / 0.4));animation:ds-toast-in 220ms cubic-bezier(0.16, 1, 0.3, 1) both;} .ds-toast-action{padding:4px 10px;border:1px solid rgb(255 255 255 / 0.4);border-radius:2px;background:none;color:var(--toast-ink,#ffffff);font-family:'Be Vietnam Pro', system-ui, sans-serif;font-size:0.75rem;font-weight:600;cursor:pointer;} .ds-toast-action:hover{background:rgb(255 255 255 / 0.12);} .ds-toast-action:focus-visible{outline:2px solid var(--toast-ink,#ffffff);outline-offset:2px;} .ds-lamp{display:inline-grid;place-items:center;flex:none;border-radius:50%;color:var(--on-signal,#1d2021);box-shadow:inset 0 -2px 0 rgb(0 0 0 / 0.18);} .ds-lamp-sm{width:16px;height:16px;} .ds-lamp-sm svg{width:10px;height:10px;} .ds-lamp-clear{background:var(--clear,#b8bb26);} @keyframes ds-toast-in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}"
+    },
+    {
+      "name": "Policy Plate",
+      "kind": "chip",
+      "refersTo": "policy-plate",
+      "description": "A Hit Policy's name as one outlined plate wherever a policy is named, its one-line meaning as the tooltip (components/HitPolicy.tsx).",
+      "html": "<span class=\"ds-pp\" title=\"Mọi Rule match, giữ thứ tự Rule\">COLLECT</span> <span class=\"ds-pp\" title=\"Rule match đầu tiên quyết định\">FIRST</span> <span class=\"ds-pp\" title=\"Tối đa một Rule được match\">UNIQUE</span> <span class=\"ds-pp\" title=\"Rule match có weight cao nhất thắng\">PRIORITY</span>",
+      "css": ".ds-pp{display:inline-flex;align-items:center;height:18px;padding:0 6px;border:1px solid var(--rule-strong,#665c54);border-radius:2px;background:var(--sheet,#181818);font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.6875rem;font-weight:600;letter-spacing:0.03em;color:var(--ink-2,#d5c4a1);white-space:nowrap;cursor:help;} .ds-pp:hover{border-color:var(--ink-3,#a89984);color:var(--ink,#ebdbb2);}"
+    },
+    {
+      "name": "Rule Plate",
+      "kind": "chip",
+      "refersTo": "rule-plate",
+      "description": "Two cells: what the Hit Policy made of a Rule, written out (THẮNG, MATCH, CHE, BỊ VƯỢT, XUNG ĐỘT, GÓP), then the Rule id. Decided on clear tint, set aside dashed, conflict on stop tint.",
+      "html": "<span class=\"ds-rp ds-rp-won\"><span class=\"ds-rp-role\">thắng</span><span class=\"ds-rp-id\">HEAT-DRY</span></span> <span class=\"ds-rp ds-rp-lost\"><span class=\"ds-rp-role\">che</span><span class=\"ds-rp-id\">DRY</span></span> <span class=\"ds-rp ds-rp-lost\"><span class=\"ds-rp-role\">bị vượt</span><span class=\"ds-rp-id\">HEAT</span></span> <span class=\"ds-rp ds-rp-stop\"><span class=\"ds-rp-role\">xung đột</span><span class=\"ds-rp-id\">SILVER</span></span> <span class=\"ds-rp ds-rp-won\"><span class=\"ds-rp-role\">góp</span><span class=\"ds-rp-id\">GOLD5</span></span>",
+      "css": ".ds-rp{display:inline-flex;align-items:stretch;border:1px solid var(--rule-strong,#665c54);border-radius:3px;line-height:1.35;white-space:nowrap;overflow:hidden;vertical-align:middle;} .ds-rp-role{display:inline-flex;align-items:center;padding:1px 5px;border-right:1px solid var(--rule-strong,#665c54);font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.625rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;} .ds-rp-id{padding:1px 6px 2px;font-family:'JetBrains Mono', ui-monospace, monospace;font-size:0.6875rem;font-weight:600;color:var(--ink,#ebdbb2);} .ds-rp-won{border-color:color-mix(in srgb,var(--clear-ink,#b8bb26) 35%,var(--rule,#32302f));} .ds-rp-won .ds-rp-role{border-right-color:color-mix(in srgb,var(--clear-ink,#b8bb26) 35%,var(--rule,#32302f));background:var(--clear-tint,#282819);color:var(--clear-ink,#b8bb26);} .ds-rp-lost{border-style:dashed;} .ds-rp-lost .ds-rp-role{border-right-style:dashed;color:var(--ink-3,#a89984);} .ds-rp-lost .ds-rp-id{color:var(--ink-3,#a89984);} .ds-rp-stop{border-color:color-mix(in srgb,var(--stop-ink,#fc6a58) 40%,var(--rule,#32302f));} .ds-rp-stop .ds-rp-role{border-right-color:color-mix(in srgb,var(--stop-ink,#fc6a58) 40%,var(--rule,#32302f));background:var(--stop-tint,#381f1c);color:var(--stop-ink,#fc6a58);} .ds-rp-stop .ds-rp-id{color:var(--stop-ink,#fc6a58);} .ds-rp:hover{filter:brightness(1.12);}"
+    },
+    {
+      "name": "Test Case Hit Policy Column",
+      "kind": "custom",
+      "refersTo": "tct__path",
+      "description": "The column pinned beside the verdict that says how the Hit Policy answered. COLLECT shows a set of lines, each marked KHỚP / THIẾU / THỪA with the Rule that returned it; PRIORITY ranks matched Rules on a weight ladder.",
+      "html": "<div class=\"ds-hp\"><div class=\"ds-hp-line\"><i class=\"ds-hp-lamp ds-ok\"></i><b class=\"ds-hp-mark ds-ok\">khớp</b><span class=\"ds-rp2\">GÓP · GOLD5</span></div><div class=\"ds-hp-line\"><i class=\"ds-hp-lamp ds-no\"></i><b class=\"ds-hp-mark ds-no\">thiếu</b><code class=\"ds-hp-why ds-no\">WKND · 2 %</code></div><div class=\"ds-hp-ladder\"><span>TANK</span><i style=\"--w:90%\"></i><b>90</b><span class=\"ds-dim\">HEAT</span><i class=\"ds-dim\" style=\"--w:50%\"></i><b class=\"ds-dim\">50</b></div></div>",
+      "css": ".ds-hp{display:grid;gap:8px;width:230px;padding:8px 10px;border-left:1px solid var(--rule-strong,#665c54);background:color-mix(in srgb,var(--panel,#282828) 50%,var(--sheet,#181818));font-family:'Be Vietnam Pro', system-ui, sans-serif;} .ds-hp-line{display:flex;flex-wrap:wrap;align-items:center;gap:4px 7px;} .ds-hp-lamp{width:12px;height:12px;border-radius:50%;} .ds-hp-lamp.ds-ok{background:var(--clear,#b8bb26);} .ds-hp-lamp.ds-no{background:var(--stop,#fb4934);} .ds-hp-mark{font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;font-size:0.6875rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;} .ds-ok{color:var(--clear-ink,#b8bb26);} .ds-no{color:var(--stop-ink,#fc6a58);} .ds-rp2{padding:1px 6px;border:1px solid color-mix(in srgb,var(--clear-ink,#b8bb26) 35%,var(--rule,#32302f));border-radius:3px;font-family:'JetBrains Mono', ui-monospace, monospace;font-size:0.6875rem;color:var(--ink,#ebdbb2);} .ds-hp-why{flex-basis:100%;padding-left:26px;font-family:'JetBrains Mono', ui-monospace, monospace;font-size:0.6875rem;} .ds-hp-ladder{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:4px 8px;font-family:'JetBrains Mono', ui-monospace, monospace;font-size:0.6875rem;color:var(--ink,#ebdbb2);} .ds-hp-ladder i{height:6px;background:linear-gradient(var(--ink,#ebdbb2),var(--ink,#ebdbb2)) 0/var(--w) 100% no-repeat,color-mix(in srgb,var(--rule,#32302f) 70%,transparent);} .ds-hp-ladder i.ds-dim{background:linear-gradient(var(--rule-strong,#665c54),var(--rule-strong,#665c54)) 0/var(--w) 100% no-repeat,color-mix(in srgb,var(--rule,#32302f) 70%,transparent);} .ds-hp-ladder b{font-family:'Barlow Semi Condensed', 'Be Vietnam Pro', system-ui, sans-serif;text-align:right;} .ds-dim{color:var(--ink-3,#a89984);}"
     }
   ],
   "narrative": {
@@ -1523,35 +1547,35 @@
       {
         "name": "The Drawn Line Rule",
         "body": "Structure is ruled, not lifted, and every line is 1px. Use `rule-strong` for the frames of the sheet's main objects and the interlock top edge, `--line` inside the table (frame, heads, the inputs | outputs seam), and `rule` hairlines for rows. Never draw a line in `ink`: on dark themes it reads as a glare, not a rule. Major divisions are made by tone (the output band), not by stroke weight.",
-        "section": "elevation"
+        "section": "elevation & depth"
       },
       {
         "name": "The Double Seam Rule",
         "body": "When a division must outrank `--line` (the seam between Rules and the outcomes that are not Rules in the Rule impact table), it is drawn as two 1px `rule-strong` lines (a 3px double border), never as one heavier stroke, so the line weight stays one.",
-        "section": "elevation"
+        "section": "elevation & depth"
       }
     ],
     "dos": [
-      "Do route every colour through the semantic tokens so all six themes stay correct, and add a new theme only by overriding the full token map under `:root[data-theme='…']`.",
-      "Do keep red, amber and green for state in every theme, and pair each lamp with its glyph and a text label.",
-      "Do use `stop-fill` / `on-stop` whenever a red fill carries text, and lead a toned toast with its lamp rather than tinting the toast.",
-      "Do lift a scheme colour that misses 4.5:1 for text, and mark it `derived` in themes.css.",
-      "Do letter identifiers, column and group heads, counts and lamp labels in Barlow Semi Condensed, set prose in Be Vietnam Pro, and keep JetBrains Mono for expressions and ids.",
-      "Do keep state transitions at 150 to 250ms on `--ease-out`, and let the release sequence be the only choreographed motion. Everything else is acknowledgement of a change that really happened (a value that changed, a row that moved), and plays once.",
-      "Do give each section a role (lead, evidence, reference) with scale, a tick and a tonal band.",
-      "Do read secondary information on demand (a lock's detail and actions, the lever's reason) through hover and focus, and keep it in the accessibility tree.",
-      "Do keep the reduced-motion override that collapses every duration and delay to 1ms.",
-      "Do keep Publish locked, with a written reason, until every interlock lamp is clear."
+      "**Do** route every colour through the semantic tokens so all six themes stay correct, and add a new theme only by overriding the full token map under `:root[data-theme='…']`.",
+      "**Do** keep red, amber and green for state in every theme, and pair each lamp with its glyph and a text label.",
+      "**Do** use `stop-fill` / `on-stop` whenever a red fill carries text, and lead a toned toast with its lamp rather than tinting the toast.",
+      "**Do** lift a scheme colour that misses 4.5:1 for text, and mark it `derived` in themes.css.",
+      "**Do** letter identifiers, column and group heads, counts and lamp labels in Barlow Semi Condensed, set prose in Be Vietnam Pro, and keep JetBrains Mono for expressions and ids.",
+      "**Do** keep state transitions at 150 to 250ms on `--ease-out`, and let the release sequence be the only choreographed motion. Everything else is acknowledgement of a change that really happened (a value that changed, a row that moved), and plays once.",
+      "**Do** give each section a role (lead, evidence, reference) with scale, a tick and a tonal band.",
+      "**Do** read secondary information on demand (a lock's detail and actions, the lever's reason) through hover and focus, and keep it in the accessibility tree.",
+      "**Do** keep the reduced-motion override that collapses every duration and delay to 1ms.",
+      "**Do** keep Publish locked, with a written reason, until every interlock lamp is clear."
     ],
     "donts": [
-      "Don't use a signal red, amber or green for the shell, brand mark, accent, theme swatch or a marker like LATEST in any theme, and don't give `primary` a green from outside the theme's own scheme.",
-      "Don't signal state with colour alone, whether as a tinted row without a route-number change or a lamp without a label.",
-      "Don't ship the category default: a neutral SaaS grid with a lone, always-clickable Publish button that explains nothing.",
-      "Don't add cards, rounded containers above 3px, or decorative shadows. Divide with ruled lines.",
-      "Don't use JetBrains Mono for labels, buttons or sentences.",
-      "Don't add a second authored animation that competes with the lever release, and don't loop anything: an animation that repeats while nothing changes is decoration.",
-      "Don't open every screen with the title block's route band. It is the Decision Table's, where the cells really are stations.",
-      "Don't offer an action as an underlined link where it is a button (a lock's \"Chấp nhận bỏ\" is a secondary button)."
+      "**Don't** use a signal red, amber or green for the shell, brand mark, accent, theme swatch or a marker like LATEST in any theme, and don't give `primary` a green from outside the theme's own scheme.",
+      "**Don't** signal state with colour alone, whether as a tinted row without a route-number change or a lamp without a label.",
+      "**Don't** ship the category default: a neutral SaaS grid with a lone, always-clickable Publish button that explains nothing.",
+      "**Don't** add cards, rounded containers above 3px, or decorative shadows. Divide with ruled lines.",
+      "**Don't** use JetBrains Mono for labels, buttons or sentences.",
+      "**Don't** add a second authored animation that competes with the lever release, and don't loop anything: an animation that repeats while nothing changes is decoration.",
+      "**Don't** open every screen with the title block's route band. It is the Decision Table's, where the cells really are stations.",
+      "**Don't** offer an action as an underlined link where it is a button (a lock's \"Chấp nhận bỏ\" is a secondary button)."
     ]
   }
 }

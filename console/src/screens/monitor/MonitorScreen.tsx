@@ -1,6 +1,7 @@
 import { ArrowLeft, ChevronDown, ExternalLink, History, Pause, Play, RotateCw } from 'lucide-react';
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
 import { ApiError, api } from '../../api/client';
+import { PolicyPlate } from '../../components/HitPolicy';
 import { Lamp, type LampState } from '../../components/Lamp';
 import { Workspace } from '../../components/Workspace';
 import { formatScalar } from '../../domain/cell';
@@ -324,7 +325,7 @@ function Lanes(props: {
                     </button>
                     <span className="lane__meta">
                       <span className="tag lane__latest">Latest v{d.latest}</span>
-                      <span className="lane__policy">{d.hitPolicy}</span>
+                      <PolicyPlate policy={d.hitPolicy} />
                       <a className="lane__open" href={href.version(d.id, d.latest)} title={`Mở ${d.id} v${d.latest}`} aria-label={`Mở ${d.id} v${d.latest}`}>
                         <ExternalLink size={13} aria-hidden="true" />
                       </a>

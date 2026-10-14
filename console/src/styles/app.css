@@ -589,6 +589,99 @@
   white-space: nowrap;
 }
 
+/* Each value is set as what it is (decided 2026-10-14 in live mode): a version is a framed v-number, the Hit Policy an ink
+   plate, a count a figure with its unit, a status plain text; the one part of the note worth seeing without hovering
+   (Latest has moved on, the new fields, when it was saved) rides beside the value as an aside. */
+.titleblock__cell dd.titleblock__val {
+  gap: 6px;
+}
+
+.titleblock__cell.is-version .titleblock__value,
+.titleblock__cell.is-policy .titleblock__value,
+.titleblock__cell.is-count .titleblock__value {
+  display: inline-flex;
+  flex: none;
+  align-items: baseline;
+}
+
+.titleblock__cell.is-version .titleblock__value {
+  align-items: center;
+  padding: 0 6px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 2px;
+  font-family: var(--font-code);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.titleblock__cell.is-policy .titleblock__value {
+  align-items: center;
+  height: 20px;
+  padding: 0 6px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 2px;
+  font-family: var(--font-tech);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--ink-2);
+}
+
+.titleblock__unit {
+  color: var(--ink-3);
+}
+
+.titleblock__cell.is-count .titleblock__unit {
+  font-size: var(--t-sm);
+  color: var(--ink-2);
+  white-space: pre;
+}
+
+.titleblock__cell.is-count .titleblock__fig {
+  font-family: var(--font-tech);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.titleblock__aside {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.titleblock__aside.is-caution {
+  flex: none;
+  padding: 0 5px;
+  border: 1px dashed color-mix(in srgb, var(--caution-ink) 60%, transparent);
+  border-radius: 2px;
+  font-family: var(--font-tech);
+  font-size: var(--t-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 18px;
+  color: var(--caution-ink);
+}
+
+.titleblock__aside.is-accent {
+  padding: 0 5px;
+  border-radius: 2px;
+  background: var(--accent-tint);
+  font-family: var(--font-code);
+  font-size: var(--t-xs);
+  line-height: 18px;
+  color: var(--accent);
+}
+
+.titleblock__aside.is-muted {
+  font-family: var(--font-code);
+  font-size: var(--t-xs);
+  color: var(--ink-3);
+}
+
 /* The note rides in the cell's tooltip and for assistive tech, not on the page. */
 .titleblock__cell dd.titleblock__note {
   position: absolute;
@@ -1159,16 +1252,6 @@ a.mode__btn {
   margin-bottom: 8px;
   font-size: var(--t-sm);
   color: var(--ink-2);
-}
-
-.rules-note__policy {
-  padding: 1px 6px;
-  border-radius: 2px;
-  background: var(--ink);
-  color: var(--sheet);
-  font-family: var(--font-tech);
-  font-weight: 600;
-  letter-spacing: 0.05em;
 }
 
 .rules-note__hint {
@@ -3390,13 +3473,12 @@ a.mode__btn {
   text-wrap: pretty;
 }
 
-.tct-policy .rules-note__policy {
+.tct-policy .policy-plate {
   flex: none;
 }
 
-.tct__path-head .rules-note__policy {
+.tct__path-head .policy-plate {
   margin-left: 6px;
-  font-size: var(--t-xs);
 }
 
 .tct th.tct__path,
@@ -3412,76 +3494,6 @@ a.mode__btn {
 
 .tct td.tct__path {
   padding: 7px 10px 8px;
-}
-
-/* Rule plate: two cells, the Hit Policy's verdict on the Rule in the technical hand, then the mono id. */
-.tct-rid {
-  display: inline-flex;
-  align-items: stretch;
-  border: 1px solid var(--rule-strong);
-  border-radius: var(--radius);
-  line-height: 1.35;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.tct-rid__role {
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 5px;
-  border-right: 1px solid var(--rule-strong);
-  font-family: var(--font-tech);
-  font-size: 0.625rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.tct-rid__id {
-  padding: 1px 6px 2px;
-  font-family: var(--font-code);
-  font-size: var(--t-xs);
-  font-weight: 600;
-  color: var(--ink);
-}
-
-/* The Rule that decided: the role cell on the clear signal's tint, quiet enough to sit beside the KHỚP mark. */
-.tct-rid.is-won {
-  border-color: color-mix(in srgb, var(--clear-ink) 35%, var(--rule));
-}
-
-.tct-rid.is-won .tct-rid__role {
-  border-right-color: color-mix(in srgb, var(--clear-ink) 35%, var(--rule));
-  background: var(--clear-tint);
-  color: var(--clear-ink);
-}
-
-/* Matched but set aside by the policy: shadowed, outweighed, or a line nobody asked for. */
-.tct-rid.is-lost {
-  border-style: dashed;
-}
-
-.tct-rid.is-lost .tct-rid__role {
-  border-right-style: dashed;
-  color: var(--ink-3);
-}
-
-.tct-rid.is-lost .tct-rid__id {
-  color: var(--ink-3);
-}
-
-.tct-rid.is-stop {
-  border-color: color-mix(in srgb, var(--stop-ink) 40%, var(--rule));
-}
-
-.tct-rid.is-stop .tct-rid__role {
-  border-right-color: color-mix(in srgb, var(--stop-ink) 40%, var(--rule));
-  background: var(--stop-tint);
-  color: var(--stop-ink);
-}
-
-.tct-rid.is-stop .tct-rid__id {
-  color: var(--stop-ink);
 }
 
 .tct-path {

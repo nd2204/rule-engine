@@ -1,4 +1,5 @@
 import { FilePlus2, GitCompareArrows, PencilLine, RotateCcw, ScanSearch, TriangleAlert } from 'lucide-react';
+import { HIT_POLICY_NOTE } from '../../components/HitPolicy';
 import { Lamp } from '../../components/Lamp';
 import { ScopePicker } from '../../components/ScopePicker';
 import { Workspace } from '../../components/Workspace';
@@ -28,13 +29,6 @@ import { RuleGraphView, ruleTrace } from '../rule-graph/RuleGraphView';
 import { useRuleGraph, type GraphUpdate } from '../rule-graph/useRuleGraph';
 
 type ScreenRoute = Extract<Route, { name: 'draft' | 'version' }>;
-
-const POLICY_NOTE: Record<RuleSet['hitPolicy'], string> = {
-  FIRST: 'Rule match đầu tiên quyết định',
-  UNIQUE: 'Tối đa một Rule được match',
-  PRIORITY: 'Rule match có weight cao nhất thắng',
-  COLLECT: 'Mọi Rule match, giữ thứ tự Rule',
-};
 
 /** What a Stale Draft would undo of Latest if it were published as is: Rules Latest added or changed since the Draft's base. */
 function staleLoss(draft: RuleSet, base: RuleSet | null, latest: RuleSet): string[] {
@@ -585,20 +579,26 @@ function DraftView({ decisionId, draftId, tab, ruleId }: { decisionId: string; d
     {
       label: 'Dựa trên',
       value: `v${draft.baseVersion}`,
+      kind: 'version',
       lamp: stale ? (staleCleared ? 'clear' : 'caution') : undefined,
       note: stale ? `Latest Pointer đang ở v${latestNo}` : 'Là Latest hiện tại',
+      aside: stale && !staleCleared ? { text: `Latest v${latestNo}`, tone: 'caution' } : undefined,
     },
-    { label: 'Hit Policy', value: ruleSet.hitPolicy, note: POLICY_NOTE[ruleSet.hitPolicy] },
+    { label: 'Hit Policy', value: ruleSet.hitPolicy, kind: 'policy', note: HIT_POLICY_NOTE[ruleSet.hitPolicy] },
     {
       label: 'Input schema',
       value: `${ruleSet.inputs.length} trường`,
+      kind: 'count',
       note: newFields.size ? `mới: ${[...newFields].join(', ')}` : 'Không thêm trường',
+      aside: newFields.size ? { text: `+ ${[...newFields].join(', ')}`, tone: 'accent' } : undefined,
     },
     {
       label: 'Lưu',
       value: save?.kind === 'saving' ? 'Đang lưu…' : save?.kind === 'error' ? 'Lưu lỗi' : 'Đã lưu',
+      kind: 'status',
       lamp: save?.kind === 'error' ? 'stop' : undefined,
       note: save?.kind === 'saved' ? timeFormat.format(new Date(save.at)) : save?.kind === 'error' ? save.message : '',
+      aside: save?.kind === 'saved' ? { text: timeFormat.format(new Date(save.at)) } : undefined,
     },
   ];
 
@@ -1057,14 +1057,21 @@ function VersionView({ decisionId, version, tab, ruleId }: { decisionId: string;
   }
 
   const cells: TitleCell[] = [
-    { label: 'Trạng thái', value: 'Published', lamp: 'clear', note: timeFormat.format(new Date(dv.publishedAt)) },
+    {
+      label: 'Trạng thái',
+      value: 'Published',
+      kind: 'status',
+      lamp: 'clear',
+      note: timeFormat.format(new Date(dv.publishedAt)),
+      aside: { text: timeFormat.format(new Date(dv.publishedAt)) },
+    },
     {
       label: 'Latest Pointer',
       value: isLatest ? 'Trỏ vào version này' : `Đang ở v${decision.latest}`,
       note: isLatest ? 'Caller gọi latest nhận version này' : `Caller vẫn gọi được v${version} theo số version`,
     },
-    { label: 'Hit Policy', value: dv.ruleSet.hitPolicy, note: POLICY_NOTE[dv.ruleSet.hitPolicy] },
-    { label: 'Input schema', value: `${dv.ruleSet.inputs.length} trường`, note: dv.ruleSet.inputs.filter((f) => f.required).length + ' bắt buộc' },
+    { label: 'Hit Policy', value: dv.ruleSet.hitPolicy, kind: 'policy', note: HIT_POLICY_NOTE[dv.ruleSet.hitPolicy] },
+    { label: 'Input schema', value: `${dv.ruleSet.inputs.length} trường`, kind: 'count', note: dv.ruleSet.inputs.filter((f) => f.required).length + ' bắt buộc' },
     { label: 'Ghi chú', value: dv.note, wide: true },
   ];
 

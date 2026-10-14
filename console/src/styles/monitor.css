@@ -280,14 +280,6 @@
   color: var(--sheet);
 }
 
-.lane__policy {
-  font-family: var(--font-tech);
-  font-size: var(--t-xs);
-  font-weight: 600;
-  letter-spacing: 0.07em;
-  color: var(--ink-3);
-}
-
 .lane__open {
   display: inline-grid;
   place-items: center;

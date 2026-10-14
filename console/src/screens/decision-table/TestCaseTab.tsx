@@ -1,5 +1,6 @@
 import { ArrowLeft, FlaskConical, ListPlus, ListX, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { PolicyPlate, RulePlate } from '../../components/HitPolicy';
 import { Lamp, type LampState } from '../../components/Lamp';
 import { formatScalar, parseNumber } from '../../domain/cell';
 import type { EvalResult, HitPolicy, InputField, OutputField, OutputRow, Rule, RuleSet, Scalar, TestCase, TestCaseResult } from '../../domain/types';
@@ -207,19 +208,6 @@ const POLICY: Record<HitPolicy, { rule: string; meta: string; read: string }> = 
 const LINE_MARK: Record<Diff, string> = { same: 'khớp', missing: 'thiếu', extra: 'thừa' };
 
 /**
- * A Rule plate in two cells: what the Hit Policy made of the Rule, written out (THẮNG, CHE, BỊ VƯỢT, XUNG ĐỘT, GÓP),
- * then the Rule's id. The role is words, not only a colour or a dashed frame, so a screenshot reads on its own.
- */
-function RuleId({ id, rule, role, tone }: { id: string; rule?: Rule; role: string; tone: 'won' | 'lost' | 'stop' }) {
-  return (
-    <span className={`tct-rid is-${tone}`} title={rule?.description}>
-      <span className="tct-rid__role">{role}</span>
-      <span className="tct-rid__id">{id}</span>
-    </span>
-  );
-}
-
-/**
  * The Hit Policy's own account of one Test Case, in the column beside the expectation:
  * FIRST names the winner and the Rules it shadowed, UNIQUE counts the matches against its limit of one,
  * PRIORITY ranks the matched Rules by weight.
@@ -236,7 +224,7 @@ function PolicyPath({ ruleSet, result, running }: { ruleSet: RuleSet; result?: T
       <div className="tct-path">
         <span className="tct-path__ids">
           {ids.map((id) => (
-            <RuleId key={id} id={id} rule={byId.get(id)} role="xung đột" tone="stop" />
+            <RulePlate key={id} id={id} rule={byId.get(id)} disposition="conflict" policy={ruleSet.hitPolicy} />
           ))}
         </span>
         <span className="tct-path__note is-stop">{ids.length} Rule cùng match, vượt giới hạn một</span>
@@ -256,7 +244,7 @@ function PolicyPath({ ruleSet, result, running }: { ruleSet: RuleSet; result?: T
           const won = actual.winnerRuleIds.includes(r.id);
           return (
             <li key={r.id} className={won ? 'is-won' : undefined}>
-              <RuleId id={r.id} rule={r} role={won ? 'thắng' : 'bị vượt'} tone={won ? 'won' : 'lost'} />
+              <RulePlate id={r.id} rule={r} disposition={won ? 'won' : 'outweighed'} policy={ruleSet.hitPolicy} />
               <span className="tct-ladder__bar" aria-hidden="true">
                 <span style={{ width: `${Math.max(4, ((r.weight ?? 0) / top) * 100)}%` }} />
               </span>
@@ -275,14 +263,14 @@ function PolicyPath({ ruleSet, result, running }: { ruleSet: RuleSet; result?: T
   return (
     <div className="tct-path">
       <span className="tct-path__ids">
-        {winner && <RuleId id={winner} rule={byId.get(winner)} role={ruleSet.hitPolicy === 'UNIQUE' ? 'match' : 'thắng'} tone="won" />}
+        {winner && <RulePlate id={winner} rule={byId.get(winner)} disposition="won" policy={ruleSet.hitPolicy} />}
         {ruleSet.hitPolicy === 'FIRST' && order >= 0 && <span className="tct-path__pos">hàng {order + 1}</span>}
         {ruleSet.hitPolicy === 'UNIQUE' && <span className="tct-path__pos">1 / tối đa 1</span>}
       </span>
       {rest.length > 0 && (
         <span className="tct-path__shadow">
           {rest.map((id) => (
-            <RuleId key={id} id={id} rule={byId.get(id)} role="che" tone="lost" />
+            <RulePlate key={id} id={id} rule={byId.get(id)} disposition="shadowed" policy={ruleSet.hitPolicy} />
           ))}
         </span>
       )}
@@ -373,7 +361,7 @@ export function TestCaseTab(props: Props) {
         </p>
       )}
       <p className="tct-policy">
-        <span className="rules-note__policy">{policy}</span>
+        <PolicyPlate policy={policy} />
         {POLICY[policy].read}
       </p>
       <p className="tct-head__note">
@@ -750,7 +738,7 @@ export function TestCaseTab(props: Props) {
                 <div className="tct-mark">
                   {line.diff ? <Lamp state={DIFF[line.diff].lamp} size="sm" /> : <span className="tct-mark__dot" aria-hidden="true" />}
                   <span className="tct-mark__label">{line.diff ? LINE_MARK[line.diff] : running ? 'chờ' : 'kỳ vọng'}</span>
-                  {line.ruleId && <RuleId id={line.ruleId} rule={rule} role="góp" tone={line.diff === 'extra' ? 'lost' : 'won'} />}
+                  {line.ruleId && <RulePlate id={line.ruleId} rule={rule} disposition="collected" policy={policy} setAside={line.diff === 'extra'} />}
                   {(line.diff === 'missing' || line.diff === 'extra') && (
                     <span className="tct-mark__why">
                       {ruleSet.outputs
@@ -811,7 +799,7 @@ export function TestCaseTab(props: Props) {
               {collect ? 'Kỳ vọng · nhiều dòng' : 'Kỳ vọng · một dòng'}
             </th>
             <th scope="colgroup" className="is-out tct__path tct__path-head">
-              Hit Policy <span className="rules-note__policy">{policy}</span>
+              Hit Policy <PolicyPlate policy={policy} />
             </th>
             <th scope="colgroup" className="tct__pin-r is-out">
               {subject} trả về

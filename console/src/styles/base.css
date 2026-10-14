@@ -200,6 +200,97 @@ textarea::placeholder {
   color: var(--stop-ink);
 }
 
+/* ---------- Hit Policy plates (components/HitPolicy.tsx) ---------- */
+
+/* The policy's name: one outlined plate wherever a policy is named (decided 2026-10-14, replacing ink, outline and
+   lettering-only tones that read as three different things). */
+.policy-plate {
+  display: inline-flex;
+  align-items: center;
+  height: 18px;
+  padding: 0 6px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 2px;
+  background: var(--sheet);
+  font-family: var(--font-tech);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--ink-2);
+  white-space: nowrap;
+  cursor: help;
+}
+
+/* Rule plate: two cells, the Hit Policy's verdict on the Rule in the technical hand, then the mono id. */
+.rule-plate {
+  display: inline-flex;
+  align-items: stretch;
+  border: 1px solid var(--rule-strong);
+  border-radius: var(--radius);
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.rule-plate__role {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 5px;
+  border-right: 1px solid var(--rule-strong);
+  font-family: var(--font-tech);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rule-plate__id {
+  padding: 1px 6px 2px;
+  font-family: var(--font-code);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* The Rule that decided: the role cell on the clear signal's tint, quiet enough to sit beside the KHỚP mark. */
+.rule-plate.is-won {
+  border-color: color-mix(in srgb, var(--clear-ink) 35%, var(--rule));
+}
+
+.rule-plate.is-won .rule-plate__role {
+  border-right-color: color-mix(in srgb, var(--clear-ink) 35%, var(--rule));
+  background: var(--clear-tint);
+  color: var(--clear-ink);
+}
+
+/* Matched but set aside by the policy: shadowed, outweighed, or a line nobody asked for. */
+.rule-plate.is-lost {
+  border-style: dashed;
+}
+
+.rule-plate.is-lost .rule-plate__role {
+  border-right-style: dashed;
+  color: var(--ink-3);
+}
+
+.rule-plate.is-lost .rule-plate__id {
+  color: var(--ink-3);
+}
+
+.rule-plate.is-stop {
+  border-color: color-mix(in srgb, var(--stop-ink) 40%, var(--rule));
+}
+
+.rule-plate.is-stop .rule-plate__role {
+  border-right-color: color-mix(in srgb, var(--stop-ink) 40%, var(--rule));
+  background: var(--stop-tint);
+  color: var(--stop-ink);
+}
+
+.rule-plate.is-stop .rule-plate__id {
+  color: var(--stop-ink);
+}
+
 /* ---------- tags ---------- */
 
 .tag {
