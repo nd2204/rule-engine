@@ -206,10 +206,15 @@ const POLICY: Record<HitPolicy, { rule: string; meta: string; read: string }> = 
 
 const LINE_MARK: Record<Diff, string> = { same: 'khớp', missing: 'thiếu', extra: 'thừa' };
 
-function RuleId({ id, rule, tone }: { id: string; rule?: Rule; tone?: 'won' | 'lost' | 'stop' }) {
+/**
+ * A Rule plate in two cells: what the Hit Policy made of the Rule, written out (THẮNG, CHE, BỊ VƯỢT, XUNG ĐỘT, GÓP),
+ * then the Rule's id. The role is words, not only a colour or a dashed frame, so a screenshot reads on its own.
+ */
+function RuleId({ id, rule, role, tone }: { id: string; rule?: Rule; role: string; tone: 'won' | 'lost' | 'stop' }) {
   return (
-    <span className={`tct-rid${tone ? ` is-${tone}` : ''}`} title={rule?.description}>
-      {id}
+    <span className={`tct-rid is-${tone}`} title={rule?.description}>
+      <span className="tct-rid__role">{role}</span>
+      <span className="tct-rid__id">{id}</span>
     </span>
   );
 }
@@ -231,7 +236,7 @@ function PolicyPath({ ruleSet, result, running }: { ruleSet: RuleSet; result?: T
       <div className="tct-path">
         <span className="tct-path__ids">
           {ids.map((id) => (
-            <RuleId key={id} id={id} rule={byId.get(id)} tone="stop" />
+            <RuleId key={id} id={id} rule={byId.get(id)} role="xung đột" tone="stop" />
           ))}
         </span>
         <span className="tct-path__note is-stop">{ids.length} Rule cùng match, vượt giới hạn một</span>
@@ -251,7 +256,7 @@ function PolicyPath({ ruleSet, result, running }: { ruleSet: RuleSet; result?: T
           const won = actual.winnerRuleIds.includes(r.id);
           return (
             <li key={r.id} className={won ? 'is-won' : undefined}>
-              <RuleId id={r.id} rule={r} tone={won ? 'won' : 'lost'} />
+              <RuleId id={r.id} rule={r} role={won ? 'thắng' : 'bị vượt'} tone={won ? 'won' : 'lost'} />
               <span className="tct-ladder__bar" aria-hidden="true">
                 <span style={{ width: `${Math.max(4, ((r.weight ?? 0) / top) * 100)}%` }} />
               </span>
@@ -270,15 +275,14 @@ function PolicyPath({ ruleSet, result, running }: { ruleSet: RuleSet; result?: T
   return (
     <div className="tct-path">
       <span className="tct-path__ids">
-        {winner && <RuleId id={winner} rule={byId.get(winner)} tone="won" />}
+        {winner && <RuleId id={winner} rule={byId.get(winner)} role={ruleSet.hitPolicy === 'UNIQUE' ? 'match' : 'thắng'} tone="won" />}
         {ruleSet.hitPolicy === 'FIRST' && order >= 0 && <span className="tct-path__pos">hàng {order + 1}</span>}
         {ruleSet.hitPolicy === 'UNIQUE' && <span className="tct-path__pos">1 / tối đa 1</span>}
       </span>
       {rest.length > 0 && (
         <span className="tct-path__shadow">
-          che{' '}
           {rest.map((id) => (
-            <RuleId key={id} id={id} rule={byId.get(id)} tone="lost" />
+            <RuleId key={id} id={id} rule={byId.get(id)} role="che" tone="lost" />
           ))}
         </span>
       )}
@@ -746,7 +750,7 @@ export function TestCaseTab(props: Props) {
                 <div className="tct-mark">
                   {line.diff ? <Lamp state={DIFF[line.diff].lamp} size="sm" /> : <span className="tct-mark__dot" aria-hidden="true" />}
                   <span className="tct-mark__label">{line.diff ? LINE_MARK[line.diff] : running ? 'chờ' : 'kỳ vọng'}</span>
-                  {line.ruleId && <RuleId id={line.ruleId} rule={rule} tone={line.diff === 'extra' ? 'lost' : 'won'} />}
+                  {line.ruleId && <RuleId id={line.ruleId} rule={rule} role="góp" tone={line.diff === 'extra' ? 'lost' : 'won'} />}
                   {(line.diff === 'missing' || line.diff === 'extra') && (
                     <span className="tct-mark__why">
                       {ruleSet.outputs
@@ -787,6 +791,81 @@ export function TestCaseTab(props: Props) {
     );
   };
 
+  const tableFrame = (
+    <div className="tct-scroll">
+      <table className={`tct tct--${policy.toLowerCase()}`} aria-labelledby="tct-title">
+        <caption id="tct-title" className="visually-hidden">
+          Test Case của Decision, kỳ vọng và kết quả của {subject} theo Hit Policy {policy}
+        </caption>
+        <thead>
+          <tr className="tct__groups">
+            <th scope="colgroup" className="tct__pin-l">
+              Test Case
+            </th>
+            {ruleSet.inputs.length > 0 && (
+              <th scope="colgroup" colSpan={ruleSet.inputs.length}>
+                Facts · input
+              </th>
+            )}
+            <th scope="colgroup" colSpan={ruleSet.outputs.length} className="is-out is-first-out">
+              {collect ? 'Kỳ vọng · nhiều dòng' : 'Kỳ vọng · một dòng'}
+            </th>
+            <th scope="colgroup" className="is-out tct__path tct__path-head">
+              Hit Policy <span className="rules-note__policy">{policy}</span>
+            </th>
+            <th scope="colgroup" className="tct__pin-r is-out">
+              {subject} trả về
+            </th>
+          </tr>
+          <tr className="tct__fields">
+            <th scope="col" className="tct__pin-l">
+              <span className="tct__field-name">Mã · tên</span>
+            </th>
+            {ruleSet.inputs.map((f) => (
+              <th key={f.name} scope="col" className={f.type === 'number' ? 'is-num' : undefined}>
+                <span className="tct__field-name">
+                  {f.name}
+                  {f.required && (
+                    <abbr className="tct__req" title="bắt buộc">
+                      *
+                    </abbr>
+                  )}
+                </span>
+                <span className="tct__field-meta">
+                  {f.type}
+                  {f.unit ? ` · ${f.unit}` : ''}
+                </span>
+              </th>
+            ))}
+            {ruleSet.outputs.map((f, i) => (
+              <th key={f.name} scope="col" className={`is-out${i === 0 ? ' is-first-out' : ''}${f.type === 'number' ? ' is-num' : ''}`}>
+                <span className="tct__field-name">{f.name}</span>
+                <span className="tct__field-meta">
+                  {f.type}
+                  {f.unit ? ` · ${f.unit}` : ''}
+                </span>
+              </th>
+            ))}
+            <th scope="col" className="is-out tct__path">
+              <span className="tct__field-name">{POLICY[policy].rule}</span>
+              <span className="tct__field-meta">{POLICY[policy].meta}</span>
+            </th>
+            <th scope="col" className="tct__pin-r is-out">
+              <span className="tct__field-name">Verdict</span>
+              <span className="tct__field-meta">so với Kỳ vọng</span>
+            </th>
+          </tr>
+        </thead>
+        {testCases.map((tc) => {
+          const r = byId.get(tc.id);
+          const active = selectedId === tc.id;
+          const cls = `tct__tc${active ? ' is-active' : ''}${r && r.status !== 'pass' ? ' is-failing' : ''}`;
+          return collect ? collectBody(tc, r, cls, active) : singleBody(tc, r, cls, active);
+        })}
+      </table>
+    </div>
+  );
+
   return (
     <section className="tct-wrap" aria-labelledby="tct-title">
       {head}
@@ -809,78 +888,7 @@ export function TestCaseTab(props: Props) {
           </div>
         </div>
       ) : (
-        <div className="tct-scroll">
-          <table className={`tct tct--${policy.toLowerCase()}`} aria-labelledby="tct-title">
-            <caption id="tct-title" className="visually-hidden">
-              Test Case của Decision, kỳ vọng và kết quả của {subject} theo Hit Policy {policy}
-            </caption>
-            <thead>
-              <tr className="tct__groups">
-                <th scope="colgroup" className="tct__pin-l">
-                  Test Case
-                </th>
-                {ruleSet.inputs.length > 0 && (
-                  <th scope="colgroup" colSpan={ruleSet.inputs.length}>
-                    Facts · input
-                  </th>
-                )}
-                <th scope="colgroup" colSpan={ruleSet.outputs.length} className="is-out is-first-out">
-                  {collect ? 'Kỳ vọng · nhiều dòng' : 'Kỳ vọng · một dòng'}
-                </th>
-                <th scope="colgroup" className="is-out tct__path tct__path-head">
-                  Hit Policy <span className="rules-note__policy">{policy}</span>
-                </th>
-                <th scope="colgroup" className="tct__pin-r is-out">
-                  {subject} trả về
-                </th>
-              </tr>
-              <tr className="tct__fields">
-                <th scope="col" className="tct__pin-l">
-                  <span className="tct__field-name">Mã · tên</span>
-                </th>
-                {ruleSet.inputs.map((f) => (
-                  <th key={f.name} scope="col" className={f.type === 'number' ? 'is-num' : undefined}>
-                    <span className="tct__field-name">
-                      {f.name}
-                      {f.required && (
-                        <abbr className="tct__req" title="bắt buộc">
-                          *
-                        </abbr>
-                      )}
-                    </span>
-                    <span className="tct__field-meta">
-                      {f.type}
-                      {f.unit ? ` · ${f.unit}` : ''}
-                    </span>
-                  </th>
-                ))}
-                {ruleSet.outputs.map((f, i) => (
-                  <th key={f.name} scope="col" className={`is-out${i === 0 ? ' is-first-out' : ''}${f.type === 'number' ? ' is-num' : ''}`}>
-                    <span className="tct__field-name">{f.name}</span>
-                    <span className="tct__field-meta">
-                      {f.type}
-                      {f.unit ? ` · ${f.unit}` : ''}
-                    </span>
-                  </th>
-                ))}
-                <th scope="col" className="is-out tct__path">
-                  <span className="tct__field-name">{POLICY[policy].rule}</span>
-                  <span className="tct__field-meta">{POLICY[policy].meta}</span>
-                </th>
-                <th scope="col" className="tct__pin-r is-out">
-                  <span className="tct__field-name">Verdict</span>
-                  <span className="tct__field-meta">so với Kỳ vọng</span>
-                </th>
-              </tr>
-            </thead>
-            {testCases.map((tc) => {
-              const r = byId.get(tc.id);
-              const active = selectedId === tc.id;
-              const cls = `tct__tc${active ? ' is-active' : ''}${r && r.status !== 'pass' ? ' is-failing' : ''}`;
-              return collect ? collectBody(tc, r, cls, active) : singleBody(tc, r, cls, active);
-            })}
-          </table>
-        </div>
+        tableFrame
       )}
       {canEdit && props.onAdd && testCases.length > 0 && (
         <button type="button" className="btn btn--secondary tct-add" onClick={() => setFormFor('new')}>

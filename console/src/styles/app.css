@@ -3414,35 +3414,73 @@ a.mode__btn {
   padding: 7px 10px 8px;
 }
 
+/* Rule plate: two cells, the Hit Policy's verdict on the Rule in the technical hand, then the mono id. */
 .tct-rid {
-  display: inline-block;
-  padding: 1px 6px 2px;
+  display: inline-flex;
+  align-items: stretch;
   border: 1px solid var(--rule-strong);
   border-radius: var(--radius);
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.tct-rid__role {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 5px;
+  border-right: 1px solid var(--rule-strong);
+  font-family: var(--font-tech);
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tct-rid__id {
+  padding: 1px 6px 2px;
   font-family: var(--font-code);
   font-size: var(--t-xs);
   font-weight: 600;
-  line-height: 1.35;
   color: var(--ink);
-  white-space: nowrap;
 }
 
-/* The Rule that decided: solid ink, like a lever pulled. */
+/* The Rule that decided: the role cell on the clear signal's tint, quiet enough to sit beside the KHỚP mark. */
 .tct-rid.is-won {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: var(--sheet);
+  border-color: color-mix(in srgb, var(--clear-ink) 35%, var(--rule));
+}
+
+.tct-rid.is-won .tct-rid__role {
+  border-right-color: color-mix(in srgb, var(--clear-ink) 35%, var(--rule));
+  background: var(--clear-tint);
+  color: var(--clear-ink);
 }
 
 /* Matched but set aside by the policy: shadowed, outweighed, or a line nobody asked for. */
 .tct-rid.is-lost {
   border-style: dashed;
+}
+
+.tct-rid.is-lost .tct-rid__role {
+  border-right-style: dashed;
+  color: var(--ink-3);
+}
+
+.tct-rid.is-lost .tct-rid__id {
   color: var(--ink-3);
 }
 
 .tct-rid.is-stop {
-  border-color: var(--stop-ink);
+  border-color: color-mix(in srgb, var(--stop-ink) 40%, var(--rule));
+}
+
+.tct-rid.is-stop .tct-rid__role {
+  border-right-color: color-mix(in srgb, var(--stop-ink) 40%, var(--rule));
   background: var(--stop-tint);
+  color: var(--stop-ink);
+}
+
+.tct-rid.is-stop .tct-rid__id {
   color: var(--stop-ink);
 }
 
